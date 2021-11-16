@@ -9,8 +9,8 @@ plugins {
 dependencies {
     implementation(project(":flink-avro"))
     testImplementation(project(":flink-test-utils"))
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-statebackend-rocksdb"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-statebackend-rocksdb"))
 }
 
 description = "Flink : E2E Tests : Datastream allround"

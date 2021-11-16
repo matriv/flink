@@ -12,7 +12,7 @@ dependencies {
     implementation("com.google.api.grpc:grpc-google-cloud-pubsub-v1:1.90.0")
     testImplementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-runtime"))
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-java"))
 }
 
 description = "Flink : Connectors : Google PubSub"

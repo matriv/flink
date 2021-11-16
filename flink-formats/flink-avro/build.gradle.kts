@@ -17,8 +17,8 @@ dependencies {
     testImplementation(project(":flink-table-planner_2.12"))
     testImplementation(project(":flink-table-planner_2.12"))
     testImplementation(project(":flink-file-sink-common"))
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-table-common"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-table-common"))
     compileOnly("joda-time:joda-time:2.5")
 }
 

@@ -10,7 +10,7 @@ dependencies {
     implementation(project(":flink-orc_2.12"))
     implementation("org.apache.orc:orc-core:1.5.6")
     testImplementation(project(":flink-orc_2.12"))
-    providedCompile(project(":flink-table-runtime_2.12"))
+    compileOnly(project(":flink-table-runtime_2.12"))
 }
 
 description = "Flink : Formats : Orc nohive"

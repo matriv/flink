@@ -16,7 +16,7 @@ dependencies {
     implementation(project(":flink-connector-kinesis"))
     implementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
     testImplementation(project(":flink-test-utils-junit"))
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-java"))
 }
 
 description = "Flink : E2E Tests : Avro AWS Glue Schema Registry"

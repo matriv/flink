@@ -14,8 +14,8 @@ dependencies {
     testImplementation(project(":flink-statebackend-rocksdb"))
     testImplementation(project(":flink-statebackend-rocksdb"))
     testImplementation(project(":flink-streaming-java"))
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-runtime"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-runtime"))
 }
 
 description = "Flink : State backends : Changelog"

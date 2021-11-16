@@ -12,7 +12,7 @@ dependencies {
     testImplementation(project(":flink-runtime"))
     testImplementation(project(":flink-test-utils"))
     testImplementation("org.testcontainers:rabbitmq:1.16.2")
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-java"))
 }
 
 description = "Flink : Connectors : RabbitMQ"

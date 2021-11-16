@@ -16,8 +16,8 @@ dependencies {
     implementation("org.clapper:grizzled-slf4j_2.12:1.3.2")
     testImplementation(project(":flink-test-utils-junit"))
     testImplementation(project(":flink-core"))
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-rpc-core"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-rpc-core"))
     compileOnly("org.apache.flink:flink-shaded-netty:4.1.65.Final-14.0")
 }
 

@@ -12,8 +12,8 @@ dependencies {
     implementation("io.dropwizard.metrics:metrics-graphite:3.2.6")
     testImplementation(project(":flink-test-utils-junit"))
     testImplementation(project(":flink-metrics-core"))
-    providedCompile(project(":flink-annotations"))
-    providedCompile(project(":flink-metrics-core"))
+    compileOnly(project(":flink-annotations"))
+    compileOnly(project(":flink-metrics-core"))
 }
 
 description = "Flink : Metrics : Graphite"

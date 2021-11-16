@@ -10,7 +10,7 @@ dependencies {
     implementation(project(":flink-connector-kafka"))
     implementation(project(":flink-avro"))
     implementation(project(":flink-avro-confluent-registry"))
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-java"))
 }
 
 description = "Flink : E2E Tests : Confluent schema registry"

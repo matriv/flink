@@ -17,10 +17,10 @@ dependencies {
     testImplementation(project(":flink-test-utils"))
     testImplementation("org.apache.cassandra:cassandra-all:2.2.5")
     testImplementation("io.netty:netty-all:4.1.46.Final")
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-streaming-scala_2.12"))
-    providedCompile(project(":flink-table-api-java-bridge"))
-    providedCompile(project(":flink-table-planner_2.12"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-scala_2.12"))
+    compileOnly(project(":flink-table-api-java-bridge"))
+    compileOnly(project(":flink-table-planner_2.12"))
     compileOnly("org.scala-lang:scala-library:2.12.7")
 }
 

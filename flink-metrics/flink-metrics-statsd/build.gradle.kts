@@ -10,8 +10,8 @@ dependencies {
     testImplementation(project(":flink-metrics-core"))
     testImplementation(project(":flink-core"))
     testImplementation(project(":flink-test-utils-junit"))
-    providedCompile(project(":flink-annotations"))
-    providedCompile(project(":flink-metrics-core"))
+    compileOnly(project(":flink-annotations"))
+    compileOnly(project(":flink-metrics-core"))
 }
 
 description = "Flink : Metrics : StatsD"

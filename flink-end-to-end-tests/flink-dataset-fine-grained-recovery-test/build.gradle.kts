@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    providedCompile(project(":flink-java"))
+    compileOnly(project(":flink-java"))
 }
 
 description = "Flink : E2E Tests : Dataset Fine-grained recovery"

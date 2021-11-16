@@ -8,8 +8,8 @@ plugins {
 
 dependencies {
     testImplementation("org.apache.calcite:calcite-core:1.26.0")
-    providedCompile(project(":flink-sql-parser"))
-    providedCompile(project(":flink-table-common"))
+    compileOnly(project(":flink-sql-parser"))
+    compileOnly(project(":flink-table-common"))
     compileOnly("com.google.guava:guava:29.0-jre")
 }
 

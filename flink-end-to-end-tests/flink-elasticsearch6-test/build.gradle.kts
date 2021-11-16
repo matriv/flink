@@ -8,7 +8,7 @@ plugins {
 
 dependencies {
     implementation(project(":flink-connector-elasticsearch6"))
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-java"))
 }
 
 description = "Flink : E2E Tests : Elasticsearch 6"

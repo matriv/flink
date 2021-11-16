@@ -9,9 +9,9 @@ plugins {
 dependencies {
     implementation("org.apache.hbase:hbase-client:1.4.3")
     implementation("io.netty:netty-all:4.1.46.Final")
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-table-api-java-bridge"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-table-api-java-bridge"))
     compileOnly("org.apache.hadoop:hadoop-common:2.4.1")
 }
 

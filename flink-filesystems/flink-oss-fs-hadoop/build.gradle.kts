@@ -14,7 +14,7 @@ dependencies {
     testImplementation(project(":flink-fs-hadoop-shaded"))
     testImplementation(project(":flink-core"))
     testImplementation(project(":flink-hadoop-fs"))
-    providedCompile(project(":flink-core"))
+    compileOnly(project(":flink-core"))
 }
 
 description = "Flink : FileSystems : OSS FS"

@@ -30,9 +30,9 @@ dependencies {
     testImplementation(project(":flink-table-runtime_2.12"))
     testImplementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-statebackend-rocksdb"))
-    providedCompile(project(":flink-scala_2.12"))
-    providedCompile(project(":flink-streaming-scala_2.12"))
-    providedCompile(project(":flink-cep"))
+    compileOnly(project(":flink-scala_2.12"))
+    compileOnly(project(":flink-streaming-scala_2.12"))
+    compileOnly(project(":flink-cep"))
 }
 
 description = "Flink : Table : Planner"

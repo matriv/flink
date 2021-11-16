@@ -21,13 +21,13 @@ dependencies {
     testImplementation(project(":flink-table-runtime_2.12"))
     testImplementation(project(":flink-table-planner_2.12"))
     testImplementation(project(":flink-test-utils-junit"))
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-clients"))
-    providedCompile(project(":flink-java"))
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-table-common"))
-    providedCompile(project(":flink-table-planner_2.12"))
-    providedCompile(project(":flink-table-runtime_2.12"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-clients"))
+    compileOnly(project(":flink-java"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-table-common"))
+    compileOnly(project(":flink-table-planner_2.12"))
+    compileOnly(project(":flink-table-runtime_2.12"))
 }
 
 description = "Flink : Python"

@@ -10,7 +10,7 @@ dependencies {
     implementation("org.apache.nifi:nifi-site-to-site-client:1.14.0")
     testImplementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-tests"))
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-java"))
 }
 
 description = "Flink : Connectors : Nifi"

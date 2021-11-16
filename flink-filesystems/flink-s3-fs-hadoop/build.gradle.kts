@@ -10,7 +10,7 @@ dependencies {
     implementation(project(":flink-s3-fs-base"))
     testImplementation(project(":flink-core"))
     testImplementation(project(":flink-hadoop-fs"))
-    providedCompile(project(":flink-core"))
+    compileOnly(project(":flink-core"))
     compileOnly("javax.xml.bind:jaxb-api:2.3.1")
 }
 

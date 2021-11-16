@@ -8,7 +8,7 @@ plugins {
 
 dependencies {
     implementation(project(":flink-connector-files"))
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-java"))
 }
 
 description = "Flink : E2E Tests : File sink"

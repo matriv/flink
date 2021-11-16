@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    providedCompile(project(":flink-table-api-java-bridge"))
+    compileOnly(project(":flink-table-api-java-bridge"))
 }
 
 description = "Flink : E2E Tests : Batch SQL"

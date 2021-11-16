@@ -13,8 +13,8 @@ dependencies {
     testImplementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-runtime"))
     testImplementation(project(":flink-statebackend-rocksdb"))
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-streaming-java"))
 }
 
 description = "Flink : Libraries : CEP"

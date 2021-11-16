@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    providedCompile(project(":flink-core"))
+    compileOnly(project(":flink-core"))
 }
 
 description = "Flink : Connectors : File Sink Common"

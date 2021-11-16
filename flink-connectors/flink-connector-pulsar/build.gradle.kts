@@ -19,7 +19,7 @@ dependencies {
     testImplementation("org.apache.pulsar:testmocks:2.8.0")
     testImplementation("org.apache.pulsar:pulsar-broker:2.8.0")
     testImplementation("org.apache.commons:commons-lang3:3.11")
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-java"))
     compileOnly("com.google.protobuf:protobuf-java:3.17.3")
 }
 

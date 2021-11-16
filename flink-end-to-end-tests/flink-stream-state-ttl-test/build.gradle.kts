@@ -9,7 +9,7 @@ plugins {
 dependencies {
     implementation(project(":flink-datastream-allround-test"))
     implementation(project(":flink-statebackend-rocksdb"))
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-java"))
 }
 
 description = "Flink : E2E Tests : Stream state TTL"

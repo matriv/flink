@@ -12,8 +12,8 @@ dependencies {
     implementation("software.amazon.awssdk:aws-core:2.17.52")
     implementation("com.kjetland:mbknor-jackson-jsonschema_2.12:1.0.39")
     implementation("com.github.erosb:everit-json-schema:1.12.2")
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-streaming-java"))
 }
 
 description = "Flink : Formats : JSON AWS Glue Schema Registry"

@@ -21,7 +21,7 @@ dependencies {
     testImplementation("mysql:mysql-connector-java:8.0.27")
     testImplementation("org.apache.derby:derby:10.14.2.0")
     testImplementation("org.testcontainers:mysql:1.16.2")
-    providedCompile(project(":flink-table-api-java-bridge"))
+    compileOnly(project(":flink-table-api-java-bridge"))
     compileOnly("org.postgresql:postgresql:42.2.10")
 }
 

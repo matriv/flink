@@ -14,8 +14,8 @@ dependencies {
     testImplementation(project(":flink-test-utils"))
     testImplementation("org.scala-lang:scala-compiler:2.12.7")
     compileOnly("org.apache.flink:flink-shaded-jackson:2.12.4-14.0")
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-table-common"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-table-common"))
 }
 
 description = "Flink : Formats : Json"

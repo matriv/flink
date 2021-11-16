@@ -16,9 +16,9 @@ dependencies {
     testImplementation(project(":flink-test-utils"))
     testImplementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-table-common"))
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-cep"))
-    providedCompile(project(":flink-scala_2.12"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-cep"))
+    compileOnly(project(":flink-scala_2.12"))
 }
 
 description = "Flink : Table : Runtime"

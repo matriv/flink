@@ -7,14 +7,14 @@ plugins {
 }
 
 dependencies {
-    providedCompile(project(":flink-table-common"))
-    providedCompile(project(":flink-sql-avro"))
-    providedCompile(project(":flink-json"))
-    providedCompile(project(":flink-csv"))
-    providedCompile(project(":flink-sql-connector-kafka"))
-    providedCompile(project(":flink-sql-connector-kinesis"))
-    providedCompile(project(":flink-sql-connector-elasticsearch6"))
-    providedCompile(project(":flink-sql-connector-elasticsearch7"))
+    compileOnly(project(":flink-table-common"))
+    compileOnly(project(":flink-sql-avro"))
+    compileOnly(project(":flink-json"))
+    compileOnly(project(":flink-csv"))
+    compileOnly(project(":flink-sql-connector-kafka"))
+    compileOnly(project(":flink-sql-connector-kinesis"))
+    compileOnly(project(":flink-sql-connector-elasticsearch6"))
+    compileOnly(project(":flink-sql-connector-elasticsearch7"))
 }
 
 description = "Flink : E2E Tests : SQL client"

@@ -7,8 +7,8 @@ plugins {
 }
 
 dependencies {
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-statebackend-rocksdb"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-statebackend-rocksdb"))
 }
 
 description = "Flink : E2E Tests : Local recovery and allocation"

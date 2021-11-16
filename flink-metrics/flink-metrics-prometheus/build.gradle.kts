@@ -15,9 +15,9 @@ dependencies {
     testImplementation(project(":flink-runtime"))
     testImplementation(project(":flink-test-utils-junit"))
     testImplementation("com.mashape.unirest:unirest-java:1.4.9")
-    providedCompile(project(":flink-annotations"))
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-metrics-core"))
+    compileOnly(project(":flink-annotations"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-metrics-core"))
 }
 
 description = "Flink : Metrics : Prometheus"

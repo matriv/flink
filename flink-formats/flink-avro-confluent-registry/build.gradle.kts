@@ -13,9 +13,9 @@ dependencies {
     testImplementation(project(":flink-table-runtime_2.12"))
     testImplementation(project(":flink-table-common"))
     testImplementation(project(":flink-avro"))
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-table-api-java"))
-    providedCompile(project(":flink-table-common"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-table-api-java"))
+    compileOnly(project(":flink-table-common"))
 }
 
 description = "Flink : Formats : Avro confluent registry"

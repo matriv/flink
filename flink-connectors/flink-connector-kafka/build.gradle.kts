@@ -27,8 +27,8 @@ dependencies {
     testImplementation(project(":flink-avro-confluent-registry"))
     testImplementation(project(":flink-csv"))
     testImplementation(project(":flink-connector-testing"))
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-table-api-java-bridge"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-table-api-java-bridge"))
 }
 
 description = "Flink : Connectors : Kafka"

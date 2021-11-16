@@ -19,7 +19,7 @@ dependencies {
     testImplementation("io.confluent:kafka-avro-serializer:5.5.2")
     testImplementation("io.confluent:kafka-schema-registry-client:5.5.2")
     testImplementation("org.apache.avro:avro:1.10.0")
-    providedCompile(project(":flink-streaming-kafka-test"))
+    compileOnly(project(":flink-streaming-kafka-test"))
 }
 
 description = "Flink : E2E Tests : Common Kafka"

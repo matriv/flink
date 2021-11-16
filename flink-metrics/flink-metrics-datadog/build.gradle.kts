@@ -10,8 +10,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:3.14.9")
     testImplementation(project(":flink-test-utils-junit"))
     testImplementation(project(":flink-metrics-core"))
-    providedCompile(project(":flink-annotations"))
-    providedCompile(project(":flink-metrics-core"))
+    compileOnly(project(":flink-annotations"))
+    compileOnly(project(":flink-metrics-core"))
     compileOnly("org.apache.flink:flink-shaded-jackson:2.12.4-14.0")
 }
 

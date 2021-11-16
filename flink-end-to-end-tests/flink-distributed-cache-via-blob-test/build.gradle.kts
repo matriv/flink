@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-java"))
 }
 
 description = "Flink : E2E Tests : Distributed cache via blob"

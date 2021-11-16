@@ -13,8 +13,8 @@ dependencies {
     testImplementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-table-common"))
     testImplementation(project(":flink-json"))
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-table-api-java-bridge"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-table-api-java-bridge"))
 }
 
 description = "Flink : Connectors : Elasticsearch base"

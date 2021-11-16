@@ -10,7 +10,7 @@ dependencies {
     implementation("org.apache.flink:flink-shaded-netty:4.1.65.Final-14.0")
     implementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
     testImplementation(project(":flink-core"))
-    providedCompile(project(":flink-core"))
+    compileOnly(project(":flink-core"))
 }
 
 description = "Flink : Queryable state : Client Java"

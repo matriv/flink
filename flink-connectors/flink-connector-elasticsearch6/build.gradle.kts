@@ -17,8 +17,8 @@ dependencies {
     testImplementation("org.elasticsearch.plugin:transport-netty4-client:6.3.1")
     testImplementation(project(":flink-table-planner_2.12"))
     testImplementation(project(":flink-json"))
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-table-api-java-bridge"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-table-api-java-bridge"))
 }
 
 description = "Flink : Connectors : Elasticsearch 6"

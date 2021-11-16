@@ -10,8 +10,8 @@ dependencies {
     testImplementation(project(":flink-test-utils"))
     testImplementation(project(":flink-core"))
     testImplementation(project(":flink-optimizer"))
-    providedCompile(project(":flink-java"))
-    providedCompile(project(":flink-clients"))
+    compileOnly(project(":flink-java"))
+    compileOnly(project(":flink-clients"))
     compileOnly("org.apache.commons:commons-lang3:3.3.2")
 }
 

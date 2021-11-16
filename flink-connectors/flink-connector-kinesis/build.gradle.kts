@@ -34,8 +34,8 @@ dependencies {
     testImplementation(project(":flink-table-common"))
     testImplementation(project(":flink-table-planner_2.12"))
     compileOnly("javax.xml.bind:jaxb-api:2.3.1")
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-table-api-java-bridge"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-table-api-java-bridge"))
 }
 
 description = "Flink : Connectors : Kinesis"

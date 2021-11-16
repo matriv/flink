@@ -10,7 +10,7 @@ dependencies {
     testImplementation(project(":flink-core"))
     testImplementation(project(":flink-test-utils"))
     testImplementation(project(":flink-connector-test-utils"))
-    providedCompile(project(":flink-core"))
+    compileOnly(project(":flink-core"))
 }
 
 description = "Flink : Connectors : Base"

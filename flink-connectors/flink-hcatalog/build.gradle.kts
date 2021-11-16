@@ -9,7 +9,7 @@ plugins {
 dependencies {
     implementation(project(":flink-hadoop-compatibility_2.12"))
     implementation("org.apache.hive.hcatalog:hcatalog-core:0.12.0")
-    providedCompile(project(":flink-java"))
+    compileOnly(project(":flink-java"))
     compileOnly("org.scala-lang:scala-library:2.12.7")
     compileOnly("org.apache.hadoop:hadoop-common:2.4.1")
     compileOnly("org.apache.hadoop:hadoop-mapreduce-client-core:2.4.1")

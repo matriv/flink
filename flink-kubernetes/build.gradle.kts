@@ -12,8 +12,8 @@ dependencies {
     testImplementation(project(":flink-runtime"))
     testImplementation(project(":flink-clients"))
     testImplementation(project(":flink-test-utils"))
-    providedCompile(project(":flink-clients"))
-    providedCompile(project(":flink-runtime"))
+    compileOnly(project(":flink-clients"))
+    compileOnly(project(":flink-runtime"))
     compileOnly("org.apache.flink:flink-shaded-jackson:2.12.4-14.0")
 }
 

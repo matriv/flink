@@ -10,8 +10,8 @@ dependencies {
     implementation(project(":flink-quickstart-java"))
     implementation(project(":flink-quickstart-scala"))
     implementation(project(":flink-connector-elasticsearch5"))
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-streaming-scala_2.12"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-scala_2.12"))
 }
 
 description = "Flink : E2E Tests : Quickstart"

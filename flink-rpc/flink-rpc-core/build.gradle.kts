@@ -8,7 +8,7 @@ plugins {
 
 dependencies {
     testImplementation(project(":flink-test-utils-junit"))
-    providedCompile(project(":flink-core"))
+    compileOnly(project(":flink-core"))
 }
 
 description = "Flink : RPC : Core"

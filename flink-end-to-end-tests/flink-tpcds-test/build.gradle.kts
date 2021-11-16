@@ -7,8 +7,8 @@ plugins {
 }
 
 dependencies {
-    providedCompile(project(":flink-java"))
-    providedCompile(project(":flink-table-planner_2.12"))
+    compileOnly(project(":flink-java"))
+    compileOnly(project(":flink-table-planner_2.12"))
 }
 
 description = "Flink : E2E Tests : TPCDS"

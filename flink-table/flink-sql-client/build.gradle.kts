@@ -30,7 +30,7 @@ dependencies {
     testImplementation("org.apache.hive:hive-metastore:2.3.4")
     testImplementation("org.apache.hive:hive-exec:2.3.4")
     testImplementation("org.apache.hadoop:hadoop-common:2.7.5")
-    providedCompile(project(":flink-connector-hive_2.12"))
+    compileOnly(project(":flink-connector-hive_2.12"))
     compileOnly("org.apache.hadoop:hadoop-mapreduce-client-core:2.7.5")
 }
 

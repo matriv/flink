@@ -12,7 +12,7 @@ dependencies {
     implementation("org.apache.hadoop:hadoop-azure:3.2.2")
     testImplementation("com.microsoft.azure:azure:1.16.0")
     testImplementation(project(":flink-core"))
-    providedCompile(project(":flink-core"))
+    compileOnly(project(":flink-core"))
 }
 
 description = "Flink : FileSystems : Azure FS Hadoop"

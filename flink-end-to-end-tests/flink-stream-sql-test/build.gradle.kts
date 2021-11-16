@@ -7,8 +7,8 @@ plugins {
 }
 
 dependencies {
-    providedCompile(project(":flink-streaming-scala_2.12"))
-    providedCompile(project(":flink-table-api-java-bridge"))
+    compileOnly(project(":flink-streaming-scala_2.12"))
+    compileOnly(project(":flink-table-api-java-bridge"))
 }
 
 description = "Flink : E2E Tests : Stream SQL"

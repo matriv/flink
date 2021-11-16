@@ -10,8 +10,8 @@ dependencies {
     implementation(project(":flink-core"))
     implementation(project(":flink-java"))
     implementation(project(":flink-queryable-state-client-java"))
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-statebackend-rocksdb"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-statebackend-rocksdb"))
 }
 
 description = "Flink : E2E Tests : Queryable state"

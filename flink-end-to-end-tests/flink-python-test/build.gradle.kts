@@ -8,10 +8,10 @@ plugins {
 
 dependencies {
     implementation(project(":flink-python_2.12"))
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-java"))
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-table-api-java-bridge"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-java"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-table-api-java-bridge"))
 }
 
 description = "Flink : E2E Tests : Python"

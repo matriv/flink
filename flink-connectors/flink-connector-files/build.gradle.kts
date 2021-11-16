@@ -15,7 +15,7 @@ dependencies {
     testImplementation(project(":flink-connector-test-utils"))
     testImplementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-streaming-java"))
-    providedCompile(project(":flink-core"))
+    compileOnly(project(":flink-core"))
 }
 
 description = "Flink : Connectors : Files"

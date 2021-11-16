@@ -8,8 +8,8 @@ plugins {
 
 dependencies {
     implementation(project(":flink-examples-batch_2.12"))
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-java"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-java"))
 }
 
 description = "Flink : E2E Tests : High parallelism iterations"

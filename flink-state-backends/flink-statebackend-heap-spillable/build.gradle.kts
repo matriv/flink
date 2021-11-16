@@ -9,7 +9,7 @@ plugins {
 dependencies {
     testImplementation(project(":flink-test-utils-junit"))
     testImplementation(project(":flink-runtime"))
-    providedCompile(project(":flink-runtime"))
+    compileOnly(project(":flink-runtime"))
 }
 
 description = "Flink : State backends : Heap spillable"

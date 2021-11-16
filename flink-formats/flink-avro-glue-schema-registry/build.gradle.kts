@@ -10,7 +10,7 @@ dependencies {
     implementation(project(":flink-avro"))
     implementation("software.amazon.glue:schema-registry-serde:1.1.5")
     implementation("software.amazon.glue:schema-registry-common:1.1.5")
-    providedCompile(project(":flink-core"))
+    compileOnly(project(":flink-core"))
 }
 
 description = "Flink : Formats : Avro AWS Glue Schema Registry"

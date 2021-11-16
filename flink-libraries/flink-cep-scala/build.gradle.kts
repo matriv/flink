@@ -12,7 +12,7 @@ dependencies {
     testImplementation(project(":flink-tests"))
     testImplementation(project(":flink-streaming-scala_2.12"))
     testImplementation(project(":flink-cep"))
-    providedCompile(project(":flink-streaming-scala_2.12"))
+    compileOnly(project(":flink-streaming-scala_2.12"))
     compileOnly("org.scala-lang:scala-reflect:2.12.7")
     compileOnly("org.scala-lang:scala-library:2.12.7")
     compileOnly("org.scala-lang:scala-compiler:2.12.7")

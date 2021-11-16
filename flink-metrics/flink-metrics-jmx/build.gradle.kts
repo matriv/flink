@@ -10,9 +10,9 @@ dependencies {
     testImplementation(project(":flink-metrics-core"))
     testImplementation(project(":flink-test-utils-junit"))
     testImplementation(project(":flink-test-utils"))
-    providedCompile(project(":flink-annotations"))
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-metrics-core"))
+    compileOnly(project(":flink-annotations"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-metrics-core"))
 }
 
 description = "Flink : Metrics : JMX"

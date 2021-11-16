@@ -12,8 +12,8 @@ dependencies {
     implementation("org.scala-lang:scala-compiler:2.11.12")
     testImplementation(project(":flink-test-utils-junit"))
     testImplementation(project(":flink-end-to-end-tests-common"))
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-clients"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-clients"))
 }
 
 description = "Flink : E2E Tests : Scala"

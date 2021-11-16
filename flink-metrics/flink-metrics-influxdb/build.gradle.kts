@@ -12,8 +12,8 @@ dependencies {
     testImplementation(project(":flink-runtime"))
     testImplementation(project(":flink-test-utils-junit"))
     testImplementation("com.github.tomakehurst:wiremock:2.19.0")
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-metrics-core"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-metrics-core"))
 }
 
 description = "Flink : Metrics : InfluxDB"

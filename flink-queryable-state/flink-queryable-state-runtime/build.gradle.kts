@@ -13,9 +13,9 @@ dependencies {
     testImplementation(project(":flink-test-utils"))
     testImplementation("org.apache.curator:curator-test:2.12.0")
     testImplementation(project(":flink-runtime"))
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-runtime"))
-    providedCompile(project(":flink-queryable-state-client-java"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-runtime"))
+    compileOnly(project(":flink-queryable-state-client-java"))
 }
 
 description = "Flink : Queryable state : Runtime"

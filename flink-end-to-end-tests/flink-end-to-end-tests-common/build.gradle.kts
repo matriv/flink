@@ -14,7 +14,7 @@ dependencies {
     implementation(project(":flink-runtime"))
     implementation(project(":flink-connector-testing"))
     implementation("org.testcontainers:testcontainers:1.16.2")
-    providedCompile(project(":flink-dist_2.12"))
+    compileOnly(project(":flink-dist_2.12"))
 }
 
 description = "Flink : E2E Tests : Common"

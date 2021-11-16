@@ -25,9 +25,9 @@ dependencies {
     testImplementation("org.apache.hbase:hbase-hadoop-compat:2.2.3")
     testImplementation("org.apache.hadoop:hadoop-hdfs:2.4.1")
     testImplementation("org.apache.hbase:hbase-hadoop2-compat:2.2.3")
-    providedCompile(project(":flink-core"))
-    providedCompile(project(":flink-streaming-java"))
-    providedCompile(project(":flink-table-api-java-bridge"))
+    compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-table-api-java-bridge"))
     compileOnly("org.apache.hadoop:hadoop-common:2.4.1")
 }
 

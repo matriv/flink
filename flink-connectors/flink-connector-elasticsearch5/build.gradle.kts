@@ -19,7 +19,7 @@ dependencies {
     testImplementation(project(":flink-test-utils"))
     testImplementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-connector-elasticsearch-base"))
-    providedCompile(project(":flink-streaming-java"))
+    compileOnly(project(":flink-streaming-java"))
 }
 
 description = "Flink : Connectors : Elasticsearch 5"

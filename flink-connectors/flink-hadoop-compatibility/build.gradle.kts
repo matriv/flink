@@ -10,8 +10,8 @@ dependencies {
     testImplementation(project(":flink-java"))
     testImplementation(project(":flink-test-utils"))
     testImplementation(project(":flink-core"))
-    providedCompile(project(":flink-java"))
-    providedCompile(project(":flink-scala_2.12"))
+    compileOnly(project(":flink-java"))
+    compileOnly(project(":flink-scala_2.12"))
     compileOnly("org.apache.hadoop:hadoop-common:2.4.1")
     compileOnly("org.apache.hadoop:hadoop-mapreduce-client-core:2.4.1")
 }
