@@ -3,12 +3,13 @@
  */
 
 plugins {
+    id("java-library")
     id("org.apache.flink.java-conventions")
 }
 
 dependencies {
-    implementation(project(":flink-annotations"))
-    implementation(project(":flink-metrics-core"))
+    api(project(":flink-annotations"))
+    api(project(":flink-metrics-core"))
     implementation("org.apache.flink:flink-shaded-asm-7:7.1-14.0")
     implementation("org.apache.commons:commons-lang3:3.3.2")
     implementation("com.esotericsoftware.kryo:kryo:2.24.0")

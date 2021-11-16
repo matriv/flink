@@ -9,6 +9,7 @@ plugins {
 dependencies {
     implementation(project(":flink-core"))
     implementation(project(":flink-connector-files"))
+    implementation("org.apache.commons:commons-lang3:3.3.2")
     implementation("org.apache.flink:flink-shaded-asm-7:7.1-14.0")
     testImplementation(project(":flink-core"))
     testImplementation(project(":flink-test-utils-junit"))

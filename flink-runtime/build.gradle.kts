@@ -13,6 +13,7 @@ dependencies {
     implementation(project(":flink-java"))
     implementation(project(":flink-queryable-state-client-java"))
     implementation(project(":flink-hadoop-fs"))
+    implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("org.apache.hadoop:hadoop-common:2.4.1")
     implementation("org.apache.hadoop:hadoop-hdfs:2.4.1")
     implementation("org.apache.hadoop:hadoop-mapreduce-client-core:2.4.1")

@@ -4,12 +4,15 @@
 
 plugins {
     id("org.apache.flink.java-conventions")
+    id("scala")
 }
 
 dependencies {
     implementation(project(":flink-core"))
     implementation(project(":flink-java"))
+    implementation("org.apache.commons:commons-lang3:3.3.2")
     implementation("org.apache.flink:flink-shaded-asm-7:7.1-14.0")
+    implementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
     implementation("org.scala-lang:scala-reflect:2.12.7")
     implementation("org.scala-lang:scala-library:2.12.7")
     implementation("org.scala-lang:scala-compiler:2.12.7")
@@ -29,3 +32,26 @@ val testsJar by tasks.registering(Jar::class) {
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+sourceSets {
+    named("main") {
+        withConvention(ScalaSourceSet::class) {
+            scala {
+                setSrcDirs(listOf("src/main/scala", "src/main/java"))
+            }
+        }
+        java {
+            setSrcDirs(emptyList<String>())
+        }
+    }
+    named("test") {
+        withConvention(ScalaSourceSet::class) {
+            scala {
+                setSrcDirs(listOf("src/test/scala", "src/test/java"))
+            }
+        }
+        java {
+            setSrcDirs(emptyList<String>())
+        }
+    }
+}

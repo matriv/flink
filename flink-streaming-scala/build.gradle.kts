@@ -3,12 +3,17 @@
  */
 
 plugins {
+    id("scala")
     id("org.apache.flink.java-conventions")
 }
 
 dependencies {
-    implementation(project(":flink-streaming-java"))
+    api(project(":flink-core"))
+    api(project(":flink-streaming-java"))
+    implementation(project(":flink-java"))
+    implementation(project(":flink-runtime"))
     implementation(project(":flink-scala_2.12"))
+    implementation("com.esotericsoftware.kryo:kryo:2.24.0")
     implementation("org.scala-lang:scala-reflect:2.12.7")
     implementation("org.scala-lang:scala-library:2.12.7")
     implementation("org.scala-lang:scala-compiler:2.12.7")

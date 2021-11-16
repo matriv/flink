@@ -7,6 +7,7 @@ plugins {
 }
 
 dependencies {
+    implementation("com.esotericsoftware.kryo:kryo:2.24.0")
     implementation("org.apache.avro:avro:1.10.0")
     testImplementation(project(":flink-streaming-scala_2.12"))
     testImplementation(project(":flink-test-utils"))

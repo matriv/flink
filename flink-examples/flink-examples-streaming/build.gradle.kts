@@ -15,8 +15,13 @@ dependencies {
     implementation(project(":flink-connector-kafka"))
     implementation("org.apache.flink:flink-shaded-jackson:2.12.4-14.0")
     implementation(project(":flink-statebackend-rocksdb"))
-    implementation("org.jcuda:jcuda:10.0.0")
-    implementation("org.jcuda:jcublas:10.0.0")
+    implementation("org.jcuda:jcuda:10.0.0") {
+       	exclude("org.jcuda", "jcuda-natives")
+    }
+    implementation("org.jcuda:jcublas:10.0.0") {
+       	exclude("org.jcuda", "jcuda-natives")
+       	exclude("org.jcuda", "jcublas-natives")
+    }
     testImplementation(project(":flink-test-utils"))
 }
 

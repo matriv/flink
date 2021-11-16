@@ -28,7 +28,9 @@ dependencies {
     testImplementation(project(":flink-connector-hive_2.12"))
     testImplementation(project(":flink-hadoop-compatibility_2.12"))
     testImplementation("org.apache.hive:hive-metastore:2.3.4")
-    testImplementation("org.apache.hive:hive-exec:2.3.4")
+    testImplementation("org.apache.hive:hive-exec:2.3.4") {
+        exclude("org.pentaho", "pentaho-aggdesigner-algorithm")
+    }
     testImplementation("org.apache.hadoop:hadoop-common:2.7.5")
     compileOnly(project(":flink-connector-hive_2.12"))
     compileOnly("org.apache.hadoop:hadoop-mapreduce-client-core:2.7.5")

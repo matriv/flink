@@ -4,14 +4,15 @@
 
 plugins {
     id("org.apache.flink.java-conventions")
+    id("scala")
 }
 
 dependencies {
-    implementation(project(":flink-table-common"))
-    implementation(project(":flink-table-api-java"))
-    implementation("org.scala-lang:scala-reflect:2.12.7")
-    implementation("org.scala-lang:scala-library:2.12.7")
-    implementation("org.scala-lang:scala-compiler:2.12.7")
+    api(project(":flink-table-common"))
+    api(project(":flink-table-api-java"))
+    api("org.scala-lang:scala-reflect:2.12.7")
+    api("org.scala-lang:scala-library:2.12.7")
+    api("org.scala-lang:scala-compiler:2.12.7")
     testImplementation(project(":flink-test-utils-junit"))
     testImplementation(project(":flink-table-common"))
     testImplementation(project(":flink-table-api-java"))

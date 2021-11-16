@@ -8,7 +8,9 @@ plugins {
 
 dependencies {
     implementation(project(":flink-connector-hive_2.12"))
-    implementation("org.apache.hive:hive-exec:3.1.2")
+    implementation("org.apache.hive:hive-exec:3.1.2") {
+        exclude("org.pentaho", "pentaho-aggdesigner-algorithm")
+    }
     implementation("org.apache.thrift:libfb303:0.9.3")
     implementation("org.antlr:antlr-runtime:3.5.2")
     implementation("org.apache.hadoop:hadoop-mapreduce-client-core:3.1.0")

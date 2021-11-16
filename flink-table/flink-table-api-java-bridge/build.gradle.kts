@@ -9,7 +9,10 @@ plugins {
 dependencies {
     implementation(project(":flink-table-api-java"))
     implementation(project(":flink-java"))
+    implementation(project(":flink-runtime"))
     implementation(project(":flink-streaming-java"))
+    implementation(project(":flink-connector-files"))
+    implementation("org.apache.commons:commons-math3:3.6.1")
     testImplementation(project(":flink-table-api-java"))
     testImplementation(project(":flink-table-common"))
     testImplementation(project(":flink-streaming-java"))

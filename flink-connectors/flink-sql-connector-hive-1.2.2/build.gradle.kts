@@ -8,7 +8,9 @@ plugins {
 
 dependencies {
     implementation(project(":flink-connector-hive_2.12"))
-    implementation("org.apache.hive:hive-exec:1.2.2")
+    implementation("org.apache.hive:hive-exec:1.2.2") {
+        exclude("org.pentaho", "pentaho-aggdesigner-algorithm")
+    }
     implementation("org.apache.hive:hive-metastore:1.2.2")
     implementation("org.apache.thrift:libfb303:0.9.2")
     implementation("org.apache.orc:orc-core:1.5.6")

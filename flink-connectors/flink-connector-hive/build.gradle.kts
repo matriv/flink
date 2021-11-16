@@ -19,11 +19,20 @@ dependencies {
     testImplementation(project(":flink-table-planner_2.12"))
     testImplementation(project(":flink-java"))
     testImplementation(project(":flink-clients"))
-    testImplementation("com.klarna:hiverunner:4.0.0")
+    testImplementation("com.klarna:hiverunner:4.0.0") {
+        exclude("javax.jms", "jms")
+        exclude("org.apache.hive", "hive-jdbc")
+    }
     testImplementation("org.reflections:reflections:0.9.8")
-    testImplementation("org.apache.hive:hive-service:2.3.4")
+    testImplementation("org.apache.hive:hive-service:2.3.4") {
+        exclude("org.apache.hive", "hive-exec")
+        exclude("org.apache.hive", "hive-metastore")
+    }
     testImplementation("org.apache.hive.hcatalog:hive-hcatalog-core:2.3.4")
-    testImplementation("org.apache.hive.hcatalog:hive-webhcat-java-client:2.3.4")
+    testImplementation("org.apache.hive.hcatalog:hive-webhcat-java-client:2.3.4") {
+        exclude("javax.jms", "jms")
+        exclude("org.pentaho", "pentaho-aggdesigner-algorithm")
+    }
     testImplementation(project(":flink-csv"))
     testImplementation(project(":flink-test-utils"))
     testImplementation("org.apache.derby:derby:10.10.2.0")
@@ -35,7 +44,13 @@ dependencies {
     compileOnly("org.apache.hadoop:hadoop-common:2.7.5")
     compileOnly("org.apache.hadoop:hadoop-mapreduce-client-core:2.7.5")
     compileOnly("org.apache.hive:hive-metastore:2.3.4")
-    compileOnly("org.apache.hive:hive-exec:2.3.4")
+    compileOnly("org.apache.hive:hive-exec:2.3.4") {
+        exclude("org.pentaho", "pentaho-aggdesigner-algorithm")
+    }
+}
+
+configurations.implementation {
+    exclude("org.pentaho", "pentaho-aggdesigner-algorithm")
 }
 
 description = "Flink : Connectors : Hive"

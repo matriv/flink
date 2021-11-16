@@ -8,7 +8,9 @@ plugins {
 
 dependencies {
     implementation(project(":flink-connector-hive_2.12"))
-    implementation("org.apache.hive:hive-exec:2.2.0")
+    implementation("org.apache.hive:hive-exec:2.2.0") {
+        exclude("org.pentaho", "pentaho-aggdesigner-algorithm")
+    }
     implementation("org.apache.orc:orc-core:1.4.3")
     implementation("io.airlift:aircompressor:0.8")
     implementation("org.antlr:antlr-runtime:3.5.2")

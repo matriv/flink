@@ -7,7 +7,10 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":flink-table-common"))
+    api(project(":flink-table-common"))
+    api(project(":flink-core"))
+    implementation("com.esotericsoftware.kryo:kryo:2.24.0")
+    implementation("org.apache.commons:commons-lang3:3.3.2")
     testImplementation(project(":flink-table-common"))
     testImplementation(project(":flink-test-utils-junit"))
 }

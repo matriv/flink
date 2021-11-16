@@ -4,6 +4,7 @@
 
 plugins {
     id("org.apache.flink.java-conventions")
+    id("scala")
 }
 
 dependencies {
@@ -15,3 +16,26 @@ dependencies {
 }
 
 description = "Flink : Table : API Scala bridge"
+
+sourceSets {
+    named("main") {
+        withConvention(ScalaSourceSet::class) {
+            scala {
+                setSrcDirs(listOf("src/main/scala", "src/main/java"))
+            }
+        }
+        java {
+            setSrcDirs(emptyList<String>())
+        }
+    }
+    named("test") {
+        withConvention(ScalaSourceSet::class) {
+            scala {
+                setSrcDirs(listOf("src/test/scala", "src/test/java"))
+            }
+        }
+        java {
+            setSrcDirs(emptyList<String>())
+        }
+    }
+}

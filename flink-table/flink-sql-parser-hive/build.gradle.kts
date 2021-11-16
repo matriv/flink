@@ -4,13 +4,65 @@
 
 plugins {
     id("org.apache.flink.java-conventions")
+    id("com.intershop.gradle.javacc") version "4.0.1"
 }
 
+configurations.create("templates")
+
 dependencies {
+    implementation("org.apache.calcite:calcite-core:1.26.0")
+    implementation("org.apache.commons:commons-lang3:3.3.2")
     testImplementation("org.apache.calcite:calcite-core:1.26.0")
+    compileOnly(project(":flink-core"))
     compileOnly(project(":flink-sql-parser"))
     compileOnly(project(":flink-table-common"))
     compileOnly("com.google.guava:guava:29.0-jre")
+    add("templates", "net.sourceforge.fmpp:fmpp:0.9.16")
 }
 
+sourceSets["main"].java.srcDir(file("${buildDir}/generated-sources/main/java"))
+
 description = "Flink : Table : SQL Parser Hive"
+
+val copyCalciteTemplates = tasks.register<Copy>("copyCalciteTemplates") {
+    from(zipTree(configurations.compileClasspath.get().filter {
+        it.name.startsWith("calcite-core")
+    }.singleFile)) {
+        include("codegen/templates/Parser.jj")
+    }
+    into(buildDir)
+}
+
+val copyFlinkTemplates = tasks.register<Copy>("copyFlinkTemplates") {
+    from("${projectDir}/src/main/codegen")
+    into("${buildDir}/codegen")
+}
+
+val expandTemplates = tasks.register("expandTemplates") {
+    dependsOn(copyCalciteTemplates, copyFlinkTemplates)
+    doLast {
+        ant.withGroovyBuilder {
+            "taskdef"(
+                    "name" to "fmpp",
+                    "classname" to "fmpp.tools.AntTask",
+                    "classpath" to configurations.getByName("templates").asPath)
+            "fmpp"(
+                    "configuration" to "${buildDir}/codegen/config.fmpp",
+                    "sourceRoot" to "${buildDir}/codegen/templates",
+                    "outputRoot" to "${buildDir}/generated-sources/main/java")
+        }
+    }
+}
+
+val generateSources = tasks.register<com.intershop.gradle.javacc.task.JavaCCTask>("generateSources") {
+    dependsOn(expandTemplates)
+    inputFile = file("${buildDir}/generated-sources/main/java/javacc/Parser.jj")
+    outputDir = file("${buildDir}/generated-sources/main/java")
+    packageName = "org.apache.flink.sql.parser.impl"
+    staticParam = "false"
+    lookahead = 1
+}
+
+tasks.withType(JavaCompile::class).configureEach {
+    dependsOn(generateSources)
+}
