@@ -6,6 +6,8 @@ plugins {
     id("org.apache.flink.java-conventions")
 }
 
+val testArtifacts by configurations.creating
+
 dependencies {
     testImplementation(project(":flink-test-utils-junit"))
 }
@@ -18,3 +20,7 @@ val testsJar by tasks.registering(Jar::class) {
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+artifacts {
+    add("testArtifacts", testsJar)
+}

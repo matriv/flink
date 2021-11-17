@@ -7,6 +7,8 @@ plugins {
     id("org.apache.flink.java-conventions")
 }
 
+val testArtifacts by configurations.creating
+
 dependencies {
     api(project(":flink-annotations"))
     api(project(":flink-metrics-core"))
@@ -32,3 +34,7 @@ val testsJar by tasks.registering(Jar::class) {
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+artifacts {
+    add("testArtifacts", testsJar)
+}

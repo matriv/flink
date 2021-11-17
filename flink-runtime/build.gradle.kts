@@ -30,11 +30,12 @@ dependencies {
     implementation("com.github.oshi:oshi-core:3.4.0")
     testImplementation(project(":flink-rpc-akka-loader"))
     testImplementation(project(":flink-test-utils-junit"))
-    testImplementation(project(":flink-metrics-core"))
-    testImplementation(project(":flink-core"))
+    testImplementation(project(":flink-metrics-core", "testArtifacts"))
+    testImplementation(project(":flink-core", "testArtifacts"))
     testImplementation("org.apache.flink:flink-shaded-netty-tcnative-dynamic:2.0.39.Final-14.0")
     testImplementation("org.apache.curator:curator-test:2.12.0")
     testImplementation("com.squareup.okhttp3:okhttp:3.7.0")
+    testImplementation("com.esotericsoftware.kryo:kryo:2.24.0")
 }
 
 description = "Flink : Runtime"
