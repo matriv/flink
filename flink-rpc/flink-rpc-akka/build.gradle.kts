@@ -4,6 +4,7 @@
 
 plugins {
     id("org.apache.flink.java-conventions")
+    alias(libs.plugins.shadow)
 }
 
 dependencies {
@@ -29,3 +30,7 @@ val testsJar by tasks.registering(Jar::class) {
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+    append("reference.conf")
+}

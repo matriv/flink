@@ -46,3 +46,8 @@ val testsJar by tasks.registering(Jar::class) {
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+tasks.withType(Test::class) {
+    minHeapSize = "256m"
+    maxHeapSize = "2048m"
+}
