@@ -9,7 +9,7 @@ plugins {
 dependencies {
     implementation(project(":flink-hadoop-fs"))
     implementation(project(":flink-fs-hadoop-shaded"))
-    implementation("org.apache.hadoop:hadoop-azure:3.2.2")
+    implementation(libs.hadoop.azure)
     testImplementation("com.microsoft.azure:azure:1.16.0")
     testImplementation(project(":flink-core"))
     compileOnly(project(":flink-core"))

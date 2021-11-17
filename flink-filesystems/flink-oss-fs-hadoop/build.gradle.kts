@@ -9,7 +9,7 @@ plugins {
 dependencies {
     implementation(project(":flink-hadoop-fs"))
     implementation(project(":flink-fs-hadoop-shaded"))
-    implementation("org.apache.hadoop:hadoop-aliyun:3.2.2")
+    implementation(libs.hadoop.aliyun)
     implementation("com.aliyun.oss:aliyun-sdk-oss:3.4.1")
     testImplementation(project(":flink-fs-hadoop-shaded"))
     testImplementation(project(":flink-core"))

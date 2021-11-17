@@ -359,3 +359,5 @@ project(":flink-sql-avro-confluent-registry").projectDir = file("flink-formats/f
 project(":flink-elasticsearch7-test").projectDir = file("flink-end-to-end-tests/flink-elasticsearch7-test")
 project(":flink-stream-sql-test_2.12").projectDir = file("flink-end-to-end-tests/flink-stream-sql-test")
 project(":flink-test-utils-junit").projectDir = file("flink-test-utils-parent/flink-test-utils-junit")
+
+enableFeaturePreview("VERSION_CATALOGS")

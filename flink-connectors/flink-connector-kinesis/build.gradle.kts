@@ -7,12 +7,11 @@ plugins {
 }
 
 dependencies {
-    implementation("com.amazonaws:aws-java-sdk-kinesis:1.12.7")
-    implementation("com.amazonaws:aws-java-sdk-sts:1.12.7")
-    implementation("com.amazonaws:aws-java-sdk-kms:1.12.7")
-    implementation("com.amazonaws:aws-java-sdk-s3:1.12.7")
-    implementation("com.amazonaws:aws-java-sdk-dynamodb:1.12.7")
-    implementation("com.amazonaws:aws-java-sdk-cloudwatch:1.12.7")
+    implementation(libs.aws.kinesis)
+    implementation(libs.aws.sts)
+    implementation(libs.aws.s3)
+    implementation(libs.aws.dynamodb)
+    implementation(libs.aws.cloudwatch)
     implementation("com.amazonaws:amazon-kinesis-producer:0.14.1")
     implementation("com.amazonaws:amazon-kinesis-client:1.14.1")
     implementation("com.amazonaws:dynamodb-streams-kinesis-adapter:1.5.3")
