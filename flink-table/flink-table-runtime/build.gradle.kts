@@ -7,6 +7,10 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":flink-java"))
+    implementation(project(":flink-runtime"))
+    implementation(project(":flink-connector-files"))
+    implementation(project(":flink-file-sink-common"))
     implementation(project(":flink-table-common"))
     implementation(project(":flink-table-api-java"))
     implementation(project(":flink-table-api-java-bridge"))
@@ -19,6 +23,13 @@ dependencies {
     compileOnly(project(":flink-streaming-java"))
     compileOnly(project(":flink-cep"))
     compileOnly(project(":flink-scala_2.12"))
+    compileOnly(project(":flink-table-api-scala_2.12"))
+    implementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
+    implementation("org.apache.commons:commons-lang3:3.3.2")
+    implementation("org.apache.commons:commons-math3:3.6.1")
+    implementation("org.apache.flink:flink-shaded-jackson:2.12.4-14.0")
+    implementation("com.esotericsoftware.kryo:kryo:2.24.0")
+    compileOnly("org.apache.flink:flink-shaded-netty:4.1.65.Final-14.0")
 }
 
 description = "Flink : Table : Runtime"
