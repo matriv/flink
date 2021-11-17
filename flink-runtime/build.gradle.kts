@@ -50,4 +50,5 @@ val testsJar by tasks.registering(Jar::class) {
 tasks.withType(Test::class) {
     minHeapSize = "256m"
     maxHeapSize = "2048m"
+    setForkEvery(1L)
 }
