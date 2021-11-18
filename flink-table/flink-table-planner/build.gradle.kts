@@ -4,21 +4,50 @@
 
 plugins {
     id("org.apache.flink.java-conventions")
+    scala
 }
+
+description = "Flink : Table : Planner"
 
 dependencies {
     implementation("com.google.guava:guava:29.0-jre")
+    implementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
+    implementation("org.apache.flink:flink-shaded-jackson:2.12.4-14.0")
     implementation("org.codehaus.janino:commons-compiler:3.0.11")
     implementation("org.codehaus.janino:janino:3.0.11")
+    implementation("org.apache.commons:commons-lang3:3.3.2")
+    implementation("org.apache.commons:commons-math3:3.6.1")
+    implementation("com.esotericsoftware.kryo:kryo:2.24.0")
+    implementation("org.scala-lang:scala-reflect:2.12.7")
+    implementation("org.scala-lang:scala-library:2.12.7")
+    implementation("org.scala-lang:scala-compiler:2.12.7")
+    implementation(project(":flink-java"))
+    implementation(project(":flink-runtime"))
     implementation(project(":flink-table-common"))
     implementation(project(":flink-table-api-java"))
     implementation(project(":flink-table-api-scala_2.12"))
     implementation(project(":flink-table-api-java-bridge"))
     implementation(project(":flink-table-api-scala-bridge_2.12"))
-    implementation(project(":flink-sql-parser"))
-    implementation(project(":flink-sql-parser-hive"))
+    implementation(project(":flink-sql-parser")) {
+        exclude("org.apache.calcite:calcite-core")
+    }
+    implementation(project(":flink-sql-parser-hive")) {
+        exclude("org.apache.calcite:calcite-core")
+    }
     implementation(project(":flink-table-runtime_2.12"))
-    implementation("org.apache.calcite:calcite-core:1.26.0")
+    implementation(project(":flink-table-code-splitter"))
+    implementation("org.apache.calcite:calcite-core:1.26.0") {
+        exclude("org.apache.calcite.avatica:avativa-server")
+        exclude("org.apache.calcite.avatica:avatica-metrics")
+        exclude("com.google.protobuf:protobuf-java")
+        exclude("com.google.uzaygezen:uzaygezen-core")
+        exclude("org.apache.httpcomponents:httpclient")
+        exclude("org.apache.httpcomponents:httpcore")
+        exclude("org.apache.commons:commons-dbcp2")
+        exclude("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
+        exclude("com.yahoo.datasketches:sketches-core")
+        exclude("net.hydromatic:aggdesigner-algorithm")
+    }
     implementation("com.ibm.icu:icu4j:67.1")
     implementation("org.scala-lang.modules:scala-parser-combinators_2.12:1.1.1")
     implementation("org.reflections:reflections:0.9.10")
@@ -35,11 +64,32 @@ dependencies {
     compileOnly(project(":flink-cep"))
 }
 
-description = "Flink : Table : Planner"
-
 val testsJar by tasks.registering(Jar::class) {
     archiveClassifier.set("tests")
     from(sourceSets["test"].output)
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+sourceSets {
+    named("main") {
+        withConvention(ScalaSourceSet::class) {
+            scala {
+                setSrcDirs(listOf("src/main/scala", "src/main/java"))
+            }
+        }
+        java {
+            setSrcDirs(emptyList<String>())
+        }
+    }
+    named("test") {
+        withConvention(ScalaSourceSet::class) {
+            scala {
+                setSrcDirs(listOf("src/test/scala", "src/test/java"))
+            }
+        }
+        java {
+            setSrcDirs(emptyList<String>())
+        }
+    }
+}
