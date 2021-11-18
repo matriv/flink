@@ -8,6 +8,7 @@ plugins {
 
 dependencies {
     implementation(project(":flink-connector-elasticsearch-base"))
+    testImplementation(project(":flink-connector-elasticsearch-base", "testArtifacts"))
     implementation("org.elasticsearch.client:elasticsearch-rest-high-level-client:6.3.1")
     testImplementation("org.testcontainers:elasticsearch:1.16.2")
     testImplementation(project(":flink-test-utils"))
@@ -17,7 +18,11 @@ dependencies {
     testImplementation("org.elasticsearch.plugin:transport-netty4-client:6.3.1")
     testImplementation(project(":flink-table-planner_2.12"))
     testImplementation(project(":flink-json"))
+    implementation(project(":flink-test-utils-junit"))
+    compileOnly(project(":flink-annotations"))
+    compileOnly(project(":flink-core"))
     compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-table-common"))
     compileOnly(project(":flink-table-api-java-bridge"))
 }
 

@@ -3,18 +3,27 @@
  */
 
 plugins {
+    id("java-library")
     id("org.apache.flink.java-conventions")
 }
+
+val testArtifacts by configurations.creating
 
 dependencies {
     implementation("org.elasticsearch:elasticsearch:5.3.3")
     testImplementation(project(":flink-test-utils"))
+    testImplementation(project(":flink-test-utils-junit"))
     testImplementation(project(":flink-runtime"))
     testImplementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-table-common"))
     testImplementation(project(":flink-json"))
-    compileOnly(project(":flink-streaming-java"))
-    compileOnly(project(":flink-table-api-java-bridge"))
+    implementation(project(":flink-annotations"))
+    implementation(project(":flink-core"))
+    implementation(project(":flink-runtime"))
+    implementation(project(":flink-streaming-java"))
+    implementation(project(":flink-streaming-java", "testArtifacts"))
+    implementation(project(":flink-table-common"))
+    implementation(project(":flink-table-api-java-bridge"))
 }
 
 description = "Flink : Connectors : Elasticsearch base"
@@ -25,3 +34,7 @@ val testsJar by tasks.registering(Jar::class) {
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+artifacts {
+    add("testArtifacts", testsJar)
+}

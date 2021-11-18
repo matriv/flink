@@ -8,6 +8,7 @@ plugins {
 
 dependencies {
     implementation(project(":flink-connector-elasticsearch-base"))
+    testImplementation(project(":flink-connector-elasticsearch-base", "testArtifacts"))
     implementation("org.elasticsearch.client:transport:5.3.3")
     implementation("io.netty:netty-buffer:4.1.46.Final")
     implementation("io.netty:netty-codec:4.1.46.Final")
@@ -17,9 +18,11 @@ dependencies {
     implementation("io.netty:netty-resolver:4.1.46.Final")
     implementation("io.netty:netty-transport:4.1.46.Final")
     testImplementation(project(":flink-test-utils"))
+    implementation(project(":flink-test-utils-junit"))
     testImplementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-connector-elasticsearch-base"))
     compileOnly(project(":flink-streaming-java"))
+    implementation(project(":flink-core"))
 }
 
 description = "Flink : Connectors : Elasticsearch 5"
