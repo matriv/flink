@@ -9,8 +9,11 @@ plugins {
 dependencies {
     testImplementation(project(":flink-test-utils-junit"))
     testImplementation(project(":flink-streaming-java"))
-    compileOnly(project(":flink-runtime"))
-    compileOnly(project(":flink-clients"))
+    compileOnly("commons-cli:commons-cli:1.5.0")
+    implementation(project(":flink-rpc-core"))
+    implementation(project(":flink-runtime"))
+    implementation(project(":flink-clients"))
+    implementation(project(":flink-core"))
 }
 
 description = "Flink : Container"
