@@ -18,6 +18,7 @@
 
 package org.apache.flink.client.cli;
 
+import org.apache.flink.annotation.VisibleForTesting;
 import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.InvalidProgramException;
 import org.apache.flink.api.common.JobID;
@@ -61,6 +62,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetSocketAddress;
@@ -318,6 +320,11 @@ public class CliFrontend {
      * @param args Command line arguments for the info action.
      */
     protected void info(String[] args) throws Exception {
+        info(args, System.out);
+    }
+
+    @VisibleForTesting
+    protected void info(String[] args, PrintStream out) throws Exception {
         LOG.info("Running 'info' command.");
 
         final Options commandOptions = CliFrontendParser.getInfoCommandOptions();
@@ -364,22 +371,22 @@ public class CliFrontend {
             String jsonPlan = FlinkPipelineTranslationUtil.translateToJSONExecutionPlan(pipeline);
 
             if (jsonPlan != null) {
-                System.out.println(
+                out.println(
                         "----------------------- Execution Plan -----------------------");
-                System.out.println(jsonPlan);
-                System.out.println(
+                out.println(jsonPlan);
+                out.println(
                         "--------------------------------------------------------------");
             } else {
-                System.out.println("JSON plan could not be generated.");
+                out.println("JSON plan could not be generated.");
             }
 
             String description = program.getDescription();
             if (description != null) {
-                System.out.println();
-                System.out.println(description);
+                out.println();
+                out.println(description);
             } else {
-                System.out.println();
-                System.out.println("No description provided.");
+                out.println();
+                out.println("No description provided.");
             }
         } finally {
             if (program != null) {

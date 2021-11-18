@@ -32,10 +32,6 @@ import static org.junit.Assert.fail;
 /** Tests for the "info" command. */
 public class CliFrontendInfoTest extends CliFrontendTestBase {
 
-    private static PrintStream stdOut;
-    private static PrintStream capture;
-    private static ByteArrayOutputStream buffer;
-
     @Test(expected = CliArgsException.class)
     public void testMissingOption() throws Exception {
         String[] parameters = {};
@@ -56,26 +52,25 @@ public class CliFrontendInfoTest extends CliFrontendTestBase {
 
     @Test
     public void testShowExecutionPlan() throws Exception {
-        replaceStdOut();
-        try {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        PrintStream capture = new PrintStream(buffer);
 
-            String[] parameters =
-                    new String[] {
-                        CliFrontendTestUtils.getTestJarPath(), "-f", "true", "--arg", "suffix"
-                    };
-            Configuration configuration = getConfiguration();
-            CliFrontend testFrontend =
-                    new CliFrontend(configuration, Collections.singletonList(getCli()));
-            testFrontend.info(parameters);
-            assertTrue(buffer.toString().contains("\"parallelism\" : 4"));
-        } finally {
-            restoreStdOut();
-        }
+        String[] parameters =
+                new String[] {
+                    CliFrontendTestUtils.getTestJarPath(), "-f", "true", "--arg", "suffix"
+                };
+        Configuration configuration = getConfiguration();
+        CliFrontend testFrontend =
+                new CliFrontend(configuration, Collections.singletonList(getCli()));
+        testFrontend.info(parameters, capture);
+        assertTrue(buffer.toString().contains("\"parallelism\" : 4"));
     }
 
     @Test
     public void testShowExecutionPlanWithParallelism() {
-        replaceStdOut();
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        PrintStream capture = new PrintStream(buffer);
+        System.setOut(capture);
         try {
             String[] parameters = {
                 "-p", "17", CliFrontendTestUtils.getTestJarPath(), "--arg", "suffix"
@@ -83,24 +78,11 @@ public class CliFrontendInfoTest extends CliFrontendTestBase {
             Configuration configuration = getConfiguration();
             CliFrontend testFrontend =
                     new CliFrontend(configuration, Collections.singletonList(getCli()));
-            testFrontend.info(parameters);
+            testFrontend.info(parameters, capture);
             assertTrue(buffer.toString().contains("\"parallelism\" : 17"));
         } catch (Exception e) {
-            e.printStackTrace();
-            fail("Program caused an exception: " + e.getMessage());
-        } finally {
-            restoreStdOut();
+              e.printStackTrace();
+              fail("Program caused an exception: " + e.getMessage());
         }
-    }
-
-    private static void replaceStdOut() {
-        stdOut = System.out;
-        buffer = new ByteArrayOutputStream();
-        capture = new PrintStream(buffer);
-        System.setOut(capture);
-    }
-
-    private static void restoreStdOut() {
-        System.setOut(stdOut);
     }
 }
