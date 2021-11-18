@@ -12,9 +12,15 @@ dependencies {
     testImplementation(project(":flink-runtime"))
     testImplementation(project(":flink-clients"))
     testImplementation(project(":flink-test-utils"))
+    compileOnly(project(":flink-annotations"))
+    compileOnly(project(":flink-core"))
     compileOnly(project(":flink-clients"))
     compileOnly(project(":flink-runtime"))
+    compileOnly(project(":flink-rpc-core"))
     compileOnly("org.apache.flink:flink-shaded-jackson:2.12.4-14.0")
+    compileOnly("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
+    compileOnly("org.apache.commons:commons-lang3:3.3.2")
+    compileOnly("commons-cli:commons-cli:1.5.0")
 }
 
 description = "Flink : Kubernetes"

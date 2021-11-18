@@ -7,9 +7,12 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":flink-annotations"))
+    implementation(project(":flink-core"))
     implementation(project(":flink-connector-base"))
     implementation("org.apache.pulsar:pulsar-client-all:2.8.0")
     testImplementation("org.assertj:assertj-core:3.20.2")
+    implementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
     testImplementation(project(":flink-core"))
     testImplementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-tests"))
@@ -19,6 +22,7 @@ dependencies {
     testImplementation("org.apache.pulsar:testmocks:2.8.0")
     testImplementation("org.apache.pulsar:pulsar-broker:2.8.0")
     testImplementation("org.apache.commons:commons-lang3:3.11")
+    implementation("com.google.inject:guice:4.2.2")
     compileOnly(project(":flink-streaming-java"))
     compileOnly("com.google.protobuf:protobuf-java:3.17.3")
 }

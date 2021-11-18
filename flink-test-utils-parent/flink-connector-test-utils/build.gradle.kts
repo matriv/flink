@@ -9,6 +9,7 @@ plugins {
 dependencies {
     implementation(project(":flink-core"))
     implementation(project(":flink-test-utils-junit"))
+    implementation("junit:junit:4.13.2")
 }
 
 description = "Flink : Test utils : Connectors"
