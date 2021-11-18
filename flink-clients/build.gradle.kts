@@ -8,14 +8,20 @@ plugins {
 
 dependencies {
     implementation(project(":flink-core"))
+    implementation(project(":flink-rpc-core"))
     implementation(project(":flink-runtime"))
     implementation(project(":flink-optimizer"))
     implementation(project(":flink-java"))
     implementation("commons-cli:commons-cli:1.5.0")
+    implementation("org.apache.flink:flink-shaded-netty:4.1.65.Final-14.0")
+    implementation("commons-io:commons-io:2.11.0")
+    implementation("commons-collections:commons-collections:3.2.2")
     implementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-test-utils-junit"))
-    testImplementation(project(":flink-runtime"))
-    testImplementation(project(":flink-core"))
+    testImplementation(project(":flink-runtime", "testArtifacts"))
+    testImplementation(project(":flink-core", "testArtifacts"))
+    testImplementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
+    testImplementation("com.esotericsoftware.kryo:kryo:2.24.0")
 }
 
 description = "Flink : Clients"

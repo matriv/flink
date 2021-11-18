@@ -10,6 +10,8 @@ dependencies {
     implementation(project(":flink-java"))
     implementation(project(":flink-scala_2.12"))
     implementation(project(":flink-clients"))
+    implementation("commons-io:commons-io:2.11.0")
+    implementation("org.apache.commons:commons-lang3:3.3.2")
 }
 
 description = "Flink : Examples : Batch"

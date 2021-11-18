@@ -4,7 +4,7 @@
 
 plugins {
     id("org.apache.flink.java-conventions")
-    scala
+    id("scala")
 }
 
 description = "Flink : Table : Planner"

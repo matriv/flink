@@ -6,16 +6,21 @@ plugins {
     id("org.apache.flink.java-conventions")
 }
 
+val testArtifacts: Configuration by configurations.creating
+
 dependencies {
     implementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
     testImplementation(project(":flink-core"))
     testImplementation(project(":flink-connector-files"))
-    testImplementation(project(":flink-core"))
+    testImplementation(project(":flink-core", "testArtifacts"))
+    testImplementation("com.esotericsoftware.kryo:kryo:2.24.0")
     testImplementation("org.apache.flink:flink-shaded-jackson:2.12.4-14.0")
     testImplementation("org.apache.hadoop:hadoop-common:2.4.1")
     testImplementation(project(":flink-streaming-java"))
-    testImplementation(project(":flink-optimizer"))
-    testImplementation(project(":flink-runtime"))
+    testImplementation(project(":flink-streaming-java", "testArtifacts"))
+    testImplementation(project(":flink-optimizer", "testArtifacts"))
+    testImplementation(project(":flink-rpc-core"))
+    testImplementation(project(":flink-runtime", "testArtifacts"))
     testImplementation(project(":flink-clients"))
     testImplementation(project(":flink-java"))
     testImplementation(project(":flink-scala_2.12"))
@@ -37,6 +42,9 @@ dependencies {
     testImplementation(project(":flink-dstl-dfs"))
     testImplementation("com.github.oshi:oshi-core:3.4.0")
     testImplementation("org.reflections:reflections:0.9.10")
+    testImplementation("org.apache.commons:commons-lang3:3.3.2")
+    testImplementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
+    testImplementation("org.apache.flink:flink-shaded-netty:4.1.65.Final-14.0")
 }
 
 description = "Flink : Tests"
@@ -44,6 +52,10 @@ description = "Flink : Tests"
 val testsJar by tasks.registering(Jar::class) {
     archiveClassifier.set("tests")
     from(sourceSets["test"].output)
+}
+
+artifacts {
+    add("testArtifacts", testsJar)
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)

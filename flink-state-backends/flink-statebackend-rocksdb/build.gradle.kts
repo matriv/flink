@@ -7,9 +7,13 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":flink-core"))
+    implementation(project(":flink-runtime"))
+    implementation(project(":flink-queryable-state-client-java"))
     implementation("com.ververica:frocksdbjni:6.20.3-ververica-1.0")
+    implementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
     testImplementation(project(":flink-test-utils-junit"))
-    testImplementation(project(":flink-streaming-java"))
+    testImplementation(project(":flink-streaming-java", "testArtifacts"))
     testImplementation(project(":flink-runtime"))
     compileOnly(project(":flink-streaming-java"))
     compileOnly(project(":flink-clients"))

@@ -21,9 +21,10 @@ dependencies {
     testImplementation(project(":flink-test-utils-junit"))
     testImplementation(project(":flink-test-utils"))
     testImplementation(project(":flink-core"))
-    testImplementation(project(":flink-streaming-java"))
-    testImplementation(project(":flink-tests"))
+    testImplementation(project(":flink-streaming-java", "testArtifacts"))
+    testImplementation(project(":flink-tests", "testArtifacts"))
     testImplementation(project(":flink-runtime"))
+    testImplementation(project(":flink-file-sink-common"))
 }
 
 description = "Flink : Streaming Scala"
@@ -34,3 +35,26 @@ val testsJar by tasks.registering(Jar::class) {
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+sourceSets {
+    named("main") {
+        withConvention(ScalaSourceSet::class) {
+            scala {
+                setSrcDirs(listOf("src/main/scala", "src/main/java"))
+            }
+        }
+        java {
+            setSrcDirs(emptyList<String>())
+        }
+    }
+    named("test") {
+        withConvention(ScalaSourceSet::class) {
+            scala {
+                setSrcDirs(listOf("src/test/scala", "src/test/java"))
+            }
+        }
+        java {
+            setSrcDirs(emptyList<String>())
+        }
+    }
+}

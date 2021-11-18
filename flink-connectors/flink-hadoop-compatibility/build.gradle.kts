@@ -7,6 +7,7 @@ plugins {
 }
 
 dependencies {
+    implementation("com.esotericsoftware.kryo:kryo:2.24.0")
     testImplementation(project(":flink-java"))
     testImplementation(project(":flink-test-utils"))
     testImplementation(project(":flink-core"))

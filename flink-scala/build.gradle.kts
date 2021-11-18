@@ -8,8 +8,8 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":flink-core"))
-    implementation(project(":flink-java"))
+    api(project(":flink-core"))
+    api(project(":flink-java"))
     implementation("org.apache.commons:commons-lang3:3.3.2")
     implementation("org.apache.flink:flink-shaded-asm-7:7.1-14.0")
     implementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")

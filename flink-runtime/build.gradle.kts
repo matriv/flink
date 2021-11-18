@@ -6,6 +6,8 @@ plugins {
     id("org.apache.flink.java-conventions")
 }
 
+val testArtifacts: Configuration by configurations.creating
+
 dependencies {
     implementation(project(":flink-core"))
     implementation(project(":flink-rpc-core"))
@@ -46,6 +48,10 @@ val testsJar by tasks.registering(Jar::class) {
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+artifacts {
+    add("testArtifacts", testsJar)
+}
 
 tasks.withType(Test::class) {
     minHeapSize = "256m"
