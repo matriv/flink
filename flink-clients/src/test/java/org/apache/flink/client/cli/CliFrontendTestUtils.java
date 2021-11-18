@@ -45,8 +45,7 @@ public class CliFrontendTestUtils {
     private static final PrintStream previousSysout = System.out;
 
     public static String getTestJarPath() throws FileNotFoundException, MalformedURLException {
-        String projectBaseDir = System.getProperty("project.basedir");
-        Path testJarPath = Paths.get(projectBaseDir, "target", "maven-test-jar.jar");
+        Path testJarPath = Paths.get("build", "libs", "maven-test-jar.jar");
         File f = testJarPath.toFile();
         if (!f.exists()) {
             throw new FileNotFoundException(

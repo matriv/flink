@@ -4,6 +4,7 @@
 
 plugins {
     id("org.apache.flink.java-conventions")
+    distribution
 }
 
 dependencies {
@@ -26,9 +27,39 @@ dependencies {
 
 description = "Flink : Clients"
 
-val testsJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("tests")
-    from(sourceSets["test"].output)
+//val testsJar by tasks.registering(Jar::class) {
+//    archiveClassifier.set("tests")
+//    from(sourceSets["test"].output)
+//}
+//
+//(publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+tasks.register<Jar>("testJar") {
+    manifest {
+        attributes["Main-Class"] = "org.apache.flink.client.testjar.TestJob"
+    }
+    archiveFileName.set("maven-test-jar.jar")
+    from(project.the<SourceSetContainer>()["test"].output)
+    include("org/apache/flink/client/testjar/**")
 }
 
-(publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+tasks.register<Jar>("testJarUserClassLoaderJob") {
+    manifest {
+        attributes["Main-Class"] = "org.apache.flink.client.testjar.TestUserClassLoaderJob"
+    }
+    archiveFileName.set("maven-test-user-classloader-job-jar.jar")
+    from(project.the<SourceSetContainer>()["test"].output)
+    include("org/apache/flink/client/testjar/TestUserClassLoaderJob.class")
+}
+
+tasks.register<Jar>("testJarUserClassLoaderJobLib") {
+    archiveFileName.set("maven-test-user-classloader-job-lib-jar.jar")
+    from(project.the<SourceSetContainer>()["test"].output)
+    include("org/apache/flink/client/testjar/TestUserClassLoaderJobLib.class")
+}
+
+
+tasks.getByName("test").dependsOn("testJar")
+tasks.getByName("test").dependsOn("testJarUserClassLoaderJob")
+tasks.getByName("test").dependsOn("testJarUserClassLoaderJobLib")
+

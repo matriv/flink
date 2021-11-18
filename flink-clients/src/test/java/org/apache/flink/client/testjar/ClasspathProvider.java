@@ -49,12 +49,12 @@ public class ClasspathProvider extends ExternalResource {
 
     private static final String CLASSPATH_PROPERTY_NAME = "java.class.path";
 
-    private static final Path TEST_JOB_JAR_PATH = Paths.get("target", "maven-test-jar.jar");
+    private static final Path TEST_JOB_JAR_PATH = Paths.get("build", "libs", "maven-test-jar.jar");
 
     private static final Path JOB_JAR_PATH =
-            Paths.get("target", "maven-test-user-classloader-job-jar.jar");
+            Paths.get("build", "libs", "maven-test-user-classloader-job-jar.jar");
     private static final Path JOB_LIB_JAR_PATH =
-            Paths.get("target", "maven-test-user-classloader-job-lib-jar.jar");
+            Paths.get("build", "libs", "maven-test-user-classloader-job-lib-jar.jar");
 
     private final TemporaryFolder temporaryFolder = new TemporaryFolder();
 

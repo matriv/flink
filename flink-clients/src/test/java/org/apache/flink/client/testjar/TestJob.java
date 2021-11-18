@@ -49,7 +49,7 @@ public class TestJob {
      */
     public static File getTestJobJar() throws FileNotFoundException {
         // Check the module's pom.xml for how we create the JAR
-        File f = new File("target/maven-test-jar.jar");
+        File f = new File("build/libs/maven-test-jar.jar");
         if (!f.exists()) {
             throw new FileNotFoundException(
                     "Test jar not present. Invoke tests using Maven "
