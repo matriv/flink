@@ -81,8 +81,8 @@ public class CliFrontendInfoTest extends CliFrontendTestBase {
             testFrontend.info(parameters, capture);
             assertTrue(buffer.toString().contains("\"parallelism\" : 17"));
         } catch (Exception e) {
-              e.printStackTrace();
-              fail("Program caused an exception: " + e.getMessage());
+            e.printStackTrace();
+            fail("Program caused an exception: " + e.getMessage());
         }
     }
 }

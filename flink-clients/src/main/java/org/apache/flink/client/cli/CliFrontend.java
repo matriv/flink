@@ -371,11 +371,9 @@ public class CliFrontend {
             String jsonPlan = FlinkPipelineTranslationUtil.translateToJSONExecutionPlan(pipeline);
 
             if (jsonPlan != null) {
-                out.println(
-                        "----------------------- Execution Plan -----------------------");
+                out.println("----------------------- Execution Plan -----------------------");
                 out.println(jsonPlan);
-                out.println(
-                        "--------------------------------------------------------------");
+                out.println("--------------------------------------------------------------");
             } else {
                 out.println("JSON plan could not be generated.");
             }
