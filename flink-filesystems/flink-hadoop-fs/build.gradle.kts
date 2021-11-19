@@ -7,10 +7,10 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":flink-core"))
-    implementation("org.apache.hadoop:hadoop-common:2.4.1")
-    implementation("org.apache.hadoop:hadoop-hdfs:2.4.1")
-    implementation("org.apache.hadoop:hadoop-mapreduce-client-core:2.4.1")
+    api(project(":flink-core"))
+    api("org.apache.hadoop:hadoop-common:2.4.1")
+    api("org.apache.hadoop:hadoop-hdfs:2.4.1")
+    api("org.apache.hadoop:hadoop-mapreduce-client-core:2.4.1")
     testImplementation(project(":flink-core"))
     testImplementation("org.apache.hadoop:hadoop-hdfs:2.4.1")
     testImplementation("org.apache.hadoop:hadoop-common:2.4.1")

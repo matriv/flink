@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":flink-table-api-java"))
+    api(project(":flink-table-api-java"))
     implementation(project(":flink-java"))
     implementation(project(":flink-runtime"))
     implementation(project(":flink-streaming-java"))

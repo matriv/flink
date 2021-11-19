@@ -8,6 +8,8 @@ plugins {
 
 dependencies {
     implementation(project(":flink-format-common"))
+    implementation("org.apache.commons:commons-compress:1.21")
+    implementation("org.apache.commons:commons-lang3:3.3.2")
     testImplementation(project(":flink-table-common"))
     testImplementation(project(":flink-table-planner_2.12"))
     testImplementation(project(":flink-test-utils"))

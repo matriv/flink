@@ -8,7 +8,13 @@ plugins {
 
 dependencies {
     implementation(project(":flink-connector-base"))
-    implementation("org.apache.kafka:kafka-clients:2.8.1")
+    implementation(project(":flink-table-common"))
+    api("org.apache.kafka:kafka-clients:2.8.1")
+    implementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
+    implementation("org.apache.flink:flink-shaded-jackson:2.12.4-14.0")
+    implementation("com.esotericsoftware.kryo:kryo:2.24.0")
+    implementation("commons-collections:commons-collections:3.2.2")
+    implementation("org.apache.commons:commons-lang3:3.3.2")
     testImplementation(project(":flink-core"))
     testImplementation(project(":flink-streaming-java"))
     testImplementation("org.apache.kafka:kafka_2.12:2.8.1")

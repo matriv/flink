@@ -25,6 +25,7 @@ dependencies {
     compileOnly(project(":flink-clients"))
     compileOnly(project(":flink-java"))
     compileOnly(project(":flink-streaming-java"))
+    compileOnly(project(":flink-table-api-java-bridge"))
     compileOnly(project(":flink-table-common"))
     compileOnly(project(":flink-table-planner_2.12"))
     compileOnly(project(":flink-table-runtime_2.12"))

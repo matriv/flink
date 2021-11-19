@@ -8,11 +8,14 @@ plugins {
 
 dependencies {
     implementation(project(":flink-java"))
+    implementation(project(":flink-runtime"))
     implementation(project(":flink-clients"))
     implementation(project(":flink-scala_2.12"))
     implementation(project(":flink-gelly"))
     implementation(project(":flink-gelly-scala_2.12"))
     implementation("org.apache.flink:flink-shaded-jackson:2.12.4-14.0")
+    implementation("org.apache.commons:commons-lang3:3.3.2")
+    implementation("org.apache.commons:commons-math3:3.6.1")
     testImplementation(project(":flink-test-utils"))
     testImplementation(project(":flink-core"))
 }

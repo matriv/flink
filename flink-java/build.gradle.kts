@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":flink-core"))
+    api(project(":flink-core"))
     implementation("org.apache.commons:commons-lang3:3.3.2")
     implementation("org.apache.commons:commons-math3:3.6.1")
     implementation("com.twitter:chill-java:0.7.6")

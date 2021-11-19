@@ -7,13 +7,13 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":flink-core"))
+    api(project(":flink-core"))
+    api(project(":flink-runtime"))
     testImplementation(project(":flink-test-utils"))
     testImplementation(project(":flink-test-utils-junit"))
     testImplementation(project(":flink-connector-test-utils"))
     testImplementation(project(":flink-streaming-java"))
     compileOnly(project(":flink-annotations"))
-    implementation(project(":flink-runtime"))
     implementation(project(":flink-runtime", "testArtifacts"))
     implementation(project(":flink-core", "testArtifacts"))
     testImplementation("org.apache.commons:commons-lang3:3.3.2")

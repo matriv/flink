@@ -10,9 +10,9 @@ val testArtifacts: Configuration by configurations.creating
 
 dependencies {
     api(project(":flink-java"))
-    implementation(project(":flink-core"))
+    api(project(":flink-core"))
+    api(project(":flink-runtime"))
     implementation(project(":flink-file-sink-common"))
-    implementation(project(":flink-runtime"))
     implementation("commons-io:commons-io:2.11.0")
     implementation("org.apache.commons:commons-lang3:3.3.2")
     implementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")

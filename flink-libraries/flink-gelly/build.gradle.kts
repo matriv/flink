@@ -13,6 +13,7 @@ dependencies {
     compileOnly(project(":flink-java"))
     compileOnly(project(":flink-clients"))
     compileOnly("org.apache.commons:commons-lang3:3.3.2")
+    compileOnly("org.apache.commons:commons-math3:3.6.1")
 }
 
 description = "Flink : Libraries : Gelly"
