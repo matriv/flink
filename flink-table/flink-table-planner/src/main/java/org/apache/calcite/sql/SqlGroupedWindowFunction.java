@@ -183,6 +183,7 @@ public class SqlGroupedWindowFunction extends SqlFunction {
 
         public WindowStartEndReturnTypeInference() {}
 
+        @Override
         public RelDataType inferReturnType(SqlOperatorBinding opBinding) {
             return explicit.inferReturnType(opBinding);
         }

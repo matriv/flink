@@ -6,6 +6,8 @@ plugins {
     id("org.apache.flink.java-conventions")
 }
 
+val testArtifacts: Configuration by configurations.creating
+
 dependencies {
     implementation(project(":flink-java"))
     implementation(project(":flink-runtime"))
@@ -16,10 +18,12 @@ dependencies {
     implementation(project(":flink-table-api-java-bridge"))
     implementation(project(":flink-table-code-splitter"))
     implementation("org.codehaus.janino:janino:3.0.11")
-    testImplementation(project(":flink-core"))
+    testImplementation(project(":flink-core", "testArtifacts"))
     testImplementation(project(":flink-test-utils"))
-    testImplementation(project(":flink-streaming-java"))
-    testImplementation(project(":flink-table-common"))
+    testImplementation(project(":flink-streaming-java", "testArtifacts"))
+    testImplementation(project(":flink-table-common", "testArtifacts"))
+    testImplementation(project(":flink-runtime", "testArtifacts"))
+    testImplementation("commons-io:commons-io:2.11.0")
     compileOnly(project(":flink-streaming-java"))
     compileOnly(project(":flink-cep"))
     compileOnly(project(":flink-scala_2.12"))
@@ -40,3 +44,7 @@ val testsJar by tasks.registering(Jar::class) {
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+artifacts {
+    add("testArtifacts", testsJar)
+}

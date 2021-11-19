@@ -6,12 +6,14 @@ plugins {
     id("org.apache.flink.java-conventions")
 }
 
+val testArtifacts: Configuration by configurations.creating
+
 dependencies {
     api(project(":flink-table-common"))
     api(project(":flink-core"))
     implementation("com.esotericsoftware.kryo:kryo:2.24.0")
     implementation("org.apache.commons:commons-lang3:3.3.2")
-    testImplementation(project(":flink-table-common"))
+    testImplementation(project(":flink-table-common", "testArtifacts"))
     testImplementation(project(":flink-test-utils-junit"))
 }
 
@@ -23,3 +25,7 @@ val testsJar by tasks.registering(Jar::class) {
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+artifacts {
+    add("testArtifacts", testsJar)
+}

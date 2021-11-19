@@ -7,8 +7,8 @@ plugins {
 }
 
 dependencies {
+    api(project(":flink-test-utils-junit"))
     implementation(project(":flink-core"))
-    implementation(project(":flink-test-utils-junit"))
     implementation(project(":flink-runtime"))
     implementation(project(":flink-runtime", "testArtifacts"))
     implementation(project(":flink-rpc-akka-loader"))

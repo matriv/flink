@@ -42,6 +42,8 @@ dependencies {
 group = "org.apache.flink"
 version = "1.15-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.targetCompatibility = JavaVersion.VERSION_1_8
+
 
 publishing {
     publications.create<MavenPublication>("maven") {

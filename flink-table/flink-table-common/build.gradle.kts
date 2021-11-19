@@ -6,13 +6,16 @@ plugins {
     id("org.apache.flink.java-conventions")
 }
 
+val testArtifacts: Configuration by configurations.creating
+
 dependencies {
     implementation(project(":flink-core"))
     implementation(project(":flink-connector-files"))
     implementation("org.apache.commons:commons-lang3:3.3.2")
     implementation("org.apache.flink:flink-shaded-asm-7:7.1-14.0")
-    testImplementation(project(":flink-core"))
+    testImplementation(project(":flink-core", "testArtifacts"))
     testImplementation(project(":flink-test-utils-junit"))
+    testImplementation("com.esotericsoftware.kryo:kryo:2.24.0")
     compileOnly("com.ibm.icu:icu4j:67.1")
 }
 
@@ -24,3 +27,7 @@ val testsJar by tasks.registering(Jar::class) {
 }
 
 (publishing.publications["maven"] as MavenPublication).artifact(testsJar)
+
+artifacts {
+    add("testArtifacts", testsJar)
+}

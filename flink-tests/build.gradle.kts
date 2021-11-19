@@ -45,6 +45,10 @@ dependencies {
     testImplementation("org.apache.commons:commons-lang3:3.3.2")
     testImplementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
     testImplementation("org.apache.flink:flink-shaded-netty:4.1.65.Final-14.0")
+    testImplementation(project(":flink-queryable-state-client-java"))
+    testImplementation(project(":flink-file-sink-common"))
+    testImplementation(project(":flink-statebackend-rocksdb"))
+    testImplementation("com.ververica:frocksdbjni:6.20.3-ververica-1.0")
 }
 
 description = "Flink : Tests"
