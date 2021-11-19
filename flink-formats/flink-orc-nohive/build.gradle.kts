@@ -7,8 +7,10 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":flink-core"))
+    implementation(project(":flink-connector-files"))
     implementation(project(":flink-orc_2.12"))
-    implementation("org.apache.orc:orc-core:1.5.6")
+    implementation("org.apache.orc:orc-core:1.5.6:nohive")
     testImplementation(project(":flink-orc_2.12"))
     compileOnly(project(":flink-table-runtime_2.12"))
 }

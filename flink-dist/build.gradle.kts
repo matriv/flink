@@ -50,7 +50,8 @@ dependencies {
     compileOnly(project(":flink-s3-fs-presto"))
     compileOnly(project(":flink-oss-fs-hadoop"))
     compileOnly(project(":flink-queryable-state-runtime"))
-    compileOnly(project(":flink-python_2.12"))
+    // TODO reenable python
+//    compileOnly(project(":flink-python_2.12"))
     compileOnly("org.apache.flink:flink-shaded-netty-tcnative-dynamic:2.0.39.Final-14.0")
     compileOnly("javax.xml.bind:jaxb-api:2.3.1")
     compileOnly("javax.activation:javax.activation-api:1.2.0")

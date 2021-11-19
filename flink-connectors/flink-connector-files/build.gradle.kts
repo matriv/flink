@@ -7,8 +7,8 @@ plugins {
 }
 
 dependencies {
+    api(project(":flink-connector-base"))
     api(project(":flink-file-sink-common"))
-    implementation(project(":flink-connector-base"))
     testImplementation(project(":flink-core"))
     testImplementation(project(":flink-connector-base"))
     testImplementation(project(":flink-test-utils"))

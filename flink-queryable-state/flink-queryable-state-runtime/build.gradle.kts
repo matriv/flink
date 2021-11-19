@@ -16,6 +16,7 @@ dependencies {
     compileOnly(project(":flink-core"))
     compileOnly(project(":flink-runtime"))
     compileOnly(project(":flink-queryable-state-client-java"))
+    compileOnly("org.apache.flink:flink-shaded-netty:4.1.65.Final-14.0")
 }
 
 description = "Flink : Queryable state : Runtime"

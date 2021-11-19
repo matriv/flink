@@ -9,7 +9,7 @@ plugins {
 val testArtifacts: Configuration by configurations.creating
 
 dependencies {
-    implementation(project(":flink-core"))
+    api(project(":flink-core"))
     implementation(project(":flink-rpc-core"))
     implementation(project(":flink-rpc-akka-loader"))
     implementation(project(":flink-java"))

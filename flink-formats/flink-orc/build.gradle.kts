@@ -7,7 +7,9 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":flink-connector-files"))
     implementation("org.apache.orc:orc-core:1.5.6")
+    implementation("org.apache.flink:flink-shaded-guava:30.1.1-jre-14.0")
     testImplementation(project(":flink-test-utils"))
     testImplementation(project(":flink-streaming-java"))
     testImplementation(project(":flink-table-planner_2.12"))

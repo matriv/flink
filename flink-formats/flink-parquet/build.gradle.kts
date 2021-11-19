@@ -19,6 +19,8 @@ dependencies {
     testImplementation(project(":flink-file-sink-common"))
     compileOnly(project(":flink-core"))
     compileOnly(project(":flink-table-runtime_2.12"))
+    compileOnly(project(":flink-connector-files"))
+
     compileOnly("org.apache.hadoop:hadoop-common:2.4.1")
     compileOnly("org.apache.hadoop:hadoop-mapreduce-client-core:2.4.1")
     compileOnly("it.unimi.dsi:fastutil:8.2.1")

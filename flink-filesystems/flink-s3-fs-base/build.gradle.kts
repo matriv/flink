@@ -7,14 +7,14 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":flink-hadoop-fs"))
-    implementation("com.amazonaws:aws-java-sdk-core:1.11.951")
-    implementation("com.amazonaws:aws-java-sdk-s3:1.11.951")
-    implementation("com.amazonaws:aws-java-sdk-kms:1.11.951")
-    implementation("com.amazonaws:aws-java-sdk-dynamodb:1.11.951")
-    implementation("com.amazonaws:aws-java-sdk-sts:1.11.951")
-    implementation(libs.hadoop.common)
-    implementation(libs.hadoop.aws)
+    api(project(":flink-hadoop-fs"))
+    api("com.amazonaws:aws-java-sdk-core:1.11.951")
+    api("com.amazonaws:aws-java-sdk-s3:1.11.951")
+    api("com.amazonaws:aws-java-sdk-kms:1.11.951")
+    api("com.amazonaws:aws-java-sdk-dynamodb:1.11.951")
+    api("com.amazonaws:aws-java-sdk-sts:1.11.951")
+    api(libs.hadoop.common)
+    api(libs.hadoop.aws)
     compileOnly(project(":flink-core"))
 }
 

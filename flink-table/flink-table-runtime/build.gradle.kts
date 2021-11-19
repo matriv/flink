@@ -13,7 +13,7 @@ dependencies {
     implementation(project(":flink-runtime"))
     implementation(project(":flink-connector-files"))
     implementation(project(":flink-file-sink-common"))
-    implementation(project(":flink-table-common"))
+    api(project(":flink-table-common"))
     implementation(project(":flink-table-api-java"))
     implementation(project(":flink-table-api-java-bridge"))
     implementation(project(":flink-table-code-splitter"))

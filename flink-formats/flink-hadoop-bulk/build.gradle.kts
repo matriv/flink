@@ -11,6 +11,7 @@ dependencies {
     testImplementation("org.apache.hadoop:hadoop-hdfs:2.4.1")
     testImplementation("org.apache.hadoop:hadoop-common:2.4.1")
     compileOnly(project(":flink-core"))
+    compileOnly(project(":flink-file-sink-common"))
     compileOnly(project(":flink-streaming-java"))
     compileOnly("org.apache.hadoop:hadoop-common:2.4.1")
     compileOnly("org.apache.hadoop:hadoop-hdfs:2.4.1")
