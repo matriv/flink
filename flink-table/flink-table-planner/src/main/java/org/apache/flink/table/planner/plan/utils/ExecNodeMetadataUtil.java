@@ -129,20 +129,23 @@ public final class ExecNodeMetadataUtil {
             if (metadata == null) {
                 throw new IllegalStateException(
                         String.format(
-                                "ExecNode: %s is missing %s annotation",
+                                "ExecNode: %s is missing %s annotation. This is a bug, please contact developers.",
                                 execNodeClass.getSimpleName(),
-                                ExecNodeMetadata.class.getSimpleName()));
+                                ExecNodeMetadata.class.getCanonicalName()));
             }
             if (!JsonSerdeUtil.hasJsonCreatorAnnotation(execNodeClass)) {
                 throw new IllegalStateException(
                         String.format(
-                                "%s does not implement @JsonCreator annotation on constructor.",
-                                execNodeClass.getClass().getCanonicalName()));
+                                "%s does not implement @JsonCreator annotation on constructor. This is a bug, please contact developers.",
+                                execNodeClass.getCanonicalName()));
             }
 
             ExecNodeNameVersion key = new ExecNodeNameVersion(metadata.name(), metadata.version());
             if (lookupMap.containsKey(key)) {
-                throw new IllegalStateException("Found duplicate ExecNode: " + key);
+                throw new IllegalStateException(
+                        String.format(
+                                "Found duplicate ExecNode: %s. This is a bug, please contact developers.",
+                                key));
             }
             lookupMap.put(key, execNodeClass);
         }
