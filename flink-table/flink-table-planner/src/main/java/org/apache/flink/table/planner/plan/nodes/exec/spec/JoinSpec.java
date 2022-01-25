@@ -88,22 +88,18 @@ public class JoinSpec {
         }
     }
 
-    @JsonIgnore
     public FlinkJoinType getJoinType() {
         return joinType;
     }
 
-    @JsonIgnore
     public int[] getLeftKeys() {
         return leftKeys;
     }
 
-    @JsonIgnore
     public int[] getRightKeys() {
         return rightKeys;
     }
 
-    @JsonIgnore
     public boolean[] getFilterNulls() {
         return filterNulls;
     }
@@ -114,7 +110,6 @@ public class JoinSpec {
     }
 
     /** Gets number of keys in join key. */
-    @JsonIgnore
     public int getJoinKeySize() {
         return leftKeys.length;
     }

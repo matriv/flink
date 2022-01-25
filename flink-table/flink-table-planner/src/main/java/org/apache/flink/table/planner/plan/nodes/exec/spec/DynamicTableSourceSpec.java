@@ -33,7 +33,6 @@ import org.apache.flink.table.planner.plan.abilities.source.SourceAbilitySpec;
 import org.apache.flink.table.types.logical.RowType;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonCreator;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
@@ -54,7 +53,7 @@ public class DynamicTableSourceSpec extends CatalogTableSpecBase {
 
     public static final String FIELD_NAME_SOURCE_ABILITY_SPECS = "sourceAbilitySpecs";
 
-    @JsonIgnore private DynamicTableSource tableSource;
+    private DynamicTableSource tableSource;
 
     @JsonProperty(FIELD_NAME_SOURCE_ABILITY_SPECS)
     private final @Nullable List<SourceAbilitySpec> sourceAbilitySpecs;
@@ -69,7 +68,6 @@ public class DynamicTableSourceSpec extends CatalogTableSpecBase {
         this.sourceAbilitySpecs = sourceAbilitySpecs;
     }
 
-    @JsonIgnore
     private DynamicTableSource getTableSource(FlinkContext flinkContext) {
         checkNotNull(configuration);
         if (tableSource == null) {
@@ -110,7 +108,6 @@ public class DynamicTableSourceSpec extends CatalogTableSpecBase {
         return tableSource;
     }
 
-    @JsonIgnore
     public ScanTableSource getScanTableSource(FlinkContext flinkContext) {
         DynamicTableSource tableSource = getTableSource(flinkContext);
         if (tableSource instanceof ScanTableSource) {
@@ -123,7 +120,6 @@ public class DynamicTableSourceSpec extends CatalogTableSpecBase {
         }
     }
 
-    @JsonIgnore
     public LookupTableSource getLookupTableSource(FlinkContext flinkContext) {
         DynamicTableSource tableSource = getTableSource(flinkContext);
         if (tableSource instanceof LookupTableSource) {
@@ -140,7 +136,6 @@ public class DynamicTableSourceSpec extends CatalogTableSpecBase {
         this.tableSource = tableSource;
     }
 
-    @JsonIgnore
     @Nullable
     public List<SourceAbilitySpec> getSourceAbilitySpecs() {
         return sourceAbilitySpecs;

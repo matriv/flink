@@ -29,6 +29,7 @@ import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.planner.codegen.CodeGeneratorContext;
 import org.apache.flink.table.planner.delegation.PlannerBase;
 import org.apache.flink.table.planner.plan.nodes.exec.ExecNode;
+import org.apache.flink.table.planner.plan.nodes.exec.ExecNodeContext;
 import org.apache.flink.table.planner.plan.nodes.exec.common.CommonExecLegacyTableSourceScan;
 import org.apache.flink.table.planner.plan.nodes.exec.utils.ExecNodeUtil;
 import org.apache.flink.table.planner.plan.utils.ScanUtil;
@@ -58,7 +59,12 @@ public class BatchExecLegacyTableSourceScan extends CommonExecLegacyTableSourceS
             List<String> qualifiedName,
             RowType outputType,
             String description) {
-        super(tableSource, qualifiedName, outputType, description);
+        super(
+                ExecNodeContext.newMetadata(BatchExecLegacyTableSourceScan.class),
+                tableSource,
+                qualifiedName,
+                outputType,
+                description);
     }
 
     @Override

@@ -1,7 +1,7 @@
 {
   "flinkVersion" : "",
   "nodes" : [ {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecTableSourceScan",
+    "context" : "1_stream-exec-table-source-scan_1",
     "scanTableSource" : {
       "identifier" : "`default_catalog`.`default_database`.`MyTable`",
       "catalogTable" : {
@@ -23,12 +23,11 @@
         "schema.0.name" : "a"
       }
     },
-    "id" : 1,
     "outputType" : "ROW<`a` INT, `b` BIGINT, `c` VARCHAR(2147483647)>",
     "description" : "TableSourceScan(table=[[default_catalog, default_database, MyTable]], fields=[a, b, c])",
     "inputProperties" : [ ]
   }, {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecCalc",
+    "context" : "2_stream-exec-calc_1",
     "projection" : [ {
       "kind" : "INPUT_REF",
       "inputIndex" : 1,
@@ -56,7 +55,6 @@
       "type" : "INT"
     } ],
     "condition" : null,
-    "id" : 2,
     "inputProperties" : [ {
       "requiredDistribution" : {
         "type" : "UNKNOWN"
@@ -67,7 +65,7 @@
     "outputType" : "ROW<`b` BIGINT, `rowtime` TIMESTAMP(3), `c` VARCHAR(2147483647), `a` INT>",
     "description" : "Calc(select=[b, TO_TIMESTAMP(c) AS rowtime, c, a])"
   }, {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecWatermarkAssigner",
+    "context" : "3_stream-exec-watermark-assigner_1",
     "watermarkExpr" : {
       "kind" : "REX_CALL",
       "operator" : {
@@ -87,7 +85,6 @@
       "type" : "TIMESTAMP(3)"
     },
     "rowtimeFieldIndex" : 1,
-    "id" : 3,
     "inputProperties" : [ {
       "requiredDistribution" : {
         "type" : "UNKNOWN"
@@ -117,8 +114,7 @@
     },
     "description" : "WatermarkAssigner(rowtime=[rowtime], watermark=[(rowtime - 1000:INTERVAL SECOND)])"
   }, {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecExchange",
-    "id" : 4,
+    "context" : "4_stream-exec-exchange_1",
     "inputProperties" : [ {
       "requiredDistribution" : {
         "type" : "HASH",
@@ -149,7 +145,7 @@
     },
     "description" : "Exchange(distribution=[hash[b]])"
   }, {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecGroupWindowAggregate",
+    "context" : "5_stream-exec-group-window-aggregate_1",
     "grouping" : [ 0 ],
     "aggCalls" : [ {
       "name" : "EXPR$1",
@@ -204,7 +200,6 @@
     },
     "namedWindowProperties" : [ ],
     "needRetraction" : false,
-    "id" : 5,
     "inputProperties" : [ {
       "requiredDistribution" : {
         "type" : "UNKNOWN"
@@ -215,7 +210,7 @@
     "outputType" : "ROW<`b` BIGINT, `EXPR$1` BIGINT NOT NULL, `EXPR$2` INT>",
     "description" : "GroupWindowAggregate(groupBy=[b], window=[SlidingGroupWindow('w$, rowtime, 10000, 5000)], select=[b, COUNT(c) AS EXPR$1, SUM(a) AS EXPR$2])"
   }, {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecSink",
+    "context" : "6_stream-exec-sink_1",
     "dynamicTableSink" : {
       "identifier" : "`default_catalog`.`default_database`.`MySink`",
       "catalogTable" : {
@@ -229,7 +224,6 @@
       }
     },
     "inputChangelogMode" : [ "INSERT" ],
-    "id" : 6,
     "inputProperties" : [ {
       "requiredDistribution" : {
         "type" : "UNKNOWN"

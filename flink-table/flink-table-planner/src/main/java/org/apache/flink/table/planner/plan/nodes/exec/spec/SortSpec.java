@@ -23,7 +23,7 @@ import org.apache.flink.table.types.logical.RowType;
 import org.apache.flink.util.Preconditions;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonCreator;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Arrays;
@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
 /** {@link SortSpec} describes how the data will be sorted. */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SortSpec {
 
     public static final String FIELD_NAME_FIELDS = "fields";
@@ -60,13 +61,11 @@ public class SortSpec {
     }
 
     /** Gets field index of all fields in input. */
-    @JsonIgnore
     public int[] getFieldIndices() {
         return Arrays.stream(fieldSpecs).mapToInt(SortFieldSpec::getFieldIndex).toArray();
     }
 
     /** Gets flags of all fields for whether to sort in ascending order or not. */
-    @JsonIgnore
     public boolean[] getAscendingOrders() {
         boolean[] orders = new boolean[fieldSpecs.length];
         IntStream.range(0, fieldSpecs.length)
@@ -75,7 +74,6 @@ public class SortSpec {
     }
 
     /** Gets flags of all fields for whether to put null at last or not. */
-    @JsonIgnore
     public boolean[] getNullsIsLast() {
         boolean[] nullIsLasts = new boolean[fieldSpecs.length];
         IntStream.range(0, fieldSpecs.length)
@@ -84,7 +82,6 @@ public class SortSpec {
     }
 
     /** Gets all {@link SortFieldSpec} in the SortSpec. */
-    @JsonIgnore
     public SortFieldSpec[] getFieldSpecs() {
         return fieldSpecs;
     }
@@ -95,7 +92,6 @@ public class SortSpec {
     }
 
     /** Gets num of field in the spec. */
-    @JsonIgnore
     public int getFieldSize() {
         return fieldSpecs.length;
     }
@@ -153,17 +149,14 @@ public class SortSpec {
             this.nullIsLast = nullIsLast;
         }
 
-        @JsonIgnore
         public int getFieldIndex() {
             return fieldIndex;
         }
 
-        @JsonIgnore
         public boolean getIsAscendingOrder() {
             return isAscendingOrder;
         }
 
-        @JsonIgnore
         public boolean getNullIsLast() {
             return nullIsLast;
         }

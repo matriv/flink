@@ -28,7 +28,6 @@ import org.apache.flink.table.planner.calcite.FlinkContext;
 import org.apache.flink.table.planner.plan.abilities.sink.SinkAbilitySpec;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonCreator;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,7 +46,7 @@ public class DynamicTableSinkSpec extends CatalogTableSpecBase {
 
     public static final String FIELD_NAME_SINK_ABILITY_SPECS = "sinkAbilitySpecs";
 
-    @JsonIgnore private DynamicTableSink tableSink;
+    private DynamicTableSink tableSink;
 
     @JsonProperty(FIELD_NAME_SINK_ABILITY_SPECS)
     private final @Nullable List<SinkAbilitySpec> sinkAbilitySpecs;

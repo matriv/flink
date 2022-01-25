@@ -35,7 +35,7 @@ import org.apache.flink.table.planner.plan.nodes.exec.visitor.ExecNodeVisitorImp
 
 import org.apache.flink.shaded.guava30.com.google.common.collect.Sets;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonCreator;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -268,6 +268,7 @@ public class ExecNodeGraphJsonPlanGenerator {
      * <p>Different from {@link ExecEdge}, {@link JsonPlanEdge} only stores the {@link ExecNode}'s
      * id instead of instance.
      */
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JsonPlanEdge {
         public static final String FIELD_NAME_SOURCE = "source";
         public static final String FIELD_NAME_TARGET = "target";
@@ -301,22 +302,18 @@ public class ExecNodeGraphJsonPlanGenerator {
             this.exchangeMode = exchangeMode;
         }
 
-        @JsonIgnore
         public int getSourceId() {
             return sourceId;
         }
 
-        @JsonIgnore
         public int getTargetId() {
             return targetId;
         }
 
-        @JsonIgnore
         public ExecEdge.Shuffle getShuffle() {
             return shuffle;
         }
 
-        @JsonIgnore
         public StreamExchangeMode getExchangeMode() {
             return exchangeMode;
         }

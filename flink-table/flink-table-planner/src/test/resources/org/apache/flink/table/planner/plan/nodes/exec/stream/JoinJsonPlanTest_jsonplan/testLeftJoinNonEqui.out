@@ -1,7 +1,7 @@
 {
   "flinkVersion" : "",
   "nodes" : [ {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecTableSourceScan",
+    "context" : "1_stream-exec-table-source-scan_1",
     "scanTableSource" : {
       "identifier" : "`default_catalog`.`default_database`.`A`",
       "catalogTable" : {
@@ -24,13 +24,11 @@
         "producedType" : "ROW<`a1` INT, `a2` BIGINT> NOT NULL"
       } ]
     },
-    "id" : 1,
     "outputType" : "ROW<`a1` INT, `a2` BIGINT>",
     "description" : "TableSourceScan(table=[[default_catalog, default_database, A, project=[a1, a2], metadata=[]]], fields=[a1, a2])",
     "inputProperties" : [ ]
   }, {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecExchange",
-    "id" : 2,
+    "context" : "2_stream-exec-exchange_1",
     "inputProperties" : [ {
       "requiredDistribution" : {
         "type" : "HASH",
@@ -42,7 +40,7 @@
     "outputType" : "ROW<`a1` INT, `a2` BIGINT>",
     "description" : "Exchange(distribution=[hash[a1]])"
   }, {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecTableSourceScan",
+    "context" : "3_stream-exec-table-source-scan_1",
     "scanTableSource" : {
       "identifier" : "`default_catalog`.`default_database`.`B`",
       "catalogTable" : {
@@ -65,13 +63,11 @@
         "producedType" : "ROW<`b1` INT, `b2` BIGINT> NOT NULL"
       } ]
     },
-    "id" : 3,
     "outputType" : "ROW<`b1` INT, `b2` BIGINT>",
     "description" : "TableSourceScan(table=[[default_catalog, default_database, B, project=[b1, b2], metadata=[]]], fields=[b1, b2])",
     "inputProperties" : [ ]
   }, {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecExchange",
-    "id" : 4,
+    "context" : "4_stream-exec-exchange_1",
     "inputProperties" : [ {
       "requiredDistribution" : {
         "type" : "HASH",
@@ -83,7 +79,7 @@
     "outputType" : "ROW<`b1` INT, `b2` BIGINT>",
     "description" : "Exchange(distribution=[hash[b1]])"
   }, {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecJoin",
+    "context" : "5_stream-exec-join_1",
     "joinSpec" : {
       "joinType" : "LEFT",
       "leftKeys" : [ 0 ],
@@ -110,7 +106,6 @@
     },
     "leftUniqueKeys" : [ ],
     "rightUniqueKeys" : [ ],
-    "id" : 5,
     "inputProperties" : [ {
       "requiredDistribution" : {
         "type" : "UNKNOWN"
@@ -127,7 +122,7 @@
     "outputType" : "ROW<`a1` INT, `a2` BIGINT, `b1` INT, `b2` BIGINT>",
     "description" : "Join(joinType=[LeftOuterJoin], where=[((a1 = b1) AND (a2 > b2))], select=[a1, a2, b1, b2], leftInputSpec=[NoUniqueKey], rightInputSpec=[NoUniqueKey])"
   }, {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecCalc",
+    "context" : "6_stream-exec-calc_1",
     "projection" : [ {
       "kind" : "INPUT_REF",
       "inputIndex" : 0,
@@ -138,7 +133,6 @@
       "type" : "INT"
     } ],
     "condition" : null,
-    "id" : 6,
     "inputProperties" : [ {
       "requiredDistribution" : {
         "type" : "UNKNOWN"
@@ -149,7 +143,7 @@
     "outputType" : "ROW<`a1` INT, `b1` INT>",
     "description" : "Calc(select=[a1, b1])"
   }, {
-    "class" : "org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecSink",
+    "context" : "7_stream-exec-sink_1",
     "dynamicTableSink" : {
       "identifier" : "`default_catalog`.`default_database`.`MySink`",
       "catalogTable" : {
@@ -163,7 +157,6 @@
       }
     },
     "inputChangelogMode" : [ "INSERT", "UPDATE_BEFORE", "UPDATE_AFTER", "DELETE" ],
-    "id" : 7,
     "inputProperties" : [ {
       "requiredDistribution" : {
         "type" : "UNKNOWN"

@@ -19,7 +19,6 @@
 package org.apache.flink.table.planner.plan.nodes.exec.spec;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonCreator;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -51,12 +50,10 @@ public class IntervalJoinSpec {
         this.joinSpec = joinSpec;
     }
 
-    @JsonIgnore
     public WindowBounds getWindowBounds() {
         return windowBounds;
     }
 
-    @JsonIgnore
     public JoinSpec getJoinSpec() {
         return joinSpec;
     }
@@ -117,27 +114,22 @@ public class IntervalJoinSpec {
             this.rightTimeIdx = rightTimeIdx;
         }
 
-        @JsonIgnore
         public boolean isEventTime() {
             return isEventTime;
         }
 
-        @JsonIgnore
         public long getLeftLowerBound() {
             return leftLowerBound;
         }
 
-        @JsonIgnore
         public long getLeftUpperBound() {
             return leftUpperBound;
         }
 
-        @JsonIgnore
         public int getLeftTimeIdx() {
             return leftTimeIdx;
         }
 
-        @JsonIgnore
         public int getRightTimeIdx() {
             return rightTimeIdx;
         }

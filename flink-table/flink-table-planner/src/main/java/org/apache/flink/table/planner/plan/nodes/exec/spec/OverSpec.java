@@ -22,7 +22,6 @@ import org.apache.flink.table.planner.plan.nodes.exec.serde.RexWindowBoundJsonDe
 import org.apache.flink.table.planner.plan.nodes.exec.serde.RexWindowBoundJsonSerializer;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonCreator;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -81,22 +80,18 @@ public class OverSpec {
         this.originalInputFields = originalInputFields;
     }
 
-    @JsonIgnore
     public PartitionSpec getPartition() {
         return partition;
     }
 
-    @JsonIgnore
     public List<GroupSpec> getGroups() {
         return groups;
     }
 
-    @JsonIgnore
     public List<RexLiteral> getConstants() {
         return constants;
     }
 
-    @JsonIgnore
     public int getOriginalInputFields() {
         return originalInputFields;
     }
@@ -157,27 +152,22 @@ public class OverSpec {
             this.aggCalls = checkNotNull(aggCalls);
         }
 
-        @JsonIgnore
         public SortSpec getSort() {
             return sort;
         }
 
-        @JsonIgnore
         public boolean isRows() {
             return isRows;
         }
 
-        @JsonIgnore
         public RexWindowBound getLowerBound() {
             return lowerBound;
         }
 
-        @JsonIgnore
         public RexWindowBound getUpperBound() {
             return upperBound;
         }
 
-        @JsonIgnore
         public List<AggregateCall> getAggCalls() {
             return aggCalls;
         }

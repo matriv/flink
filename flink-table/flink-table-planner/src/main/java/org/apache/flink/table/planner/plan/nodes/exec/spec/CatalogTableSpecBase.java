@@ -27,7 +27,6 @@ import org.apache.flink.table.planner.plan.nodes.exec.serde.CatalogTableJsonSeri
 import org.apache.flink.table.planner.plan.nodes.exec.serde.ObjectIdentifierJsonDeserializer;
 import org.apache.flink.table.planner.plan.nodes.exec.serde.ObjectIdentifierJsonSerializer;
 
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -53,9 +52,9 @@ public class CatalogTableSpecBase {
     @JsonDeserialize(using = CatalogTableJsonDeserializer.class)
     protected final ResolvedCatalogTable catalogTable;
 
-    @JsonIgnore protected ClassLoader classLoader;
+    protected ClassLoader classLoader;
 
-    @JsonIgnore protected ReadableConfig configuration;
+    protected ReadableConfig configuration;
 
     protected CatalogTableSpecBase(
             ObjectIdentifier objectIdentifier, ResolvedCatalogTable catalogTable) {
@@ -71,24 +70,20 @@ public class CatalogTableSpecBase {
         this.configuration = config;
     }
 
-    @JsonIgnore
     public ObjectIdentifier getObjectIdentifier() {
         return objectIdentifier;
     }
 
-    @JsonIgnore
     public ResolvedCatalogTable getCatalogTable() {
         return catalogTable;
     }
 
     @VisibleForTesting
-    @JsonIgnore
     public ClassLoader getClassLoader() {
         return classLoader;
     }
 
     @VisibleForTesting
-    @JsonIgnore
     public ReadableConfig getReadableConfig() {
         return configuration;
     }

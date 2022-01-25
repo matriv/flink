@@ -19,7 +19,6 @@
 package org.apache.flink.table.planner.plan.nodes.exec.spec;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonCreator;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -107,47 +106,38 @@ public class MatchSpec {
         this.interval = interval;
     }
 
-    @JsonIgnore
     public RexNode getPattern() {
         return pattern;
     }
 
-    @JsonIgnore
     public Map<String, RexNode> getPatternDefinitions() {
         return patternDefinitions;
     }
 
-    @JsonIgnore
     public Map<String, RexNode> getMeasures() {
         return measures;
     }
 
-    @JsonIgnore
     public RexNode getAfter() {
         return after;
     }
 
-    @JsonIgnore
     public Map<String, SortedSet<String>> getSubsets() {
         return subsets;
     }
 
-    @JsonIgnore
     public boolean isAllRows() {
         return allRows;
     }
 
-    @JsonIgnore
     public PartitionSpec getPartition() {
         return partition;
     }
 
-    @JsonIgnore
     public SortSpec getOrderKeys() {
         return orderKeys;
     }
 
-    @JsonIgnore
     public Optional<RexNode> getInterval() {
         return Optional.ofNullable(interval);
     }

@@ -1755,7 +1755,7 @@ object TableTestUtil {
    * ExecNode {id} is ignored, because id keeps incrementing in test class.
    */
   def replaceExecNodeId(s: String): String = {
-    s.replaceAll("\"id\"\\s*:\\s*\\d+", "\"id\": 0")
+    s.replaceAll("\"context\"\\s*:\\s*\"\\s*\\d+_(.*)\"", "\"id\": 0_\1")
       .replaceAll("\"source\"\\s*:\\s*\\d+", "\"source\": 0")
       .replaceAll("\"target\"\\s*:\\s*\\d+", "\"target\": 0")
   }

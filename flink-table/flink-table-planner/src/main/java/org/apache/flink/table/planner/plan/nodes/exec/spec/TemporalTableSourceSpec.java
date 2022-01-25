@@ -30,7 +30,6 @@ import org.apache.flink.table.planner.plan.schema.TableSourceTable;
 import org.apache.flink.table.planner.plan.stats.FlinkStatistic;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonCreator;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -59,7 +58,7 @@ public class TemporalTableSourceSpec {
     @Nullable
     private RelDataType outputType;
 
-    @JsonIgnore private RelOptTable temporalTable;
+    private RelOptTable temporalTable;
 
     public TemporalTableSourceSpec(RelOptTable temporalTable, TableConfig tableConfig) {
         this.temporalTable = temporalTable;
@@ -85,7 +84,6 @@ public class TemporalTableSourceSpec {
         this.outputType = outputType;
     }
 
-    @JsonIgnore
     public RelOptTable getTemporalTable(FlinkContext flinkContext) {
         if (null != temporalTable) {
             return temporalTable;
@@ -113,13 +111,11 @@ public class TemporalTableSourceSpec {
         throw new TableException("Can not obtain temporalTable correctly!");
     }
 
-    @JsonIgnore
     @Nullable
     public DynamicTableSourceSpec getTableSourceSpec() {
         return tableSourceSpec;
     }
 
-    @JsonIgnore
     @Nullable
     public RelDataType getOutputType() {
         return outputType;
