@@ -20,6 +20,7 @@ package org.apache.flink.table.planner.plan.utils;
 
 import org.apache.flink.table.planner.plan.nodes.exec.ExecNode;
 import org.apache.flink.table.planner.plan.nodes.exec.ExecNodeMetadata;
+import org.apache.flink.table.planner.plan.nodes.exec.serde.JsonSerdeUtil;
 import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecCalc;
 import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecChangelogNormalize;
 import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecCorrelate;
@@ -61,11 +62,11 @@ import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecWindowJoi
 import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecWindowRank;
 import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecWindowTableFunction;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /** Utility class for ExecNodeMetadata related functionality. */
 public final class ExecNodeMetadataUtil {
@@ -77,7 +78,7 @@ public final class ExecNodeMetadataUtil {
     private static final Map<ExecNodeNameVersion, Class<? extends ExecNode<?>>> lookupMap =
             new HashMap<>();
 
-    private static final List<Class<? extends ExecNode<?>>> execNodes = new ArrayList<>();
+    private static final Set<Class<? extends ExecNode<?>>> execNodes = new HashSet<>();
 
     static {
         execNodes.add(StreamExecCalc.class);
@@ -123,25 +124,31 @@ public final class ExecNodeMetadataUtil {
     }
 
     static {
-        for (Class<? extends ExecNode<?>> execNode : execNodes) {
-            ExecNodeMetadata metadata = execNode.getAnnotation(ExecNodeMetadata.class);
+        for (Class<? extends ExecNode<?>> execNodeClass : execNodes) {
+            ExecNodeMetadata metadata = execNodeClass.getAnnotation(ExecNodeMetadata.class);
             if (metadata == null) {
                 throw new IllegalStateException(
-                        "ExecNode: "
-                                + execNode.getSimpleName()
-                                + " is missing "
-                                + ExecNodeMetadata.class.getSimpleName()
-                                + " annotation");
+                        String.format(
+                                "ExecNode: %s is missing %s annotation",
+                                execNodeClass.getSimpleName(),
+                                ExecNodeMetadata.class.getSimpleName()));
             }
+            if (!JsonSerdeUtil.hasJsonCreatorAnnotation(execNodeClass)) {
+                throw new IllegalStateException(
+                        String.format(
+                                "%s does not implement @JsonCreator annotation on constructor.",
+                                execNodeClass.getClass().getCanonicalName()));
+            }
+
             ExecNodeNameVersion key = new ExecNodeNameVersion(metadata.name(), metadata.version());
             if (lookupMap.containsKey(key)) {
                 throw new IllegalStateException("Found duplicate ExecNode: " + key);
             }
-            lookupMap.put(key, execNode);
+            lookupMap.put(key, execNodeClass);
         }
     }
 
-    public static List<Class<? extends ExecNode<?>>> execNodes() {
+    public static Set<Class<? extends ExecNode<?>>> execNodes() {
         return execNodes;
     }
 

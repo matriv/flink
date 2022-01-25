@@ -32,6 +32,7 @@ import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecLookupJoi
 import org.apache.flink.table.planner.plan.nodes.exec.visitor.AbstractExecNodeExactlyOnceVisitor;
 import org.apache.flink.table.planner.plan.nodes.exec.visitor.ExecNodeVisitor;
 import org.apache.flink.table.planner.plan.nodes.exec.visitor.ExecNodeVisitorImpl;
+import org.apache.flink.table.planner.plan.utils.ExecNodeMetadataUtil;
 
 import org.apache.flink.shaded.guava30.com.google.common.collect.Sets;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonCreator;
@@ -80,11 +81,12 @@ public class ExecNodeGraphJsonPlanGenerator {
                 new AbstractExecNodeExactlyOnceVisitor() {
                     @Override
                     protected void visitNode(ExecNode<?> node) {
-                        if (!JsonSerdeUtil.hasJsonCreatorAnnotation(node.getClass())) {
+                        if (!ExecNodeMetadataUtil.execNodes().contains(node)) {
                             throw new TableException(
                                     String.format(
-                                            "%s does not implement @JsonCreator annotation on constructor.",
-                                            node.getClass().getCanonicalName()));
+                                            "%s is not contained in %s.execNodes().",
+                                            node.getClass().getCanonicalName(),
+                                            ExecNodeMetadataUtil.class.getCanonicalName()));
                         }
                         if (node instanceof StreamExecLookupJoin) {
                             StreamExecLookupJoin streamExecLookupJoin = (StreamExecLookupJoin) node;
