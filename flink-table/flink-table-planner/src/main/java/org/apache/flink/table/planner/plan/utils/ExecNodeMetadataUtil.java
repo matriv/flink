@@ -18,8 +18,10 @@
 
 package org.apache.flink.table.planner.plan.utils;
 
+import org.apache.flink.annotation.VisibleForTesting;
 import org.apache.flink.table.planner.plan.nodes.exec.ExecNode;
 import org.apache.flink.table.planner.plan.nodes.exec.ExecNodeMetadata;
+import org.apache.flink.table.planner.plan.nodes.exec.ExecNodeMetadatas;
 import org.apache.flink.table.planner.plan.nodes.exec.serde.JsonSerdeUtil;
 import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecCalc;
 import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecChangelogNormalize;
@@ -62,8 +64,11 @@ import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecWindowJoi
 import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecWindowRank;
 import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecWindowTableFunction;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -125,29 +130,7 @@ public final class ExecNodeMetadataUtil {
 
     static {
         for (Class<? extends ExecNode<?>> execNodeClass : execNodes) {
-            ExecNodeMetadata metadata = execNodeClass.getAnnotation(ExecNodeMetadata.class);
-            if (metadata == null) {
-                throw new IllegalStateException(
-                        String.format(
-                                "ExecNode: %s is missing %s annotation. This is a bug, please contact developers.",
-                                execNodeClass.getSimpleName(),
-                                ExecNodeMetadata.class.getCanonicalName()));
-            }
-            if (!JsonSerdeUtil.hasJsonCreatorAnnotation(execNodeClass)) {
-                throw new IllegalStateException(
-                        String.format(
-                                "%s does not implement @JsonCreator annotation on constructor. This is a bug, please contact developers.",
-                                execNodeClass.getCanonicalName()));
-            }
-
-            ExecNodeNameVersion key = new ExecNodeNameVersion(metadata.name(), metadata.version());
-            if (lookupMap.containsKey(key)) {
-                throw new IllegalStateException(
-                        String.format(
-                                "Found duplicate ExecNode: %s. This is a bug, please contact developers.",
-                                key));
-            }
-            lookupMap.put(key, execNodeClass);
+            addToLookupMap(execNodeClass);
         }
     }
 
@@ -157,6 +140,90 @@ public final class ExecNodeMetadataUtil {
 
     public static Class<? extends ExecNode<?>> retrieveExecNode(String name, int version) {
         return lookupMap.get(new ExecNodeNameVersion(name, version));
+    }
+
+    @VisibleForTesting
+    static void addTestNode(Class<? extends ExecNode<?>> execNodeClass) {
+        addToLookupMap(execNodeClass);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static List<ExecNodeMetadata> extractMetadataFromAnnotation(
+            Class<? extends ExecNode> execNodeClass) {
+        List<ExecNodeMetadata> metadata = new ArrayList<>();
+        ExecNodeMetadata annotation = execNodeClass.getDeclaredAnnotation(ExecNodeMetadata.class);
+        if (annotation != null) {
+            metadata.add(annotation);
+        }
+
+        ExecNodeMetadatas annotations =
+                execNodeClass.getDeclaredAnnotation(ExecNodeMetadatas.class);
+        if (metadata.isEmpty()) {
+            if (annotations != null) {
+                for (ExecNodeMetadata annot : annotations.value()) {
+                    if (annot != null) {
+                        metadata.add(annot);
+                    }
+                }
+            }
+        } else {
+            if (annotations != null) {
+                throw new IllegalStateException(
+                        String.format(
+                                "ExecNode: %s is annotated both with %s and %s. This is a bug, please contact developers.",
+                                execNodeClass.getCanonicalName(),
+                                ExecNodeMetadata.class,
+                                ExecNodeMetadatas.class));
+            }
+        }
+        return metadata;
+    }
+
+    private static void addToLookupMap(Class<? extends ExecNode<?>> execNodeClass) {
+        if (!JsonSerdeUtil.hasJsonCreatorAnnotation(execNodeClass)) {
+            throw new IllegalStateException(
+                    String.format(
+                            "ExecNode: %s does not implement @JsonCreator annotation on constructor. This is a bug, please contact developers.",
+                            execNodeClass.getCanonicalName()));
+        }
+
+        List<ExecNodeMetadata> metadata = extractMetadataFromAnnotation(execNodeClass);
+        if (metadata.isEmpty()) {
+            throw new IllegalStateException(
+                    String.format(
+                            "ExecNode: %s is missing %s annotation. This is a bug, please contact developers.",
+                            execNodeClass.getCanonicalName(),
+                            ExecNodeMetadata.class.getSimpleName()));
+        }
+
+        for (ExecNodeMetadata meta : metadata) {
+            doAddToMap(new ExecNodeNameVersion(meta.name(), meta.version()), execNodeClass);
+        }
+    }
+
+    private static void doAddToMap(
+            ExecNodeNameVersion key, Class<? extends ExecNode<?>> execNodeClass) {
+        if (lookupMap.containsKey(key)) {
+            throw new IllegalStateException(
+                    String.format(
+                            "Found duplicate ExecNode: %s. This is a bug, please contact developers.",
+                            key));
+        }
+        lookupMap.put(key, execNodeClass);
+    }
+
+    /**
+     * Returns the {@link ExecNodeMetadata} annotation of the class with the highest (most recent)
+     * {@link ExecNodeMetadata#version()}.
+     */
+    @SuppressWarnings("rawtypes")
+    public static ExecNodeMetadata latestAnnotation(Class<? extends ExecNode> execNodeClass) {
+        List<ExecNodeMetadata> sortedAnnotations = extractMetadataFromAnnotation(execNodeClass);
+        if (sortedAnnotations.isEmpty()) {
+            return null;
+        }
+        sortedAnnotations.sort(Comparator.comparingInt(ExecNodeMetadata::version));
+        return sortedAnnotations.get(sortedAnnotations.size() - 1);
     }
 
     /** Helper Pojo used as a tuple for the {@link #lookupMap}. */
@@ -172,7 +239,7 @@ public final class ExecNodeMetadataUtil {
 
         @Override
         public String toString() {
-            return name + ":" + version;
+            return String.format("name: %s, version: %s", name, version);
         }
 
         @Override

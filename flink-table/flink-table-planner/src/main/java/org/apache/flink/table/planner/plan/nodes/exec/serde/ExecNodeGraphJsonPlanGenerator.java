@@ -81,7 +81,7 @@ public class ExecNodeGraphJsonPlanGenerator {
                 new AbstractExecNodeExactlyOnceVisitor() {
                     @Override
                     protected void visitNode(ExecNode<?> node) {
-                        if (!ExecNodeMetadataUtil.execNodes().contains(node)) {
+                        if (!ExecNodeMetadataUtil.execNodes().contains(node.getClass())) {
                             throw new TableException(
                                     String.format(
                                             "%s is not contained in %s.execNodes().",

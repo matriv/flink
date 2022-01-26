@@ -18,7 +18,7 @@
 
 package org.apache.flink.table.planner.plan.nodes.exec;
 
-import org.apache.flink.table.planner.plan.nodes.exec.stream.StreamExecNode;
+import org.apache.flink.table.planner.plan.utils.ExecNodeMetadataUtil;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonCreator;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonValue;
@@ -77,13 +77,8 @@ public class ExecNodeContext {
     }
 
     @SuppressWarnings("rawtypes")
-    public static ExecNodeContext newMetadata(Class<? extends ExecNode> execNode, int id) {
-        ExecNodeMetadata metadata = null;
-        // In the future we should check for ExecNodeMetadatas annotation, since the classes could
-        // be annotated with multiple ExecNodeMetadata annotations, and use the latest one.
-        if (StreamExecNode.class.isAssignableFrom(execNode)) {
-            metadata = execNode.getDeclaredAnnotation(ExecNodeMetadata.class);
-        }
+    static ExecNodeContext newMetadata(Class<? extends ExecNode> execNode, int id) {
+        ExecNodeMetadata metadata = ExecNodeMetadataUtil.latestAnnotation(execNode);
         // Some StreamExecNodes likes StreamExecMultipleInput
         // still don't support the ExecNodeMetadata annotation.
         if (metadata == null) {
