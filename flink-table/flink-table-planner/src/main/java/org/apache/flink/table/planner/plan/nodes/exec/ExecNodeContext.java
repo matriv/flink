@@ -28,11 +28,9 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonVal
  * and de-serialisation.
  */
 public class ExecNodeContext {
-    /** The unique identifier for each ExecNode in the JSON plan. */
+
     private final int id;
-    /** The type identifying an ExecNode in the JSON plan. See {@link ExecNodeMetadata#name()}. */
     private final String name;
-    /** The version of the ExecNode in the JSON plan. See {@link ExecNodeMetadata#version()}. */
     private final Integer version;
 
     public ExecNodeContext(int id, String name, Integer version) {
@@ -53,14 +51,17 @@ public class ExecNodeContext {
         this.version = Integer.valueOf(split[2]);
     }
 
+    /** The unique identifier for each ExecNode in the JSON plan. */
     public int getId() {
         return id;
     }
 
+    /** The type identifying an ExecNode in the JSON plan. See {@link ExecNodeMetadata#name()}. */
     public String getName() {
         return name;
     }
 
+    /** The version of the ExecNode in the JSON plan. See {@link ExecNodeMetadata#version()}. */
     public Integer getVersion() {
         return version;
     }
