@@ -19,6 +19,7 @@
 package org.apache.flink.table.planner.plan.nodes.exec.spec;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonCreator;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -138,6 +139,7 @@ public class MatchSpec {
         return orderKeys;
     }
 
+    @JsonIgnore
     public Optional<RexNode> getInterval() {
         return Optional.ofNullable(interval);
     }
