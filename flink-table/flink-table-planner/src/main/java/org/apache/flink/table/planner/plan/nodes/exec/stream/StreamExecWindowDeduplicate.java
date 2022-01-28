@@ -93,7 +93,8 @@ public class StreamExecWindowDeduplicate extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecWindowDeduplicate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecWindowDeduplicate.class),
                 partitionKeys,
                 orderKey,
                 keepLastRow,
@@ -105,7 +106,8 @@ public class StreamExecWindowDeduplicate extends ExecNodeBase<RowData>
 
     @JsonCreator
     public StreamExecWindowDeduplicate(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_PARTITION_KEYS) int[] partitionKeys,
             @JsonProperty(FIELD_NAME_ORDER_KEY) int orderKey,
             @JsonProperty(FIELD_NAME_KEEP_LAST_ROW) boolean keepLastRow,
@@ -113,7 +115,7 @@ public class StreamExecWindowDeduplicate extends ExecNodeBase<RowData>
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 1);
         this.partitionKeys = checkNotNull(partitionKeys);
         this.orderKey = orderKey;

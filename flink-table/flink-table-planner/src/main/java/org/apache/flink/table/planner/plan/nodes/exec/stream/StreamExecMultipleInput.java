@@ -63,7 +63,8 @@ public class StreamExecMultipleInput extends ExecNodeBase<RowData>
     public StreamExecMultipleInput(
             List<InputProperty> inputProperties, ExecNode<?> rootNode, String description) {
         super(
-                ExecNodeContext.newMetadata(StreamExecMultipleInput.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecMultipleInput.class),
                 inputProperties,
                 rootNode.getOutputType(),
                 description);

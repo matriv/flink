@@ -47,7 +47,8 @@ public class BatchExecLegacySink<T> extends CommonExecLegacySink<T> implements B
             LogicalType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecLegacySink.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecLegacySink.class),
                 tableSink,
                 upsertKeys,
                 false, // needRetraction

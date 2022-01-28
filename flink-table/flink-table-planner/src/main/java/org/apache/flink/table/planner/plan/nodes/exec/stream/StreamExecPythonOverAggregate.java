@@ -107,7 +107,8 @@ public class StreamExecPythonOverAggregate extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecPythonOverAggregate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecPythonOverAggregate.class),
                 overSpec,
                 Collections.singletonList(inputProperty),
                 outputType,
@@ -116,12 +117,13 @@ public class StreamExecPythonOverAggregate extends ExecNodeBase<RowData>
 
     @JsonCreator
     public StreamExecPythonOverAggregate(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_OVER_SPEC) OverSpec overSpec,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 1);
         this.overSpec = checkNotNull(overSpec);
     }

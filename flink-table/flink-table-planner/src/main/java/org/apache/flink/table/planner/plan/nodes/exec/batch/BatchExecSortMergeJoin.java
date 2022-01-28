@@ -76,7 +76,8 @@ public class BatchExecSortMergeJoin extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecSortMergeJoin.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecSortMergeJoin.class),
                 Arrays.asList(leftInputProperty, rightInputProperty),
                 outputType,
                 description);

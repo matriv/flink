@@ -47,7 +47,8 @@ public class BatchExecLimit extends ExecNodeBase<RowData> implements BatchExecNo
             LogicalType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecLimit.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecLimit.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);

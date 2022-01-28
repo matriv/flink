@@ -41,11 +41,12 @@ public abstract class CommonExecUnion extends ExecNodeBase<RowData>
         implements SingleTransformationTranslator<RowData> {
 
     public CommonExecUnion(
+            int id,
             ExecNodeContext context,
             List<InputProperty> inputProperties,
             RowType outputType,
             String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

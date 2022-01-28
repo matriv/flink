@@ -69,7 +69,8 @@ public class StreamExecLegacyTableSourceScan extends CommonExecLegacyTableSource
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(StreamExecLegacyTableSourceScan.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecLegacyTableSourceScan.class),
                 tableSource,
                 qualifiedName,
                 outputType,

@@ -68,12 +68,13 @@ public abstract class CommonExecLegacyTableSourceScan extends ExecNodeBase<RowDa
     protected final List<String> qualifiedName;
 
     public CommonExecLegacyTableSourceScan(
+            int id,
             ExecNodeContext context,
             TableSource<?> tableSource,
             List<String> qualifiedName,
             RowType outputType,
             String description) {
-        super(context, Collections.emptyList(), outputType, description);
+        super(id, context, Collections.emptyList(), outputType, description);
         this.tableSource = tableSource;
         this.qualifiedName = qualifiedName;
     }

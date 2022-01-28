@@ -50,7 +50,8 @@ public class StreamExecTableSourceScan extends CommonExecTableSourceScan
     public StreamExecTableSourceScan(
             DynamicTableSourceSpec tableSourceSpec, RowType outputType, String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecTableSourceScan.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecTableSourceScan.class),
                 tableSourceSpec,
                 outputType,
                 description);
@@ -58,11 +59,12 @@ public class StreamExecTableSourceScan extends CommonExecTableSourceScan
 
     @JsonCreator
     public StreamExecTableSourceScan(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_SCAN_TABLE_SOURCE) DynamicTableSourceSpec tableSourceSpec,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, tableSourceSpec, outputType, description);
+        super(id, context, tableSourceSpec, outputType, description);
     }
 
     @Override

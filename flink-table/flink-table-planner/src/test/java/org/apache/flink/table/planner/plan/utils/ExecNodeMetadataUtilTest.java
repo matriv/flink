@@ -173,7 +173,7 @@ public class ExecNodeMetadataUtilTest {
                 List<InputProperty> properties,
                 LogicalType outputType,
                 String description) {
-            super(context, properties, outputType, description);
+            super(10, context, properties, outputType, description);
         }
 
         @Override
@@ -189,7 +189,7 @@ public class ExecNodeMetadataUtilTest {
                 List<InputProperty> properties,
                 LogicalType outputType,
                 String description) {
-            super(context, properties, outputType, description);
+            super(10, context, properties, outputType, description);
         }
 
         @Override
@@ -206,7 +206,7 @@ public class ExecNodeMetadataUtilTest {
                 List<InputProperty> properties,
                 LogicalType outputType,
                 String description) {
-            super(context, properties, outputType, description);
+            super(10, context, properties, outputType, description);
         }
 
         @Override
@@ -240,7 +240,7 @@ public class ExecNodeMetadataUtilTest {
                 List<InputProperty> properties,
                 LogicalType outputType,
                 String description) {
-            super(context, properties, outputType, description);
+            super(10, context, properties, outputType, description);
         }
 
         @Override

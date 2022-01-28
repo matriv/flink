@@ -55,7 +55,8 @@ public class BatchExecBoundedStreamScan extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecBoundedStreamScan.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecBoundedStreamScan.class),
                 Collections.emptyList(),
                 outputType,
                 description);

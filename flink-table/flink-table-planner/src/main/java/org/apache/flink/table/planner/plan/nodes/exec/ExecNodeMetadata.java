@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to be used for {@link ExecNode}s to keep necessary metadata when
- * serialising/deserialising them in a plan.
+ * serialising/deserializing them in a plan.
  *
  * <p>Each {@link ExecNode} needs to be annotated and provide the necessary metadata info so that it
  * can be correctly serialised and later on instantiated from a string (JSON) plan.
@@ -110,7 +110,7 @@ public @interface ExecNodeMetadata {
      *
      * <p>Completeness tests can verify that restore tests exist for all JSON plan variations.
      */
-    @JsonProperty("minPlanVersion")
+    //    @JsonProperty("minPlanVersion")
     FlinkVersion minPlanVersion();
 
     /**
@@ -126,6 +126,6 @@ public @interface ExecNodeMetadata {
      *
      * <p>Completeness tests can verify that restore tests exist for all state variations.
      */
-    @JsonProperty("minStateVersion")
+    //    @JsonProperty("minStateVersion")
     FlinkVersion minStateVersion();
 }

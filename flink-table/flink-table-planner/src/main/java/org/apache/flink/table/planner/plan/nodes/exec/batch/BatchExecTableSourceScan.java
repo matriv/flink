@@ -43,7 +43,8 @@ public class BatchExecTableSourceScan extends CommonExecTableSourceScan
     public BatchExecTableSourceScan(
             DynamicTableSourceSpec tableSourceSpec, RowType outputType, String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecTableSourceScan.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecTableSourceScan.class),
                 tableSourceSpec,
                 outputType,
                 description);

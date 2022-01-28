@@ -60,7 +60,8 @@ public class BatchExecNestedLoopJoin extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecNestedLoopJoin.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecNestedLoopJoin.class),
                 Arrays.asList(leftInputProperty, rightInputProperty),
                 outputType,
                 description);

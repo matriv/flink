@@ -80,7 +80,8 @@ public class StreamExecPythonGroupTableAggregate extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(StreamExecPythonGroupTableAggregate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecPythonGroupTableAggregate.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);

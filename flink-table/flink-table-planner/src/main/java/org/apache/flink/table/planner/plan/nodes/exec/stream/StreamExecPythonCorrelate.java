@@ -52,7 +52,8 @@ public class StreamExecPythonCorrelate extends CommonExecPythonCorrelate
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecPythonCorrelate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecPythonCorrelate.class),
                 joinType,
                 invocation,
                 Collections.singletonList(inputProperty),
@@ -62,12 +63,20 @@ public class StreamExecPythonCorrelate extends CommonExecPythonCorrelate
 
     @JsonCreator
     public StreamExecPythonCorrelate(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_JOIN_TYPE) FlinkJoinType joinType,
             @JsonProperty(FIELD_NAME_FUNCTION_CALL) RexNode invocation,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, joinType, (RexCall) invocation, inputProperties, outputType, description);
+        super(
+                id,
+                context,
+                joinType,
+                (RexCall) invocation,
+                inputProperties,
+                outputType,
+                description);
     }
 }

@@ -44,7 +44,8 @@ public class BatchExecCorrelate extends CommonExecCorrelate implements BatchExec
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecCorrelate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecCorrelate.class),
                 joinType,
                 invocation,
                 condition,

@@ -46,7 +46,8 @@ public class StreamExecUnion extends CommonExecUnion implements StreamExecNode<R
     public StreamExecUnion(
             List<InputProperty> inputProperties, RowType outputType, String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecUnion.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecUnion.class),
                 inputProperties,
                 outputType,
                 description);
@@ -54,10 +55,11 @@ public class StreamExecUnion extends CommonExecUnion implements StreamExecNode<R
 
     @JsonCreator
     public StreamExecUnion(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
     }
 }

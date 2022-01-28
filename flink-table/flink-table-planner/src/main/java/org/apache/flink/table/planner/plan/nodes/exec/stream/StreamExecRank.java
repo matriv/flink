@@ -133,7 +133,8 @@ public class StreamExecRank extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecRank.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecRank.class),
                 rankType,
                 partitionSpec,
                 sortSpec,
@@ -148,7 +149,8 @@ public class StreamExecRank extends ExecNodeBase<RowData>
 
     @JsonCreator
     public StreamExecRank(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_RANK_TYPE) RankType rankType,
             @JsonProperty(FIELD_NAME_PARTITION_SPEC) PartitionSpec partitionSpec,
             @JsonProperty(FIELD_NAME_SORT_SPEC) SortSpec sortSpec,
@@ -159,7 +161,7 @@ public class StreamExecRank extends ExecNodeBase<RowData>
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 1);
         this.rankType = checkNotNull(rankType);
         this.rankRange = checkNotNull(rankRange);

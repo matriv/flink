@@ -102,7 +102,8 @@ public class StreamExecTemporalJoin extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecTemporalJoin.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecTemporalJoin.class),
                 joinSpec,
                 isTemporalTableFunctionJoin,
                 leftTimeAttributeIndex,
@@ -114,7 +115,8 @@ public class StreamExecTemporalJoin extends ExecNodeBase<RowData>
 
     @JsonCreator
     public StreamExecTemporalJoin(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_JOIN_SPEC) JoinSpec joinSpec,
             @JsonProperty(FIELD_NAME_IS_TEMPORAL_FUNCTION_JOIN) boolean isTemporalTableFunctionJoin,
             @JsonProperty(FIELD_NAME_LEFT_TIME_ATTRIBUTE_INDEX) int leftTimeAttributeIndex,
@@ -122,7 +124,7 @@ public class StreamExecTemporalJoin extends ExecNodeBase<RowData>
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         Preconditions.checkArgument(inputProperties.size() == 2);
         Preconditions.checkArgument(
                 rightTimeAttributeIndex == FIELD_INDEX_FOR_PROC_TIME_ATTRIBUTE

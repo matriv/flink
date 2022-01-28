@@ -54,7 +54,8 @@ public class StreamExecWindowTableFunction extends CommonExecWindowTableFunction
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecWindowTableFunction.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecWindowTableFunction.class),
                 windowingStrategy,
                 Collections.singletonList(inputProperty),
                 outputType,
@@ -63,11 +64,12 @@ public class StreamExecWindowTableFunction extends CommonExecWindowTableFunction
 
     @JsonCreator
     public StreamExecWindowTableFunction(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_WINDOWING) TimeAttributeWindowingStrategy windowingStrategy,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, windowingStrategy, inputProperties, outputType, description);
+        super(id, context, windowingStrategy, inputProperties, outputType, description);
     }
 }

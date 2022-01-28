@@ -40,7 +40,8 @@ public class BatchExecPythonCorrelate extends CommonExecPythonCorrelate
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecPythonCorrelate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecPythonCorrelate.class),
                 joinType,
                 invocation,
                 Collections.singletonList(inputProperty),

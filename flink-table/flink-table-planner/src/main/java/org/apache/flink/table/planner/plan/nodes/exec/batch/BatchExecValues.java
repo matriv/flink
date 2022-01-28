@@ -35,7 +35,12 @@ import java.util.List;
 public class BatchExecValues extends CommonExecValues implements BatchExecNode<RowData> {
 
     public BatchExecValues(List<List<RexLiteral>> tuples, RowType outputType, String description) {
-        super(ExecNodeContext.newMetadata(BatchExecValues.class), tuples, outputType, description);
+        super(
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecValues.class),
+                tuples,
+                outputType,
+                description);
     }
 
     @Override

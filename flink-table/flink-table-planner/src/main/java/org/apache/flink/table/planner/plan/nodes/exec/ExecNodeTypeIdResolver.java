@@ -18,6 +18,7 @@
 
 package org.apache.flink.table.planner.plan.nodes.exec;
 
+import org.apache.flink.annotation.Internal;
 import org.apache.flink.table.planner.plan.utils.ExecNodeMetadataUtil;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
@@ -26,11 +27,12 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JavaType;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase;
 
 /**
- * Helper class to implement the Jackson subtype serialisation/de-serialisation. Instead of using
- * the class name use the {@link ExecNodeMetadata#name()} and {@link ExecNodeMetadata#version()} to
+ * Helper class to implement the Jackson subtype serialisation/deserialization. Instead of using the
+ * class name use the {@link ExecNodeMetadata#name()} and {@link ExecNodeMetadata#version()} to
  * perform a lookup in a static map residing in {@link ExecNodeMetadataUtil}.
  */
-public class ExecNodeTypeIdResolver extends TypeIdResolverBase {
+@Internal
+class ExecNodeTypeIdResolver extends TypeIdResolverBase {
 
     private JavaType superType;
 

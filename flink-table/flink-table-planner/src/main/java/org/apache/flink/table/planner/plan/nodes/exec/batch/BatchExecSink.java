@@ -43,7 +43,8 @@ public class BatchExecSink extends CommonExecSink implements BatchExecNode<Objec
             LogicalType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecSink.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecSink.class),
                 tableSinkSpec,
                 ChangelogMode.insertOnly(),
                 true, // isBounded

@@ -79,7 +79,8 @@ public class BatchExecOverAggregate extends BatchExecOverAggregateBase {
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecOverAggregate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecOverAggregate.class),
                 overSpec,
                 inputProperty,
                 outputType,

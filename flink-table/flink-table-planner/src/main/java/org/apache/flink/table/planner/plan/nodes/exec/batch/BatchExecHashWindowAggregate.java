@@ -82,7 +82,8 @@ public class BatchExecHashWindowAggregate extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecHashWindowAggregate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecHashWindowAggregate.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);

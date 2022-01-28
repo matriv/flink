@@ -59,7 +59,8 @@ public class BatchExecRank extends ExecNodeBase<RowData> implements BatchExecNod
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecRank.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecRank.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);

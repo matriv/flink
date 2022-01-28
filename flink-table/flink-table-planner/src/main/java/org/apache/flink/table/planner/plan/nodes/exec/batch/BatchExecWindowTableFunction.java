@@ -41,7 +41,8 @@ public class BatchExecWindowTableFunction extends CommonExecWindowTableFunction
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecWindowTableFunction.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecWindowTableFunction.class),
                 windowingStrategy,
                 Collections.singletonList(inputProperty),
                 outputType,

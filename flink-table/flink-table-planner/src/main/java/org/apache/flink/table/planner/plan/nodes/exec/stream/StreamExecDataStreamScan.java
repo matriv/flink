@@ -70,7 +70,8 @@ public class StreamExecDataStreamScan extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(StreamExecDataStreamScan.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecDataStreamScan.class),
                 Collections.emptyList(),
                 outputType,
                 description);

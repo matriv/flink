@@ -85,12 +85,13 @@ public abstract class CommonExecPythonCalc extends ExecNodeBase<RowData>
     private final List<RexNode> projection;
 
     public CommonExecPythonCalc(
+            int id,
             ExecNodeContext context,
             List<RexNode> projection,
             List<InputProperty> inputProperties,
             RowType outputType,
             String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 1);
         this.projection = checkNotNull(projection);
     }

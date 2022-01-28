@@ -172,6 +172,7 @@ public abstract class CommonExecLookupJoin extends ExecNodeBase<RowData>
     private final @Nullable RelDataType temporalTableOutputType;
 
     protected CommonExecLookupJoin(
+            int id,
             ExecNodeContext context,
             FlinkJoinType joinType,
             @Nullable RexNode joinCondition,
@@ -183,7 +184,7 @@ public abstract class CommonExecLookupJoin extends ExecNodeBase<RowData>
             List<InputProperty> inputProperties,
             RowType outputType,
             String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 1);
         this.joinType = checkNotNull(joinType);
         this.joinCondition = joinCondition;

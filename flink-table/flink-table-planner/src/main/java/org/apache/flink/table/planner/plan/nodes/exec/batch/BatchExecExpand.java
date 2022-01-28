@@ -39,7 +39,8 @@ public class BatchExecExpand extends CommonExecExpand implements BatchExecNode<R
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecExpand.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecExpand.class),
                 projects,
                 false, // retainHeader
                 Collections.singletonList(inputProperty),

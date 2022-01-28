@@ -52,7 +52,8 @@ public class BatchExecSort extends ExecNodeBase<RowData> implements BatchExecNod
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecSort.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecSort.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);

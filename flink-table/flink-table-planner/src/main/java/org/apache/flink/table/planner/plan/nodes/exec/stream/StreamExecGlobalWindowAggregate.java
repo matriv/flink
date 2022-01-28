@@ -108,7 +108,8 @@ public class StreamExecGlobalWindowAggregate extends StreamExecWindowAggregateBa
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecGlobalWindowAggregate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecGlobalWindowAggregate.class),
                 grouping,
                 aggCalls,
                 windowing,
@@ -121,7 +122,8 @@ public class StreamExecGlobalWindowAggregate extends StreamExecWindowAggregateBa
 
     @JsonCreator
     public StreamExecGlobalWindowAggregate(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_GROUPING) int[] grouping,
             @JsonProperty(FIELD_NAME_AGG_CALLS) AggregateCall[] aggCalls,
             @JsonProperty(FIELD_NAME_WINDOWING) WindowingStrategy windowing,
@@ -131,7 +133,7 @@ public class StreamExecGlobalWindowAggregate extends StreamExecWindowAggregateBa
             @JsonProperty(FIELD_NAME_LOCAL_AGG_INPUT_ROW_TYPE) RowType localAggInputRowType,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         this.grouping = checkNotNull(grouping);
         this.aggCalls = checkNotNull(aggCalls);
         this.windowing = checkNotNull(windowing);

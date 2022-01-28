@@ -67,6 +67,7 @@ public abstract class CommonExecCorrelate extends ExecNodeBase<RowData>
     private final boolean retainHeader;
 
     public CommonExecCorrelate(
+            int id,
             ExecNodeContext context,
             FlinkJoinType joinType,
             RexCall invocation,
@@ -76,7 +77,7 @@ public abstract class CommonExecCorrelate extends ExecNodeBase<RowData>
             List<InputProperty> inputProperties,
             RowType outputType,
             String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 1);
         this.joinType = checkNotNull(joinType);
         this.invocation = checkNotNull(invocation);

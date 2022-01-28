@@ -51,11 +51,12 @@ public abstract class StreamExecWindowAggregateBase extends StreamExecAggregateB
     public static final String FIELD_NAME_NAMED_WINDOW_PROPERTIES = "namedWindowProperties";
 
     protected StreamExecWindowAggregateBase(
+            int id,
             ExecNodeContext context,
             List<InputProperty> inputProperties,
             LogicalType outputType,
             String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 1);
     }
 

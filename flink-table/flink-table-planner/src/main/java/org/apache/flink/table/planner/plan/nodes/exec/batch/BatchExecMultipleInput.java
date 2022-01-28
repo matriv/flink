@@ -76,7 +76,8 @@ public class BatchExecMultipleInput extends ExecNodeBase<RowData>
     public BatchExecMultipleInput(
             List<InputProperty> inputProperties, ExecNode<?> rootNode, String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecMultipleInput.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecMultipleInput.class),
                 inputProperties,
                 rootNode.getOutputType(),
                 description);

@@ -53,7 +53,7 @@ import org.apache.flink.table.planner.delegation.PlannerBase
 import org.apache.flink.table.planner.functions.sql.FlinkSqlOperatorTable
 import org.apache.flink.table.planner.operations.{InternalDataStreamQueryOperation, PlannerQueryOperation, RichTableSourceQueryOperation}
 import org.apache.flink.table.planner.plan.nodes.calcite.LogicalWatermarkAssigner
-import org.apache.flink.table.planner.plan.nodes.exec.ExecNodeBase
+import org.apache.flink.table.planner.plan.nodes.exec.{ExecNodeBase, ExecNodeContext}
 import org.apache.flink.table.planner.plan.nodes.exec.utils.ExecNodePlanDumper
 import org.apache.flink.table.planner.plan.optimize.program._
 import org.apache.flink.table.planner.plan.stats.FlinkStatistic
@@ -779,7 +779,7 @@ abstract class TableTestUtilBase(test: TableTestBase, isStreamingMode: Boolean) 
    * Verify the json plan for the given insert statement.
    */
   def verifyJsonPlan(insert: String): Unit = {
-    ExecNodeBase.resetIdCounter()
+    ExecNodeContext.resetIdCounter()
     val jsonPlan = getTableEnv.asInstanceOf[TableEnvironmentInternal].getJsonPlan(insert)
     val jsonPlanWithoutFlinkVersion = TableTestUtil.replaceFlinkVersion(jsonPlan)
     // add the postfix to the path to avoid conflicts
@@ -1755,7 +1755,7 @@ object TableTestUtil {
    * ExecNode {id} is ignored, because id keeps incrementing in test class.
    */
   def replaceExecNodeId(s: String): String = {
-    s.replaceAll("\"context\"\\s*:\\s*\"\\s*\\d+_(.*)\"", "\"id\": 0_\1")
+    s.replaceAll("\"id\"\\s*:\\s*\\d+", "\"id\": 0")
       .replaceAll("\"source\"\\s*:\\s*\\d+", "\"source\": 0")
       .replaceAll("\"target\"\\s*:\\s*\\d+", "\"target\": 0")
   }

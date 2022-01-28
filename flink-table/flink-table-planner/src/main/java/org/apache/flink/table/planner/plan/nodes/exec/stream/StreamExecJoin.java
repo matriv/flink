@@ -89,7 +89,8 @@ public class StreamExecJoin extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecJoin.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecJoin.class),
                 joinSpec,
                 leftUniqueKeys,
                 rightUniqueKeys,
@@ -100,14 +101,15 @@ public class StreamExecJoin extends ExecNodeBase<RowData>
 
     @JsonCreator
     public StreamExecJoin(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_JOIN_SPEC) JoinSpec joinSpec,
             @JsonProperty(FIELD_NAME_LEFT_UNIQUE_KEYS) List<int[]> leftUniqueKeys,
             @JsonProperty(FIELD_NAME_RIGHT_UNIQUE_KEYS) List<int[]> rightUniqueKeys,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 2);
         this.joinSpec = checkNotNull(joinSpec);
         this.leftUniqueKeys = leftUniqueKeys;

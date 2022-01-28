@@ -60,7 +60,8 @@ public class BatchExecLegacyTableSourceScan extends CommonExecLegacyTableSourceS
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecLegacyTableSourceScan.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecLegacyTableSourceScan.class),
                 tableSource,
                 qualifiedName,
                 outputType,

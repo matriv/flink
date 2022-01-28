@@ -68,6 +68,7 @@ public abstract class CommonExecLegacySink<T> extends ExecNodeBase<T>
     protected final boolean isStreaming;
 
     public CommonExecLegacySink(
+            int id,
             ExecNodeContext context,
             TableSink<T> tableSink,
             @Nullable String[] upsertKeys,
@@ -76,7 +77,7 @@ public abstract class CommonExecLegacySink<T> extends ExecNodeBase<T>
             InputProperty inputProperty,
             LogicalType outputType,
             String description) {
-        super(context, Collections.singletonList(inputProperty), outputType, description);
+        super(id, context, Collections.singletonList(inputProperty), outputType, description);
         this.tableSink = tableSink;
         this.upsertKeys = upsertKeys;
         this.needRetraction = needRetraction;

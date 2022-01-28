@@ -73,7 +73,8 @@ public class BatchExecHashJoin extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecHashJoin.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecHashJoin.class),
                 Arrays.asList(leftInputProperty, rightInputProperty),
                 outputType,
                 description);

@@ -62,6 +62,7 @@ public abstract class CommonExecCalc extends ExecNodeBase<RowData>
     private final boolean retainHeader;
 
     protected CommonExecCalc(
+            int id,
             ExecNodeContext context,
             List<RexNode> projection,
             @Nullable RexNode condition,
@@ -70,7 +71,7 @@ public abstract class CommonExecCalc extends ExecNodeBase<RowData>
             List<InputProperty> inputProperties,
             RowType outputType,
             String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 1);
         this.projection = checkNotNull(projection);
         this.condition = condition;

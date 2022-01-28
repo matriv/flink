@@ -67,7 +67,8 @@ public class BatchExecSortAggregate extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecSortAggregate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecSortAggregate.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);

@@ -95,7 +95,8 @@ public class StreamExecLocalWindowAggregate extends StreamExecWindowAggregateBas
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecLocalWindowAggregate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecLocalWindowAggregate.class),
                 grouping,
                 aggCalls,
                 windowing,
@@ -106,14 +107,15 @@ public class StreamExecLocalWindowAggregate extends StreamExecWindowAggregateBas
 
     @JsonCreator
     public StreamExecLocalWindowAggregate(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_GROUPING) int[] grouping,
             @JsonProperty(FIELD_NAME_AGG_CALLS) AggregateCall[] aggCalls,
             @JsonProperty(FIELD_NAME_WINDOWING) WindowingStrategy windowing,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         this.grouping = checkNotNull(grouping);
         this.aggCalls = checkNotNull(aggCalls);
         this.windowing = checkNotNull(windowing);

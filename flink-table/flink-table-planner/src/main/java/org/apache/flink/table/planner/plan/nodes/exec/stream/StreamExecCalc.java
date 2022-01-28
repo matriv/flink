@@ -53,7 +53,8 @@ public class StreamExecCalc extends CommonExecCalc implements StreamExecNode<Row
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecCalc.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecCalc.class),
                 projection,
                 condition,
                 Collections.singletonList(inputProperty),
@@ -63,13 +64,15 @@ public class StreamExecCalc extends CommonExecCalc implements StreamExecNode<Row
 
     @JsonCreator
     public StreamExecCalc(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_PROJECTION) List<RexNode> projection,
             @JsonProperty(FIELD_NAME_CONDITION) @Nullable RexNode condition,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
         super(
+                id,
                 context,
                 projection,
                 condition,

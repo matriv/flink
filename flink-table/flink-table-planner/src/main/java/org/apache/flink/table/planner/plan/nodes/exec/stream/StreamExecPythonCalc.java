@@ -49,7 +49,8 @@ public class StreamExecPythonCalc extends CommonExecPythonCalc implements Stream
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecPythonCalc.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecPythonCalc.class),
                 projection,
                 Collections.singletonList(inputProperty),
                 outputType,
@@ -58,11 +59,12 @@ public class StreamExecPythonCalc extends CommonExecPythonCalc implements Stream
 
     @JsonCreator
     public StreamExecPythonCalc(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_PROJECTION) List<RexNode> projection,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, projection, inputProperties, outputType, description);
+        super(id, context, projection, inputProperties, outputType, description);
     }
 }

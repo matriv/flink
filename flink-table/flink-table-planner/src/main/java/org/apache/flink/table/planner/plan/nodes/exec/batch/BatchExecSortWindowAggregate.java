@@ -82,7 +82,8 @@ public class BatchExecSortWindowAggregate extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecSortWindowAggregate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecSortWindowAggregate.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);

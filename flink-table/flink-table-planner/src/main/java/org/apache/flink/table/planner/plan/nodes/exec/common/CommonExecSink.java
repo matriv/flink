@@ -98,6 +98,7 @@ public abstract class CommonExecSink extends ExecNodeBase<Object>
     private final boolean isBounded;
 
     protected CommonExecSink(
+            int id,
             ExecNodeContext context,
             DynamicTableSinkSpec tableSinkSpec,
             ChangelogMode inputChangelogMode,
@@ -105,7 +106,7 @@ public abstract class CommonExecSink extends ExecNodeBase<Object>
             List<InputProperty> inputProperties,
             LogicalType outputType,
             String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         this.tableSinkSpec = tableSinkSpec;
         this.inputChangelogMode = inputChangelogMode;
         this.isBounded = isBounded;

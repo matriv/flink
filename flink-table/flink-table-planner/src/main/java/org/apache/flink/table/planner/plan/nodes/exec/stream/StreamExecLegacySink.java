@@ -51,7 +51,8 @@ public class StreamExecLegacySink<T> extends CommonExecLegacySink<T> implements 
             LogicalType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(StreamExecLegacySink.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecLegacySink.class),
                 tableSink,
                 upsertKeys,
                 needRetraction,

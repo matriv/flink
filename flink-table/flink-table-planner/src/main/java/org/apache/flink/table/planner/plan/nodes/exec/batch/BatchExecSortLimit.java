@@ -60,7 +60,8 @@ public class BatchExecSortLimit extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecSortLimit.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecSortLimit.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);

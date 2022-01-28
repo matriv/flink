@@ -65,7 +65,8 @@ public class StreamExecSort extends ExecNodeBase<RowData> implements StreamExecN
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(StreamExecSort.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecSort.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);

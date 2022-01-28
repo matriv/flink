@@ -130,7 +130,8 @@ public class StreamExecDeduplicate extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecDeduplicate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecDeduplicate.class),
                 uniqueKeys,
                 isRowtime,
                 keepLastRow,
@@ -142,7 +143,8 @@ public class StreamExecDeduplicate extends ExecNodeBase<RowData>
 
     @JsonCreator
     public StreamExecDeduplicate(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_UNIQUE_KEYS) int[] uniqueKeys,
             @JsonProperty(FIELD_NAME_IS_ROWTIME) boolean isRowtime,
             @JsonProperty(FIELD_NAME_KEEP_LAST_ROW) boolean keepLastRow,
@@ -150,7 +152,7 @@ public class StreamExecDeduplicate extends ExecNodeBase<RowData>
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 1);
         this.uniqueKeys = checkNotNull(uniqueKeys);
         this.isRowtime = isRowtime;

@@ -41,11 +41,12 @@ public abstract class StreamExecAggregateBase extends ExecNodeBase<RowData>
     public static final String FIELD_NAME_NEED_RETRACTION = "needRetraction";
 
     protected StreamExecAggregateBase(
+            int id,
             ExecNodeContext context,
             List<InputProperty> inputProperties,
             LogicalType outputType,
             String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 1);
     }
 }

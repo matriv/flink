@@ -106,7 +106,8 @@ public class StreamExecGroupAggregate extends StreamExecAggregateBase {
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecGroupAggregate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecGroupAggregate.class),
                 grouping,
                 aggCalls,
                 aggCallNeedRetractions,
@@ -119,7 +120,8 @@ public class StreamExecGroupAggregate extends StreamExecAggregateBase {
 
     @JsonCreator
     public StreamExecGroupAggregate(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_GROUPING) int[] grouping,
             @JsonProperty(FIELD_NAME_AGG_CALLS) AggregateCall[] aggCalls,
             @JsonProperty(FIELD_NAME_AGG_CALL_NEED_RETRACTIONS) boolean[] aggCallNeedRetractions,
@@ -128,7 +130,7 @@ public class StreamExecGroupAggregate extends StreamExecAggregateBase {
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         this.grouping = checkNotNull(grouping);
         this.aggCalls = checkNotNull(aggCalls);
         this.aggCallNeedRetractions = checkNotNull(aggCallNeedRetractions);

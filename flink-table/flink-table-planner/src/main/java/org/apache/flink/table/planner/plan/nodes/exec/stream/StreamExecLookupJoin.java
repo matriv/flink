@@ -58,7 +58,8 @@ public class StreamExecLookupJoin extends CommonExecLookupJoin implements Stream
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecLookupJoin.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecLookupJoin.class),
                 joinType,
                 joinCondition,
                 temporalTableSourceSpec,
@@ -72,7 +73,8 @@ public class StreamExecLookupJoin extends CommonExecLookupJoin implements Stream
 
     @JsonCreator
     public StreamExecLookupJoin(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_JOIN_TYPE) FlinkJoinType joinType,
             @JsonProperty(FIELD_NAME_JOIN_CONDITION) @Nullable RexNode joinCondition,
             @JsonProperty(FIELD_NAME_TEMPORAL_TABLE)
@@ -86,6 +88,7 @@ public class StreamExecLookupJoin extends CommonExecLookupJoin implements Stream
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
         super(
+                id,
                 context,
                 joinType,
                 joinCondition,

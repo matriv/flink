@@ -43,7 +43,8 @@ public class BatchExecCalc extends CommonExecCalc implements BatchExecNode<RowDa
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecCalc.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecCalc.class),
                 projection,
                 condition,
                 TableStreamOperator.class,

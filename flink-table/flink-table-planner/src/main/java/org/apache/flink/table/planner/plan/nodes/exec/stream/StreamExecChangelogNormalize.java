@@ -84,7 +84,8 @@ public class StreamExecChangelogNormalize extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecChangelogNormalize.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecChangelogNormalize.class),
                 uniqueKeys,
                 generateUpdateBefore,
                 Collections.singletonList(inputProperty),
@@ -94,13 +95,14 @@ public class StreamExecChangelogNormalize extends ExecNodeBase<RowData>
 
     @JsonCreator
     public StreamExecChangelogNormalize(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) Integer id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_UNIQUE_KEYS) int[] uniqueKeys,
             @JsonProperty(FIELD_NAME_GENERATE_UPDATE_BEFORE) boolean generateUpdateBefore,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         this.uniqueKeys = uniqueKeys;
         this.generateUpdateBefore = generateUpdateBefore;
     }

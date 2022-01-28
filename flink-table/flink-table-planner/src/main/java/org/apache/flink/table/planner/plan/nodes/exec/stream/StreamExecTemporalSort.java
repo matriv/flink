@@ -73,7 +73,8 @@ public class StreamExecTemporalSort extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecTemporalSort.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecTemporalSort.class),
                 sortSpec,
                 Collections.singletonList(inputProperty),
                 outputType,
@@ -82,12 +83,13 @@ public class StreamExecTemporalSort extends ExecNodeBase<RowData>
 
     @JsonCreator
     public StreamExecTemporalSort(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_SORT_SPEC) SortSpec sortSpec,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 1);
         this.sortSpec = checkNotNull(sortSpec);
     }

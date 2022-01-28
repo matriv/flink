@@ -70,7 +70,8 @@ public class BatchExecPythonGroupAggregate extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecPythonGroupAggregate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecPythonGroupAggregate.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);

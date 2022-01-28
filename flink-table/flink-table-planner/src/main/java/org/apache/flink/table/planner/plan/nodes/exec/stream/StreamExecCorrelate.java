@@ -58,7 +58,8 @@ public class StreamExecCorrelate extends CommonExecCorrelate implements StreamEx
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecCorrelate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecCorrelate.class),
                 joinType,
                 invocation,
                 condition,
@@ -69,7 +70,8 @@ public class StreamExecCorrelate extends CommonExecCorrelate implements StreamEx
 
     @JsonCreator
     public StreamExecCorrelate(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_JOIN_TYPE) FlinkJoinType joinType,
             @JsonProperty(FIELD_NAME_FUNCTION_CALL) RexNode invocation,
             @JsonProperty(FIELD_NAME_CONDITION) @Nullable RexNode condition,
@@ -77,6 +79,7 @@ public class StreamExecCorrelate extends CommonExecCorrelate implements StreamEx
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
         super(
+                id,
                 context,
                 joinType,
                 (RexCall) invocation,

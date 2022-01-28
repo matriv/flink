@@ -36,7 +36,8 @@ public class BatchExecUnion extends CommonExecUnion implements BatchExecNode<Row
     public BatchExecUnion(
             List<InputProperty> inputProperties, RowType outputType, String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecUnion.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecUnion.class),
                 inputProperties,
                 outputType,
                 description);

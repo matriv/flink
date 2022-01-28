@@ -62,7 +62,8 @@ public class StreamExecExchange extends CommonExecExchange implements StreamExec
 
     public StreamExecExchange(InputProperty inputProperty, RowType outputType, String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecExchange.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecExchange.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);
@@ -70,11 +71,12 @@ public class StreamExecExchange extends CommonExecExchange implements StreamExec
 
     @JsonCreator
     public StreamExecExchange(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         checkArgument(inputProperties.size() == 1);
     }
 

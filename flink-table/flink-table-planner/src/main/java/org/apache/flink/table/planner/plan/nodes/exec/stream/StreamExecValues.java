@@ -42,15 +42,21 @@ import java.util.List;
 public class StreamExecValues extends CommonExecValues implements StreamExecNode<RowData> {
 
     public StreamExecValues(List<List<RexLiteral>> tuples, RowType outputType, String description) {
-        this(ExecNodeContext.newMetadata(StreamExecValues.class), tuples, outputType, description);
+        this(
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecValues.class),
+                tuples,
+                outputType,
+                description);
     }
 
     @JsonCreator
     public StreamExecValues(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_TUPLES) List<List<RexLiteral>> tuples,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, tuples, outputType, description);
+        super(id, context, tuples, outputType, description);
     }
 }

@@ -48,7 +48,8 @@ public class BatchExecLookupJoin extends CommonExecLookupJoin implements BatchEx
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecLookupJoin.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecLookupJoin.class),
                 joinType,
                 joinCondition,
                 temporalTableSourceSpec,

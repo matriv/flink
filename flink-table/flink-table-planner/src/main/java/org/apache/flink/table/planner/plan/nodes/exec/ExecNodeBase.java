@@ -18,7 +18,6 @@
 
 package org.apache.flink.table.planner.plan.nodes.exec;
 
-import org.apache.flink.annotation.VisibleForTesting;
 import org.apache.flink.api.dag.Transformation;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.table.api.TableConfig;
@@ -56,41 +55,26 @@ public abstract class ExecNodeBase<T> implements ExecNode<T> {
 
     private transient Transformation<T> transformation;
 
-    /** Holds the context information (id, name, version) as de-serialised from a JSON plan. */
-    @JsonProperty(value = FIELD_NAME_CONTEXT, access = JsonProperty.Access.WRITE_ONLY)
+    /** Holds the context information (id, name, version) as deserialized from a JSON plan. */
+    @JsonProperty(value = FIELD_NAME_TYPE, access = JsonProperty.Access.WRITE_ONLY)
     private final ExecNodeContext context;
 
     /**
      * Retrieves the default context from the {@link ExecNodeMetadata} annotation to be serialised
      * into the JSON plan.
      */
-    @JsonProperty(value = FIELD_NAME_CONTEXT, access = JsonProperty.Access.READ_ONLY, index = 0)
+    @JsonProperty(value = FIELD_NAME_TYPE, access = JsonProperty.Access.READ_ONLY, index = 1)
     public ExecNodeContext getContextFromAnnotation() {
-        return ExecNodeContext.newMetadata(this.getClass(), this.getId());
-    }
-
-    /** This is used to assign a unique ID to every ExecNode. */
-    private static Integer idCounter = 0;
-
-    /** Generate an unique ID for ExecNode. */
-    public static int getNewNodeId() {
-        idCounter++;
-        return idCounter;
-    }
-
-    /** Reset the id counter to 0. */
-    @VisibleForTesting
-    public static void resetIdCounter() {
-        idCounter = 0;
+        return ExecNodeContext.newContext(this.getClass()).withId(getId());
     }
 
     protected ExecNodeBase(
+            int id,
             ExecNodeContext context,
             List<InputProperty> inputProperties,
             LogicalType outputType,
             String description) {
-        checkNotNull(context);
-        this.context = context;
+        this.context = checkNotNull(context).withId(id);
         this.inputProperties = checkNotNull(inputProperties);
         this.outputType = checkNotNull(outputType);
         this.description = checkNotNull(description);

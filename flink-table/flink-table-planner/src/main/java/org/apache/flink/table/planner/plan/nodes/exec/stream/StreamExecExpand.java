@@ -49,7 +49,8 @@ public class StreamExecExpand extends CommonExecExpand implements StreamExecNode
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecExpand.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecExpand.class),
                 projects,
                 Collections.singletonList(inputProperty),
                 outputType,
@@ -58,12 +59,14 @@ public class StreamExecExpand extends CommonExecExpand implements StreamExecNode
 
     @JsonCreator
     public StreamExecExpand(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_PROJECTS) List<List<RexNode>> projects,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
         super(
+                id,
                 context,
                 projects,
                 true, // retainHeader

@@ -36,10 +36,11 @@ public abstract class CommonExecExchange extends ExecNodeBase<RowData>
         implements SingleTransformationTranslator<RowData> {
 
     public CommonExecExchange(
+            int id,
             ExecNodeContext context,
             List<InputProperty> inputProperties,
             RowType outputType,
             String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
     }
 }

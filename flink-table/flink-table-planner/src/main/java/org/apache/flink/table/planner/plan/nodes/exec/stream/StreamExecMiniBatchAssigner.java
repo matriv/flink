@@ -74,7 +74,8 @@ public class StreamExecMiniBatchAssigner extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecMiniBatchAssigner.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecMiniBatchAssigner.class),
                 miniBatchInterval,
                 Collections.singletonList(inputProperty),
                 outputType,
@@ -83,12 +84,13 @@ public class StreamExecMiniBatchAssigner extends ExecNodeBase<RowData>
 
     @JsonCreator
     public StreamExecMiniBatchAssigner(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_MINI_BATCH_INTERVAL) MiniBatchInterval miniBatchInterval,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         this.miniBatchInterval = checkNotNull(miniBatchInterval);
     }
 

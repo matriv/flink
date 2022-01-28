@@ -116,7 +116,8 @@ public class StreamExecIncrementalGroupAggregate extends StreamExecAggregateBase
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecIncrementalGroupAggregate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecIncrementalGroupAggregate.class),
                 partialAggGrouping,
                 finalAggGrouping,
                 partialOriginalAggCalls,
@@ -130,7 +131,8 @@ public class StreamExecIncrementalGroupAggregate extends StreamExecAggregateBase
 
     @JsonCreator
     public StreamExecIncrementalGroupAggregate(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_PARTIAL_AGG_GROUPING) int[] partialAggGrouping,
             @JsonProperty(FIELD_NAME_FINAL_AGG_GROUPING) int[] finalAggGrouping,
             @JsonProperty(FIELD_NAME_PARTIAL_ORIGINAL_AGG_CALLS)
@@ -142,7 +144,7 @@ public class StreamExecIncrementalGroupAggregate extends StreamExecAggregateBase
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
-        super(context, inputProperties, outputType, description);
+        super(id, context, inputProperties, outputType, description);
         this.partialAggGrouping = checkNotNull(partialAggGrouping);
         this.finalAggGrouping = checkNotNull(finalAggGrouping);
         this.partialOriginalAggCalls = checkNotNull(partialOriginalAggCalls);

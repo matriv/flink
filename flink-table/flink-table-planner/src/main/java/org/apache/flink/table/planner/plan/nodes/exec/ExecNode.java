@@ -36,7 +36,7 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.annotatio
 
 import java.util.List;
 
-import static org.apache.flink.table.planner.plan.nodes.exec.ExecNode.FIELD_NAME_CONTEXT;
+import static org.apache.flink.table.planner.plan.nodes.exec.ExecNode.FIELD_NAME_TYPE;
 
 /**
  * The representation of execution information for a {@link FlinkPhysicalRel}.
@@ -46,22 +46,20 @@ import static org.apache.flink.table.planner.plan.nodes.exec.ExecNode.FIELD_NAME
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = FIELD_NAME_CONTEXT,
+        property = FIELD_NAME_TYPE,
         visible = true)
 @JsonTypeIdResolver(ExecNodeTypeIdResolver.class)
 @Internal
 public interface ExecNode<T> extends ExecNodeTranslator<T> {
 
-    String FIELD_NAME_CONTEXT = "context";
+    String FIELD_NAME_ID = "id";
+    String FIELD_NAME_TYPE = "type";
     String FIELD_NAME_DESCRIPTION = "description";
     String FIELD_NAME_INPUT_PROPERTIES = "inputProperties";
     String FIELD_NAME_OUTPUT_TYPE = "outputType";
 
-    /**
-     * The unique identifier for each ExecNode in the JSON plan. It's not stored in a property of
-     * its own, but is included in {@link ExecNodeContext}.
-     */
-    @JsonIgnore
+    /** The unique ID of the node. */
+    @JsonProperty(value = FIELD_NAME_ID, index = 0)
     int getId();
 
     /** Returns a string which describes this node. */

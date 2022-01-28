@@ -62,7 +62,8 @@ public class BatchExecExchange extends CommonExecExchange implements BatchExecNo
 
     public BatchExecExchange(InputProperty inputProperty, RowType outputType, String description) {
         super(
-                ExecNodeContext.newMetadata(BatchExecExchange.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(BatchExecExchange.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);

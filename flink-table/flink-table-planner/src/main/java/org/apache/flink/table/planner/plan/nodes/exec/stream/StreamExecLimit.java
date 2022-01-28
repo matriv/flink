@@ -59,7 +59,8 @@ public class StreamExecLimit extends StreamExecRank {
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecLimit.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecLimit.class),
                 new ConstantRankRange(limitStart + 1, limitEnd),
                 getRankStrategy(needRetraction),
                 generateUpdateBefore,
@@ -70,7 +71,8 @@ public class StreamExecLimit extends StreamExecRank {
 
     @JsonCreator
     public StreamExecLimit(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_RANK_RANG) ConstantRankRange rankRange,
             @JsonProperty(FIELD_NAME_RANK_STRATEGY) RankProcessStrategy rankStrategy,
             @JsonProperty(FIELD_NAME_GENERATE_UPDATE_BEFORE) boolean generateUpdateBefore,
@@ -78,6 +80,7 @@ public class StreamExecLimit extends StreamExecRank {
             @JsonProperty(FIELD_NAME_OUTPUT_TYPE) RowType outputType,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
         super(
+                id,
                 context,
                 RankType.ROW_NUMBER,
                 PartitionSpec.ALL_IN_ONE,

@@ -78,7 +78,8 @@ public class StreamExecGroupTableAggregate extends ExecNodeBase<RowData>
             RowType outputType,
             String description) {
         super(
-                ExecNodeContext.newMetadata(StreamExecGroupTableAggregate.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecGroupTableAggregate.class),
                 Collections.singletonList(inputProperty),
                 outputType,
                 description);

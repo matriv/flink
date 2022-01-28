@@ -59,7 +59,8 @@ public class StreamExecSortLimit extends StreamExecRank {
             RowType outputType,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecSortLimit.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecSortLimit.class),
                 sortSpec,
                 new ConstantRankRange(limitStart + 1, limitEnd),
                 rankStrategy,
@@ -71,7 +72,8 @@ public class StreamExecSortLimit extends StreamExecRank {
 
     @JsonCreator
     public StreamExecSortLimit(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_SORT_SPEC) SortSpec sortSpec,
             @JsonProperty(FIELD_NAME_RANK_RANG) ConstantRankRange rankRange,
             @JsonProperty(FIELD_NAME_RANK_STRATEGY) RankProcessStrategy rankStrategy,
@@ -81,6 +83,7 @@ public class StreamExecSortLimit extends StreamExecRank {
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
 
         super(
+                id,
                 context,
                 RankType.ROW_NUMBER,
                 PartitionSpec.ALL_IN_ONE,

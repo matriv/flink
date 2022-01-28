@@ -81,7 +81,8 @@ public class StreamExecSink extends CommonExecSink implements StreamExecNode<Obj
             boolean upsertMaterialize,
             String description) {
         this(
-                ExecNodeContext.newMetadata(StreamExecSink.class),
+                ExecNodeContext.getNewNodeId(),
+                ExecNodeContext.newContext(StreamExecSink.class),
                 tableSinkSpec,
                 inputChangelogMode,
                 Collections.singletonList(inputProperty),
@@ -92,7 +93,8 @@ public class StreamExecSink extends CommonExecSink implements StreamExecNode<Obj
 
     @JsonCreator
     public StreamExecSink(
-            @JsonProperty(FIELD_NAME_CONTEXT) ExecNodeContext context,
+            @JsonProperty(FIELD_NAME_ID) int id,
+            @JsonProperty(FIELD_NAME_TYPE) ExecNodeContext context,
             @JsonProperty(FIELD_NAME_DYNAMIC_TABLE_SINK) DynamicTableSinkSpec tableSinkSpec,
             @JsonProperty(FIELD_NAME_INPUT_CHANGELOG_MODE) ChangelogMode inputChangelogMode,
             @JsonProperty(FIELD_NAME_INPUT_PROPERTIES) List<InputProperty> inputProperties,
@@ -100,6 +102,7 @@ public class StreamExecSink extends CommonExecSink implements StreamExecNode<Obj
             @JsonProperty(FIELD_NAME_REQUIRE_UPSERT_MATERIALIZE) boolean upsertMaterialize,
             @JsonProperty(FIELD_NAME_DESCRIPTION) String description) {
         super(
+                id,
                 context,
                 tableSinkSpec,
                 inputChangelogMode,
