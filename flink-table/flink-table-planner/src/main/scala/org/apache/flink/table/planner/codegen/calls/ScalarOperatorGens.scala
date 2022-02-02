@@ -37,6 +37,7 @@ import org.apache.flink.table.runtime.typeutils.TypeCheckUtils._
 import org.apache.flink.table.types.logical.LogicalTypeFamily.DATETIME
 import org.apache.flink.table.types.logical.LogicalTypeRoot._
 import org.apache.flink.table.types.logical._
+import org.apache.flink.table.types.logical.utils.LogicalTypeCasts
 import org.apache.flink.table.types.logical.utils.LogicalTypeChecks.getFieldTypes
 import org.apache.flink.table.types.logical.utils.LogicalTypeMerging.findCommonType
 import org.apache.flink.table.utils.DateTimeUtils.MILLIS_PER_DAY
@@ -44,6 +45,7 @@ import org.apache.flink.util.Preconditions.checkArgument
 
 import java.time.ZoneId
 import java.util.Arrays.asList
+
 import scala.collection.JavaConversions._
 
 /**
@@ -934,6 +936,11 @@ object ScalarOperatorGens {
       operand: GeneratedExpression,
       targetType: LogicalType)
     : GeneratedExpression = {
+
+    val failureMsg = LogicalTypeCasts.getValidationMessage(operand.resultType, targetType)
+    if (failureMsg != null) {
+      throw new ValidationException(failureMsg);
+    }
 
     ctx.addReusableHeaderComment(
       s"Using option '${ExecutionConfigOptions.TABLE_EXEC_LEGACY_CAST_BEHAVIOUR.key()}':" +

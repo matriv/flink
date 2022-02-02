@@ -578,4 +578,27 @@ public final class LogicalTypeCasts {
     private LogicalTypeCasts() {
         // no instantiation
     }
+
+    public static String getValidationMessage(LogicalType inputType, LogicalType targetType) {
+        if (inputType.is(NUMERIC)) {
+            if (targetType.is(LogicalTypeRoot.TIMESTAMP_WITHOUT_TIME_ZONE)) {
+                return "The cast conversion from NUMERIC type to TIMESTAMP type"
+                        + " is not allowed, it's recommended to use TO_TIMESTAMP(FROM_UNIXTIME(numeric_col))"
+                        + " instead, note the numeric is in seconds.";
+            } else if (targetType.is(LogicalTypeRoot.TIMESTAMP_WITH_LOCAL_TIME_ZONE)) {
+                return "The cast conversion from NUMERIC type"
+                        + " to TIMESTAMP_LTZ type is not allowed, it's recommended to use"
+                        + " TO_TIMESTAMP_LTZ(numeric_col, precision) instead.";
+            }
+        } else if (targetType.is(NUMERIC)) {
+            if (inputType.is(LogicalTypeRoot.TIMESTAMP_WITHOUT_TIME_ZONE)) {
+                return "The cast conversion from TIMESTAMP type to NUMERIC type"
+                        + " is not allowed, it's recommended to use"
+                        + " UNIX_TIMESTAMP(CAST(timestamp_col AS STRING)) instead.";
+            } else if (inputType.is(LogicalTypeRoot.TIMESTAMP_WITH_LOCAL_TIME_ZONE)) {
+                return "The cast conversion from TIMESTAMP_LTZ type to NUMERIC type is not allowed.";
+            }
+        }
+        return null;
+    }
 }
