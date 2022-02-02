@@ -160,7 +160,7 @@ public class CastRuleProvider {
      * Used by {@link CodeGeneratorCastRule}s which checks for nullability, rather than deferring
      * the check to the rules.
      */
-    static CastCodeBlock generateAlwaysNonNullCodeBlock(
+    static @Nullable CastCodeBlock generateAlwaysNonNullCodeBlock(
             CodeGeneratorCastRule.Context context,
             String inputTerm,
             LogicalType inputLogicalType,

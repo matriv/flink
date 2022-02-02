@@ -59,8 +59,9 @@ class TimestampToTimeCastRule
             return cast(
                     "int",
                     operator(
-                            "%s",
-                            methodCall(inputTerm, "getMillisecond"), DateTimeUtils.MILLIS_PER_DAY));
+                            methodCall(inputTerm, "getMillisecond"),
+                            "%",
+                            DateTimeUtils.MILLIS_PER_DAY));
         } else if (inputLogicalType.is(LogicalTypeRoot.TIMESTAMP_WITH_LOCAL_TIME_ZONE)) {
             return staticCall(
                     BuiltInMethods.TIMESTAMP_WITH_LOCAL_TIME_ZONE_TO_TIME(),

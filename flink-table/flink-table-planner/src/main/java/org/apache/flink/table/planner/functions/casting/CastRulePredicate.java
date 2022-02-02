@@ -105,7 +105,7 @@ public class CastRulePredicate {
     }
 
     public Optional<BiPredicate<LogicalType, LogicalType>> getCustomPredicate() {
-        return Optional.of(customPredicate);
+        return Optional.ofNullable(customPredicate);
     }
 
     public static Builder builder() {

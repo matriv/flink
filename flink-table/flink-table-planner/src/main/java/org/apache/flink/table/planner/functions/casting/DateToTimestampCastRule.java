@@ -56,7 +56,7 @@ class DateToTimestampCastRule
         if (targetLogicalType.is(LogicalTypeRoot.TIMESTAMP_WITHOUT_TIME_ZONE)) {
             return staticCall(
                     BuiltInMethods.TIMESTAMP_FROM_EPOCH_MILLIS(),
-                    operator("*", cast("long", inputTerm), DateTimeUtils.MILLIS_PER_DAY));
+                    operator(cast("long", inputTerm), "*", DateTimeUtils.MILLIS_PER_DAY));
         } else if (targetLogicalType.is(LogicalTypeRoot.TIMESTAMP_WITH_LOCAL_TIME_ZONE)) {
             return staticCall(
                     BuiltInMethods.DATE_TO_TIMESTAMP_WITH_LOCAL_TIME_ZONE(),
