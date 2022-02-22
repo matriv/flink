@@ -18,6 +18,7 @@
 
 package org.apache.flink.table.api;
 
+import org.apache.flink.annotation.Internal;
 import org.apache.flink.annotation.PublicEvolving;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.ReadableConfig;
@@ -56,8 +57,11 @@ public class EnvironmentSettings {
      */
     private final Configuration configuration;
 
-    private EnvironmentSettings(Configuration configuration) {
+    private final ClassLoader classLoader;
+
+    private EnvironmentSettings(Configuration configuration, ClassLoader classLoader) {
         this.configuration = configuration;
+        this.classLoader = classLoader;
     }
 
     /**
@@ -97,7 +101,8 @@ public class EnvironmentSettings {
      */
     @Deprecated
     public static EnvironmentSettings fromConfiguration(ReadableConfig configuration) {
-        return new EnvironmentSettings((Configuration) configuration);
+        return new EnvironmentSettings(
+                (Configuration) configuration, Thread.currentThread().getContextClassLoader());
     }
 
     /**
@@ -136,11 +141,21 @@ public class EnvironmentSettings {
         return configuration.get(RUNTIME_MODE) == STREAMING;
     }
 
+    /**
+     * Returns the user {@link ClassLoader} to use for code generation, UDF loading and other
+     * operations requiring reflections on user code.
+     */
+    @Internal
+    public ClassLoader getUserClassLoader() {
+        return classLoader;
+    }
+
     /** A builder for {@link EnvironmentSettings}. */
     @PublicEvolving
     public static class Builder {
 
         private final Configuration configuration = new Configuration();
+        private ClassLoader classLoader;
 
         public Builder() {}
 
@@ -200,9 +215,27 @@ public class EnvironmentSettings {
             return this;
         }
 
+        /**
+         * Specifies the classloader to use in the planner for operations related to code
+         * generation, UDF loading, operations requiring reflections on user classes, discovery of
+         * factories.
+         *
+         * <p>By default, this is configured using {@code
+         * Thread.currentThread().getContextClassLoader()}.
+         *
+         * <p>Modify the {@link ClassLoader} only if you know what you're doing.
+         */
+        public Builder withClassLoader(ClassLoader classLoader) {
+            this.classLoader = classLoader;
+            return this;
+        }
+
         /** Returns an immutable instance of {@link EnvironmentSettings}. */
         public EnvironmentSettings build() {
-            return new EnvironmentSettings(configuration);
+            if (classLoader == null) {
+                classLoader = Thread.currentThread().getContextClassLoader();
+            }
+            return new EnvironmentSettings(configuration, classLoader);
         }
     }
 }
