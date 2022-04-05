@@ -41,6 +41,7 @@ import org.apache.flink.shaded.guava30.com.google.common.base.Throwables;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -89,7 +90,7 @@ public abstract class AbstractOuterJoinTaskTest
                     (Class<Tuple2<Integer, Integer>>) (Class<?>) Tuple2.class,
                     new TypeSerializer<?>[] {IntSerializer.INSTANCE, IntSerializer.INSTANCE});
 
-    public AbstractOuterJoinTaskTest(ExecutionConfig config) {
+    public AbstractOuterJoinTaskTest(ExecutionConfig config) throws IOException {
         super(config, HASH_MEM, NUM_SORTER, SORT_MEM);
         bnljn_frac = (double) BNLJN_MEM / this.getMemoryManager().getMemorySize();
     }
@@ -499,7 +500,6 @@ public abstract class AbstractOuterJoinTaskTest
 
     // =================================================================================================
 
-    @SuppressWarnings("serial")
     public static final class MockJoinStub
             implements FlatJoinFunction<
                     Tuple2<Integer, Integer>, Tuple2<Integer, Integer>, Tuple2<Integer, Integer>> {
@@ -514,7 +514,6 @@ public abstract class AbstractOuterJoinTaskTest
         }
     }
 
-    @SuppressWarnings("serial")
     public static final class MockFailingJoinStub
             implements FlatJoinFunction<
                     Tuple2<Integer, Integer>, Tuple2<Integer, Integer>, Tuple2<Integer, Integer>> {

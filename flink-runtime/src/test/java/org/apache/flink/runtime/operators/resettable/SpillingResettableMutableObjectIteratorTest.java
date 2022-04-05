@@ -34,7 +34,9 @@ import org.apache.flink.util.MutableObjectIterator;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 
@@ -43,6 +45,8 @@ public class SpillingResettableMutableObjectIteratorTest {
     private static final int NUM_TESTRECORDS = 50000;
 
     private static final int MEMORY_CAPACITY = 10 * 1024 * 1024;
+
+    @ClassRule public static TemporaryFolder tempFolder = new TemporaryFolder();
 
     private IOManager ioman;
 
@@ -88,7 +92,7 @@ public class SpillingResettableMutableObjectIteratorTest {
     @Test
     public void testResettableIterator() {
         try {
-            final AbstractInvokable memOwner = new DummyInvokable();
+            final AbstractInvokable memOwner = new DummyInvokable(tempFolder.newFolder());
 
             // create the resettable Iterator
             SpillingResettableMutableObjectIterator<Record> iterator =
@@ -145,7 +149,7 @@ public class SpillingResettableMutableObjectIteratorTest {
     @Test
     public void testResettableIteratorInMemory() {
         try {
-            final AbstractInvokable memOwner = new DummyInvokable();
+            final AbstractInvokable memOwner = new DummyInvokable(tempFolder.newFolder());
 
             // create the resettable Iterator
             SpillingResettableMutableObjectIterator<Record> iterator =

@@ -33,6 +33,7 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.runtime.watermarkstatus.WatermarkStatus;
 import org.apache.flink.util.Preconditions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -46,6 +47,7 @@ import static org.apache.flink.util.Preconditions.checkState;
  * and watermarks into the operator. {@link java.util.Deque}s containing the emitted elements and
  * watermarks can be retrieved. You are free to modify these.
  */
+@SuppressWarnings("rawtypes")
 public class OneInputStreamOperatorTestHarness<IN, OUT>
         extends AbstractStreamOperatorTestHarness<OUT> {
 
@@ -55,9 +57,11 @@ public class OneInputStreamOperatorTestHarness<IN, OUT>
     private long currentWatermark;
 
     public OneInputStreamOperatorTestHarness(
-            OneInputStreamOperator<IN, OUT> operator, TypeSerializer<IN> typeSerializerIn)
+            OneInputStreamOperator<IN, OUT> operator,
+            TypeSerializer<IN> typeSerializerIn,
+            File tmpWorkingDir)
             throws Exception {
-        this(operator, 1, 1, 0);
+        this(operator, 1, 1, 0, tmpWorkingDir);
 
         config.setupNetworkInputs(Preconditions.checkNotNull(typeSerializerIn));
     }
@@ -68,53 +72,53 @@ public class OneInputStreamOperatorTestHarness<IN, OUT>
             int parallelism,
             int subtaskIndex,
             TypeSerializer<IN> typeSerializerIn,
-            OperatorID operatorID)
+            OperatorID operatorID,
+            File tmpWorkingDir)
             throws Exception {
         this(
                 SimpleOperatorFactory.of(operator),
                 maxParallelism,
                 parallelism,
                 subtaskIndex,
-                operatorID);
+                operatorID,
+                tmpWorkingDir);
         config.setupNetworkInputs(Preconditions.checkNotNull(typeSerializerIn));
     }
 
     public OneInputStreamOperatorTestHarness(
             OneInputStreamOperator<IN, OUT> operator,
             TypeSerializer<IN> typeSerializerIn,
-            MockEnvironment environment)
+            MockEnvironment environment,
+            File tmpWorkingDir)
             throws Exception {
-        this(operator, environment);
+        this(operator, environment, tmpWorkingDir);
 
         config.setupNetworkInputs(Preconditions.checkNotNull(typeSerializerIn));
     }
 
-    public OneInputStreamOperatorTestHarness(OneInputStreamOperator<IN, OUT> operator)
-            throws Exception {
-        this(operator, 1, 1, 0);
+    public OneInputStreamOperatorTestHarness(
+            OneInputStreamOperator<IN, OUT> operator, File tmpWorkingDir) throws Exception {
+        this(operator, 1, 1, 0, tmpWorkingDir);
     }
 
-    public OneInputStreamOperatorTestHarness(OneInputStreamOperatorFactory<IN, OUT> factory)
-            throws Exception {
-        this(factory, 1, 1, 0);
+    public OneInputStreamOperatorTestHarness(
+            OneInputStreamOperatorFactory<IN, OUT> factory, File tmpWorkingDir) throws Exception {
+        this(factory, 1, 1, 0, tmpWorkingDir);
     }
 
     public OneInputStreamOperatorTestHarness(
             OneInputStreamOperator<IN, OUT> operator,
             int maxParallelism,
             int parallelism,
-            int subtaskIndex)
+            int subtaskIndex,
+            File tmpWorkingDir)
             throws Exception {
-        this(SimpleOperatorFactory.of(operator), maxParallelism, parallelism, subtaskIndex);
-    }
-
-    public OneInputStreamOperatorTestHarness(
-            StreamOperatorFactory<OUT> operatorFactory,
-            int maxParallelism,
-            int parallelism,
-            int subtaskIndex)
-            throws Exception {
-        this(operatorFactory, maxParallelism, parallelism, subtaskIndex, new OperatorID());
+        this(
+                SimpleOperatorFactory.of(operator),
+                maxParallelism,
+                parallelism,
+                subtaskIndex,
+                tmpWorkingDir);
     }
 
     public OneInputStreamOperatorTestHarness(
@@ -122,48 +126,69 @@ public class OneInputStreamOperatorTestHarness<IN, OUT>
             int maxParallelism,
             int parallelism,
             int subtaskIndex,
-            OperatorID operatorID)
+            File tmpWorkingDir)
             throws Exception {
-        super(operatorFactory, maxParallelism, parallelism, subtaskIndex, operatorID);
+        this(
+                operatorFactory,
+                maxParallelism,
+                parallelism,
+                subtaskIndex,
+                new OperatorID(),
+                tmpWorkingDir);
     }
 
     public OneInputStreamOperatorTestHarness(
-            OneInputStreamOperator<IN, OUT> operator, MockEnvironment environment)
+            StreamOperatorFactory<OUT> operatorFactory,
+            int maxParallelism,
+            int parallelism,
+            int subtaskIndex,
+            OperatorID operatorID,
+            File tmpWorkingDir)
             throws Exception {
-        super(operator, environment);
+        super(
+                operatorFactory,
+                maxParallelism,
+                parallelism,
+                subtaskIndex,
+                operatorID,
+                tmpWorkingDir);
+    }
+
+    public OneInputStreamOperatorTestHarness(
+            OneInputStreamOperator<IN, OUT> operator,
+            MockEnvironment environment,
+            File tmpWorkingDir)
+            throws Exception {
+        super(operator, environment, tmpWorkingDir);
     }
 
     public OneInputStreamOperatorTestHarness(
             OneInputStreamOperatorFactory<IN, OUT> factory,
             TypeSerializer<IN> typeSerializerIn,
-            MockEnvironment environment)
+            MockEnvironment environment,
+            File tmpWorkingDir)
             throws Exception {
-        this(factory, environment);
-
-        config.setupNetworkInputs(Preconditions.checkNotNull(typeSerializerIn));
-    }
-
-    public OneInputStreamOperatorTestHarness(
-            OneInputStreamOperatorFactory<IN, OUT> factory, MockEnvironment environment)
-            throws Exception {
-        super(factory, environment);
-    }
-
-    public OneInputStreamOperatorTestHarness(
-            OneInputStreamOperatorFactory<IN, OUT> factory, TypeSerializer<IN> typeSerializerIn)
-            throws Exception {
-        this(factory, 1, 1, 0);
+        this(factory, environment, tmpWorkingDir);
 
         config.setupNetworkInputs(Preconditions.checkNotNull(typeSerializerIn));
     }
 
     public OneInputStreamOperatorTestHarness(
             OneInputStreamOperatorFactory<IN, OUT> factory,
-            int maxParallelism,
-            int parallelism,
-            int subtaskIndex)
+            MockEnvironment environment,
+            File tmpWorkingDir)
             throws Exception {
-        this(factory, maxParallelism, parallelism, subtaskIndex, new OperatorID());
+        super(factory, environment, tmpWorkingDir);
+    }
+
+    public OneInputStreamOperatorTestHarness(
+            OneInputStreamOperatorFactory<IN, OUT> factory,
+            TypeSerializer<IN> typeSerializerIn,
+            File tmpWorkingDir)
+            throws Exception {
+        this(factory, 1, 1, 0, tmpWorkingDir);
+
+        config.setupNetworkInputs(Preconditions.checkNotNull(typeSerializerIn));
     }
 
     public OneInputStreamOperatorTestHarness(
@@ -171,23 +196,36 @@ public class OneInputStreamOperatorTestHarness<IN, OUT>
             int maxParallelism,
             int parallelism,
             int subtaskIndex,
-            OperatorID operatorID)
+            File tmpWorkingDir)
             throws Exception {
-        super(factory, maxParallelism, parallelism, subtaskIndex, operatorID);
+        this(factory, maxParallelism, parallelism, subtaskIndex, new OperatorID(), tmpWorkingDir);
+    }
+
+    public OneInputStreamOperatorTestHarness(
+            OneInputStreamOperatorFactory<IN, OUT> factory,
+            int maxParallelism,
+            int parallelism,
+            int subtaskIndex,
+            OperatorID operatorID,
+            File tmpWorkingDir)
+            throws Exception {
+        super(factory, maxParallelism, parallelism, subtaskIndex, operatorID, tmpWorkingDir);
     }
 
     public OneInputStreamOperatorTestHarness(
             OneInputStreamOperator<IN, OUT> operator,
             TypeSerializer<IN> typeSerializerIn,
             String taskName,
-            OperatorID operatorID)
+            OperatorID operatorID,
+            File tmpWorkingDir)
             throws Exception {
-        super(operator, taskName, operatorID);
+        super(operator, taskName, operatorID, tmpWorkingDir);
 
         config.setupNetworkInputs(Preconditions.checkNotNull(typeSerializerIn));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setup(TypeSerializer<OUT> outputSerializer) {
         super.setup(outputSerializer);
         if (operator instanceof MultipleInputStreamOperator) {
@@ -204,6 +242,7 @@ public class OneInputStreamOperatorTestHarness<IN, OUT>
         processElement(new StreamRecord<>(value, timestamp));
     }
 
+    @SuppressWarnings("unchecked")
     public void processElement(StreamRecord<IN> element) throws Exception {
         if (inputs.isEmpty()) {
             operator.setKeyContextElement1(element);

@@ -35,7 +35,9 @@ import org.apache.flink.streaming.util.KeyedOneInputStreamOperatorTestHarness;
 import org.apache.flink.streaming.util.TestHarnessUtil;
 import org.apache.flink.util.Collector;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayDeque;
 import java.util.Objects;
@@ -47,6 +49,8 @@ import static org.junit.Assert.assertTrue;
 public class ContinuousProcessingTimeTriggerTest {
 
     private static final long NO_TIMESTAMP = Watermark.UNINITIALIZED.getTimestamp();
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static class WindowedInteger {
         private final TimeWindow window;
@@ -121,7 +125,10 @@ public class ContinuousProcessingTimeTriggerTest {
 
         KeyedOneInputStreamOperatorTestHarness<Byte, Integer, WindowedInteger> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, operator.getKeySelector(), BasicTypeInfo.BYTE_TYPE_INFO);
+                        operator,
+                        operator.getKeySelector(),
+                        BasicTypeInfo.BYTE_TYPE_INFO,
+                        tempFolder.newFolder());
 
         ArrayDeque<Object> expectedOutput = new ArrayDeque<>();
 
@@ -198,7 +205,10 @@ public class ContinuousProcessingTimeTriggerTest {
 
         KeyedOneInputStreamOperatorTestHarness<Byte, Integer, WindowedInteger> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, operator.getKeySelector(), BasicTypeInfo.BYTE_TYPE_INFO);
+                        operator,
+                        operator.getKeySelector(),
+                        BasicTypeInfo.BYTE_TYPE_INFO,
+                        tempFolder.newFolder());
 
         ArrayDeque<Object> expectedOutput = new ArrayDeque<>();
 

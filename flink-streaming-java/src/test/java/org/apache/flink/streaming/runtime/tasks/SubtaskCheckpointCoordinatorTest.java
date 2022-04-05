@@ -127,7 +127,7 @@ public class SubtaskCheckpointCoordinatorTest {
                 MockEnvironment.builder().setTaskStateManager(stateManager).build();
 
         try (SubtaskCheckpointCoordinator subtaskCheckpointCoordinator =
-                new MockSubtaskCheckpointCoordinatorBuilder()
+                new MockSubtaskCheckpointCoordinatorBuilder(tmpWorkingDir)
                         .setEnvironment(mockEnvironment)
                         .build()) {
             final OperatorChain<?, ?> operatorChain = getOperatorChain(mockEnvironment);
@@ -154,7 +154,7 @@ public class SubtaskCheckpointCoordinatorTest {
         MockEnvironment mockEnvironment = MockEnvironment.builder().build();
 
         try (SubtaskCheckpointCoordinator coordinator =
-                new MockSubtaskCheckpointCoordinatorBuilder()
+                new MockSubtaskCheckpointCoordinatorBuilder(tmpWorkingDir)
                         .setUnalignedCheckpointEnabled(true)
                         .setEnvironment(mockEnvironment)
                         .build()) {
@@ -191,7 +191,7 @@ public class SubtaskCheckpointCoordinatorTest {
         MockEnvironment mockEnvironment = MockEnvironment.builder().build();
 
         try (SubtaskCheckpointCoordinator coordinator =
-                new MockSubtaskCheckpointCoordinatorBuilder()
+                new MockSubtaskCheckpointCoordinatorBuilder(tmpWorkingDir)
                         .setUnalignedCheckpointEnabled(true)
                         .setEnvironment(mockEnvironment)
                         .build()) {
@@ -237,7 +237,7 @@ public class SubtaskCheckpointCoordinatorTest {
     @Test
     public void testSkipChannelStateForSavepoints() throws Exception {
         try (SubtaskCheckpointCoordinator coordinator =
-                new MockSubtaskCheckpointCoordinatorBuilder()
+                new MockSubtaskCheckpointCoordinatorBuilder(tmpWorkingDir)
                         .setUnalignedCheckpointEnabled(true)
                         .setPrepareInputSnapshot(
                                 (u1, u2) -> {
@@ -266,7 +266,7 @@ public class SubtaskCheckpointCoordinatorTest {
 
         try (SubtaskCheckpointCoordinatorImpl subtaskCheckpointCoordinator =
                 (SubtaskCheckpointCoordinatorImpl)
-                        new MockSubtaskCheckpointCoordinatorBuilder()
+                        new MockSubtaskCheckpointCoordinatorBuilder(tmpWorkingDir)
                                 .setEnvironment(mockEnvironment)
                                 .setUnalignedCheckpointEnabled(true)
                                 .build()) {
@@ -311,7 +311,7 @@ public class SubtaskCheckpointCoordinatorTest {
 
         try (SubtaskCheckpointCoordinatorImpl subtaskCheckpointCoordinator =
                 (SubtaskCheckpointCoordinatorImpl)
-                        new MockSubtaskCheckpointCoordinatorBuilder()
+                        new MockSubtaskCheckpointCoordinatorBuilder(tmpWorkingDir)
                                 .setEnvironment(mockEnvironment)
                                 .setMaxRecordAbortedCheckpoints(maxRecordAbortedCheckpoints)
                                 .build()) {
@@ -335,7 +335,7 @@ public class SubtaskCheckpointCoordinatorTest {
 
         try (SubtaskCheckpointCoordinatorImpl subtaskCheckpointCoordinator =
                 (SubtaskCheckpointCoordinatorImpl)
-                        new MockSubtaskCheckpointCoordinatorBuilder()
+                        new MockSubtaskCheckpointCoordinatorBuilder(tmpWorkingDir)
                                 .setEnvironment(mockEnvironment)
                                 .setUnalignedCheckpointEnabled(true)
                                 .build()) {
@@ -388,7 +388,7 @@ public class SubtaskCheckpointCoordinatorTest {
         MockEnvironment mockEnvironment = MockEnvironment.builder().build();
 
         try (SubtaskCheckpointCoordinator subtaskCheckpointCoordinator =
-                new MockSubtaskCheckpointCoordinatorBuilder()
+                new MockSubtaskCheckpointCoordinatorBuilder(tmpWorkingDir)
                         .setEnvironment(mockEnvironment)
                         .build()) {
             ArrayList<Object> recordOrEvents = new ArrayList<>();
@@ -443,7 +443,7 @@ public class SubtaskCheckpointCoordinatorTest {
 
         try (SubtaskCheckpointCoordinatorImpl subtaskCheckpointCoordinator =
                 (SubtaskCheckpointCoordinatorImpl)
-                        new MockSubtaskCheckpointCoordinatorBuilder()
+                        new MockSubtaskCheckpointCoordinatorBuilder(tmpWorkingDir)
                                 .setEnvironment(mockEnvironment)
                                 .setExecutor(Executors.newSingleThreadExecutor())
                                 .setUnalignedCheckpointEnabled(true)
@@ -491,7 +491,7 @@ public class SubtaskCheckpointCoordinatorTest {
 
         try (SubtaskCheckpointCoordinatorImpl subtaskCheckpointCoordinator =
                 (SubtaskCheckpointCoordinatorImpl)
-                        new MockSubtaskCheckpointCoordinatorBuilder()
+                        new MockSubtaskCheckpointCoordinatorBuilder(tmpWorkingDir)
                                 .setEnvironment(mockEnvironment)
                                 .build()) {
             final OperatorChain<?, ?> operatorChain = getOperatorChain(mockEnvironment);

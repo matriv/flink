@@ -32,6 +32,7 @@ import org.apache.flink.shaded.guava30.com.google.common.base.Throwables;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertFalse;
@@ -43,7 +44,7 @@ public class LeftOuterJoinTaskTest extends AbstractOuterJoinTaskTest {
 
     private final double hash_frac;
 
-    public LeftOuterJoinTaskTest(ExecutionConfig config) {
+    public LeftOuterJoinTaskTest(ExecutionConfig config) throws IOException {
         super(config);
         hash_frac = (double) HASH_MEM / this.getMemoryManager().getMemorySize();
     }
@@ -169,7 +170,7 @@ public class LeftOuterJoinTaskTest extends AbstractOuterJoinTaskTest {
         int keyCnt2 = 20;
         int valCnt2 = 20;
 
-        setOutput(new DiscardingOutputCollector<Tuple2<Integer, Integer>>());
+        setOutput(new DiscardingOutputCollector<>());
         addDriverComparator(this.comparator1);
         addDriverComparator(this.comparator2);
         getTaskConfig().setDriverPairComparator(new RuntimePairComparatorFactory());
@@ -190,7 +191,7 @@ public class LeftOuterJoinTaskTest extends AbstractOuterJoinTaskTest {
 
     @Test
     public void testCancelLeftOuterJoinTaskWhileBuilding() throws Exception {
-        setOutput(new DiscardingOutputCollector<Tuple2<Integer, Integer>>());
+        setOutput(new DiscardingOutputCollector<>());
         addDriverComparator(this.comparator1);
         addDriverComparator(this.comparator2);
         getTaskConfig().setDriverPairComparator(new RuntimePairComparatorFactory());
@@ -236,7 +237,7 @@ public class LeftOuterJoinTaskTest extends AbstractOuterJoinTaskTest {
 
     @Test
     public void testCancelLeftOuterJoinTaskWhileProbing() throws Exception {
-        setOutput(new DiscardingOutputCollector<Tuple2<Integer, Integer>>());
+        setOutput(new DiscardingOutputCollector<>());
         addDriverComparator(this.comparator1);
         addDriverComparator(this.comparator2);
         getTaskConfig().setDriverPairComparator(new RuntimePairComparatorFactory());

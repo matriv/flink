@@ -27,15 +27,21 @@ import org.apache.flink.runtime.memory.MemoryManager;
 import org.apache.flink.runtime.memory.MemoryManagerBuilder;
 import org.apache.flink.runtime.operators.testutils.DummyInvokable;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class SeekableFileChannelInputViewTest {
+
+    @Rule TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testSeek() {
@@ -49,8 +55,8 @@ public class SeekableFileChannelInputViewTest {
                             .setMemorySize(4 * PAGE_SIZE)
                             .setPageSize(PAGE_SIZE)
                             .build();
-            List<MemorySegment> memory = new ArrayList<MemorySegment>();
-            memMan.allocatePages(new DummyInvokable(), memory, 4);
+            List<MemorySegment> memory = new ArrayList<>();
+            memMan.allocatePages(new DummyInvokable(tempFolder.newFolder()), memory, 4);
 
             FileIOChannel.ID channel = ioManager.createChannel();
             BlockChannelWriter<MemorySegment> writer = ioManager.createBlockChannelWriter(channel);
@@ -66,7 +72,7 @@ public class SeekableFileChannelInputViewTest {
             out.close();
             assertTrue(memMan.verifyEmpty());
 
-            memMan.allocatePages(new DummyInvokable(), memory, 4);
+            memMan.allocatePages(new DummyInvokable(tempFolder.newFolder()), memory, 4);
             SeekableFileChannelInputView in =
                     new SeekableFileChannelInputView(
                             ioManager, channel, memMan, memory, out.getBytesInLatestSegment());

@@ -61,7 +61,9 @@ import org.apache.flink.streaming.runtime.tasks.ProcessingTimeService;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,7 +81,9 @@ import static org.mockito.Mockito.when;
 /** Tests for {@link StateInitializationContextImpl}. */
 public class StateInitializationContextImplTest {
 
-    static final int NUM_HANDLES = 10;
+    private static final int NUM_HANDLES = 10;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private StateInitializationContextImpl initializationContext;
     private CloseableRegistry closableRegistry;
@@ -172,7 +176,8 @@ public class StateInitializationContextImplTest {
                         jobManagerTaskRestore,
                         mock(CheckpointResponder.class));
 
-        DummyEnvironment environment = new DummyEnvironment("test", 1, 0, prev);
+        DummyEnvironment environment =
+                new DummyEnvironment("test", 1, 0, prev, tempFolder.newFolder());
 
         environment.setTaskStateManager(manager);
 

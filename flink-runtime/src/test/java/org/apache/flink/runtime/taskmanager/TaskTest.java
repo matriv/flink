@@ -309,7 +309,7 @@ public class TaskTest extends TestLogger {
 
         final QueuedNoOpTaskManagerActions taskManagerActions = new QueuedNoOpTaskManagerActions();
         final Task task =
-                new TestTaskBuilder(shuffleEnvironment)
+                new TestTaskBuilder(shuffleEnvironment, TEMPORARY_FOLDER.newFolder())
                         .setTaskManagerActions(taskManagerActions)
                         .setConsumableNotifier(consumableNotifier)
                         .setPartitionProducerStateChecker(partitionProducerStateChecker)
@@ -1258,8 +1258,8 @@ public class TaskTest extends TestLogger {
     //  helper functions
     // ------------------------------------------------------------------------
 
-    private TestTaskBuilder createTaskBuilder() {
-        return new TestTaskBuilder(shuffleEnvironment);
+    private TestTaskBuilder createTaskBuilder() throws IOException {
+        return new TestTaskBuilder(shuffleEnvironment, TEMPORARY_FOLDER.newFolder());
     }
 
     // ------------------------------------------------------------------------

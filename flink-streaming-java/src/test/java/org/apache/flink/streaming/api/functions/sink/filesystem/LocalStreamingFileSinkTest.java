@@ -41,14 +41,15 @@ import java.util.Map;
 /** Tests for the {@link StreamingFileSink}. */
 public class LocalStreamingFileSinkTest extends TestLogger {
 
-    @ClassRule public static final TemporaryFolder TEMP_FOLDER = new TemporaryFolder();
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testClosingWithoutInput() throws Exception {
-        final File outDir = TEMP_FOLDER.newFolder();
+        final File outDir = tempFolder.newFolder();
 
         try (OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness =
-                TestUtils.createRescalingTestSink(outDir, 1, 0, 100L, 124L); ) {
+                TestUtils.createRescalingTestSink(
+                        outDir, 1, 0, 100L, 124L, tempFolder.newFolder())) {
             testHarness.setup();
             testHarness.open();
         }
@@ -56,22 +57,24 @@ public class LocalStreamingFileSinkTest extends TestLogger {
 
     @Test
     public void testClosingWithoutInitializingStateShouldNotFail() throws Exception {
-        final File outDir = TEMP_FOLDER.newFolder();
+        final File outDir = tempFolder.newFolder();
 
         try (OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness =
-                TestUtils.createRescalingTestSink(outDir, 1, 0, 100L, 124L)) {
+                TestUtils.createRescalingTestSink(
+                        outDir, 1, 0, 100L, 124L, tempFolder.newFolder())) {
             testHarness.setup();
         }
     }
 
     @Test
     public void testTruncateAfterRecoveryAndOverwrite() throws Exception {
-        final File outDir = TEMP_FOLDER.newFolder();
+        final File outDir = tempFolder.newFolder();
         OperatorSubtaskState snapshot;
 
         // we set the max bucket size to small so that we can know when it rolls
         try (OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness =
-                TestUtils.createRescalingTestSink(outDir, 1, 0, 100L, 10L)) {
+                TestUtils.createRescalingTestSink(
+                        outDir, 1, 0, 100L, 10L, tempFolder.newFolder())) {
 
             testHarness.setup();
             testHarness.open();
@@ -104,7 +107,8 @@ public class LocalStreamingFileSinkTest extends TestLogger {
         }
 
         try (OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness =
-                TestUtils.createRescalingTestSink(outDir, 1, 0, 100L, 10L)) {
+                TestUtils.createRescalingTestSink(
+                        outDir, 1, 0, 100L, 10L, tempFolder.newFolder())) {
 
             testHarness.setup();
             testHarness.initializeState(snapshot);
@@ -196,11 +200,12 @@ public class LocalStreamingFileSinkTest extends TestLogger {
 
     @Test
     public void testCommitStagedFilesInCorrectOrder() throws Exception {
-        final File outDir = TEMP_FOLDER.newFolder();
+        final File outDir = tempFolder.newFolder();
 
         // we set the max bucket size to small so that we can know when it rolls
         try (OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness =
-                TestUtils.createRescalingTestSink(outDir, 1, 0, 100L, 10L)) {
+                TestUtils.createRescalingTestSink(
+                        outDir, 1, 0, 100L, 10L, tempFolder.newFolder())) {
 
             testHarness.setup();
             testHarness.open();
@@ -288,11 +293,12 @@ public class LocalStreamingFileSinkTest extends TestLogger {
 
     @Test
     public void testInactivityPeriodWithLateNotify() throws Exception {
-        final File outDir = TEMP_FOLDER.newFolder();
+        final File outDir = tempFolder.newFolder();
 
         // we set a big bucket size so that it does not close by size, but by timers.
         try (OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness =
-                TestUtils.createRescalingTestSink(outDir, 1, 0, 100L, 124L)) {
+                TestUtils.createRescalingTestSink(
+                        outDir, 1, 0, 100L, 124L, tempFolder.newFolder())) {
 
             testHarness.setup();
             testHarness.open();
@@ -382,10 +388,10 @@ public class LocalStreamingFileSinkTest extends TestLogger {
 
     @Test
     public void testClosingOnSnapshot() throws Exception {
-        final File outDir = TEMP_FOLDER.newFolder();
+        final File outDir = tempFolder.newFolder();
 
         try (OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness =
-                TestUtils.createRescalingTestSink(outDir, 1, 0, 100L, 2L)) {
+                TestUtils.createRescalingTestSink(outDir, 1, 0, 100L, 2L, tempFolder.newFolder())) {
             testHarness.setup();
             testHarness.open();
 
@@ -420,7 +426,7 @@ public class LocalStreamingFileSinkTest extends TestLogger {
 
     @Test
     public void testClosingWithCustomizedBucketer() throws Exception {
-        final File outDir = TEMP_FOLDER.newFolder();
+        final File outDir = tempFolder.newFolder();
         final long partMaxSize = 2L;
         final long inactivityInterval = 100L;
         final RollingPolicy<Tuple2<String, Integer>, Integer> rollingPolicy =
@@ -439,7 +445,8 @@ public class LocalStreamingFileSinkTest extends TestLogger {
                         new TupleToIntegerBucketer(),
                         new Tuple2Encoder(),
                         rollingPolicy,
-                        new DefaultBucketFactoryImpl<>()); ) {
+                        new DefaultBucketFactoryImpl<>(),
+                        tempFolder.newFolder())) {
             testHarness.setup();
             testHarness.open();
 
@@ -475,7 +482,7 @@ public class LocalStreamingFileSinkTest extends TestLogger {
         // check file content and bucket ID.
         Map<File, String> contents = TestUtils.getFileContentByPath(outDir);
         for (Map.Entry<File, String> fileContents : contents.entrySet()) {
-            Integer bucketId = Integer.parseInt(fileContents.getKey().getParentFile().getName());
+            int bucketId = Integer.parseInt(fileContents.getKey().getParentFile().getName());
 
             Assert.assertTrue(bucketId >= 1 && bucketId <= 4);
             Assert.assertEquals(
@@ -485,15 +492,17 @@ public class LocalStreamingFileSinkTest extends TestLogger {
 
     @Test
     public void testScalingDownAndMergingOfStates() throws Exception {
-        final File outDir = TEMP_FOLDER.newFolder();
+        final File outDir = tempFolder.newFolder();
 
         OperatorSubtaskState mergedSnapshot;
 
         // we set small file size so that the part file rolls on every element.
         try (OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness1 =
-                        TestUtils.createRescalingTestSink(outDir, 2, 0, 100L, 10L);
+                        TestUtils.createRescalingTestSink(
+                                outDir, 2, 0, 100L, 10L, tempFolder.newFolder());
                 OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness2 =
-                        TestUtils.createRescalingTestSink(outDir, 2, 1, 100L, 10L)) {
+                        TestUtils.createRescalingTestSink(
+                                outDir, 2, 1, 100L, 10L, tempFolder.newFolder())) {
             testHarness1.setup();
             testHarness1.open();
 
@@ -537,7 +546,8 @@ public class LocalStreamingFileSinkTest extends TestLogger {
                         mergedSnapshot, TestUtils.MAX_PARALLELISM, 2, 1, 0);
 
         try (OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness =
-                TestUtils.createRescalingTestSink(outDir, 1, 0, 100L, 10L)) {
+                TestUtils.createRescalingTestSink(
+                        outDir, 1, 0, 100L, 10L, tempFolder.newFolder())) {
             testHarness.setup();
             testHarness.initializeState(initState);
             testHarness.open();

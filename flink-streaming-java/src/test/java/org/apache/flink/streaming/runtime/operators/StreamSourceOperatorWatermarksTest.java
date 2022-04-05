@@ -46,8 +46,11 @@ import org.apache.flink.streaming.util.MockStreamTask;
 import org.apache.flink.streaming.util.MockStreamTaskBuilder;
 import org.apache.flink.util.ExceptionUtils;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +62,8 @@ import static org.mockito.Mockito.mock;
 /** Tests for {@link StreamSource} operators. */
 @SuppressWarnings("serial")
 public class StreamSourceOperatorWatermarksTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testEmitMaxWatermarkForFiniteSource() throws Exception {
@@ -196,7 +201,7 @@ public class StreamSourceOperatorWatermarksTest {
         cfg.setTimeCharacteristic(timeChar);
         cfg.setOperatorID(new OperatorID());
 
-        Environment env = new DummyEnvironment("MockTwoInputTask", 1, 0);
+        Environment env = new DummyEnvironment("MockTwoInputTask", 1, 0, tempFolder.newFolder());
 
         MockStreamTask mockTask =
                 new MockStreamTaskBuilder(env)
@@ -210,7 +215,7 @@ public class StreamSourceOperatorWatermarksTest {
     }
 
     private static <T> StreamTaskTestHarness<T> setupSourceStreamTask(
-            StreamSource<T, ?> sourceOperator, TypeInformation<T> outputType) {
+            StreamSource<T, ?> sourceOperator, TypeInformation<T> outputType) throws IOException {
 
         return setupSourceStreamTask(sourceOperator, outputType, false);
     }
@@ -218,7 +223,8 @@ public class StreamSourceOperatorWatermarksTest {
     private static <T> StreamTaskTestHarness<T> setupSourceStreamTask(
             StreamSource<T, ?> sourceOperator,
             TypeInformation<T> outputType,
-            final boolean cancelImmediatelyAfterCreation) {
+            final boolean cancelImmediatelyAfterCreation)
+            throws IOException {
 
         final StreamTaskTestHarness<T> testHarness =
                 new StreamTaskTestHarness<>(
@@ -233,7 +239,8 @@ public class StreamSourceOperatorWatermarksTest {
                             }
                             return sourceTask;
                         },
-                        outputType);
+                        outputType,
+                        tempFolder.newFolder());
         testHarness.setupOutputForSingletonOperatorChain();
 
         StreamConfig streamConfig = testHarness.getStreamConfig();

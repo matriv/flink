@@ -31,8 +31,11 @@ import org.apache.flink.types.IntValue;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -43,7 +46,9 @@ public class SpillingResettableIteratorTest {
 
     private static final int MEMORY_CAPACITY = 10 * 1024 * 1024;
 
-    private final AbstractInvokable memOwner = new DummyInvokable();
+    @ClassRule public static TemporaryFolder tempFolder = new TemporaryFolder();
+
+    private AbstractInvokable memOwner;
 
     private IOManager ioman;
 
@@ -53,8 +58,12 @@ public class SpillingResettableIteratorTest {
 
     private final TypeSerializer<IntValue> serializer = new IntValueSerializer();
 
+    public SpillingResettableIteratorTest() throws IOException {}
+
     @Before
-    public void startup() {
+    public void startup() throws IOException {
+        memOwner = new DummyInvokable(tempFolder.newFolder());
+
         // set up IO and memory manager
         this.memman = MemoryManagerBuilder.newBuilder().setMemorySize(MEMORY_CAPACITY).build();
         this.ioman = new IOManagerAsync();

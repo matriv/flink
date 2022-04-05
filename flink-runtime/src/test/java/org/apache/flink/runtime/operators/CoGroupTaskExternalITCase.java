@@ -33,6 +33,8 @@ import org.apache.flink.util.Collector;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public class CoGroupTaskExternalITCase
         extends DriverTestBase<CoGroupFunction<Record, Record, Record>> {
     private static final long SORT_MEM = 3 * 1024 * 1024;
@@ -49,7 +51,7 @@ public class CoGroupTaskExternalITCase
 
     private final CountingOutputCollector output = new CountingOutputCollector();
 
-    public CoGroupTaskExternalITCase(ExecutionConfig config) {
+    public CoGroupTaskExternalITCase(ExecutionConfig config) throws IOException {
         super(config, 0, 2, SORT_MEM);
     }
 

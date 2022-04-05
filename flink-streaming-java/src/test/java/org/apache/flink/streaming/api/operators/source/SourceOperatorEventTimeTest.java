@@ -32,7 +32,9 @@ import org.apache.flink.streaming.runtime.tasks.TestProcessingTimeService;
 
 import org.apache.flink.shaded.guava30.com.google.common.collect.Lists;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -56,6 +58,8 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(Parameterized.class)
 public class SourceOperatorEventTimeTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Parameterized.Parameters(name = "Emit progressive watermarks: {0}")
     public static Collection<Boolean> parameters() {
@@ -162,7 +166,11 @@ public class SourceOperatorEventTimeTest {
                         // Emit watermark 300 (from the 3rd record in split 1)
                         (output) -> output.createOutputForSplit("2").collect(0, 400L));
         SourceOperator<Integer, MockSourceSplit> sourceOperator =
-                createTestOperator(reader, watermarkStrategy, emitProgressiveWatermarks);
+                createTestOperator(
+                        reader,
+                        watermarkStrategy,
+                        emitProgressiveWatermarks,
+                        tempFolder.newFolder());
 
         // Add two splits to SourceOperator. Output for two splits should be created during event
         // handling.
@@ -204,7 +212,11 @@ public class SourceOperatorEventTimeTest {
             throws Exception {
         final SourceReader<Integer, MockSourceSplit> reader = new InterpretingSourceReader(actions);
         final SourceOperator<Integer, MockSourceSplit> sourceOperator =
-                createTestOperator(reader, watermarkStrategy, emitProgressiveWatermarks);
+                createTestOperator(
+                        reader,
+                        watermarkStrategy,
+                        emitProgressiveWatermarks,
+                        tempFolder.newFolder());
 
         return testSequenceOfWatermarks(sourceOperator);
     }

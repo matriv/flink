@@ -23,7 +23,9 @@ import org.apache.flink.runtime.checkpoint.OperatorSubtaskState;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 
+import org.junit.ClassRule;
 import org.junit.jupiter.api.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,6 +35,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GlobalCommitterOperatorTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     void testWaitForCommittablesOfLatestCheckpointBeforeCommitting() throws Exception {
@@ -117,7 +121,8 @@ class GlobalCommitterOperatorTest {
     private OneInputStreamOperatorTestHarness<CommittableMessage<Integer>, Void> createTestHarness(
             Committer<Integer> committer) throws Exception {
         return new OneInputStreamOperatorTestHarness<>(
-                new GlobalCommitterOperator<>(() -> committer, IntegerSerializer::new));
+                new GlobalCommitterOperator<>(() -> committer, IntegerSerializer::new),
+                tempFolder.newFolder());
     }
 
     private static class MockCommitter implements Committer<Integer> {

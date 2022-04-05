@@ -27,7 +27,9 @@ import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.util.AbstractStreamOperatorTestHarness;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,6 +40,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /** Tests for {@link StatefulSequenceSource}. */
 public class StatefulSequenceSourceTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testCheckpointRestore() throws Exception {
@@ -60,14 +64,16 @@ public class StatefulSequenceSourceTest {
         StreamSource<Long, StatefulSequenceSource> src1 = new StreamSource<>(source1);
 
         final AbstractStreamOperatorTestHarness<Long> testHarness1 =
-                new AbstractStreamOperatorTestHarness<>(src1, maxParallelsim, 2, 0);
+                new AbstractStreamOperatorTestHarness<>(
+                        src1, maxParallelsim, 2, 0, tempFolder.newFolder());
         testHarness1.open();
 
         final StatefulSequenceSource source2 = new StatefulSequenceSource(initElement, maxElement);
         StreamSource<Long, StatefulSequenceSource> src2 = new StreamSource<>(source2);
 
         final AbstractStreamOperatorTestHarness<Long> testHarness2 =
-                new AbstractStreamOperatorTestHarness<>(src2, maxParallelsim, 2, 1);
+                new AbstractStreamOperatorTestHarness<>(
+                        src2, maxParallelsim, 2, 1, tempFolder.newFolder());
         testHarness2.open();
 
         final Throwable[] error = new Throwable[3];
@@ -135,7 +141,8 @@ public class StatefulSequenceSourceTest {
                         snapshot, maxParallelsim, 2, 1, 0);
 
         final AbstractStreamOperatorTestHarness<Long> testHarness3 =
-                new AbstractStreamOperatorTestHarness<>(src3, maxParallelsim, 1, 0);
+                new AbstractStreamOperatorTestHarness<>(
+                        src3, maxParallelsim, 1, 0, tempFolder.newFolder());
         testHarness3.setup();
         testHarness3.initializeState(initState);
         testHarness3.open();

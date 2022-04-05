@@ -35,7 +35,9 @@ import org.apache.flink.runtime.memory.MemoryManagerBuilder;
 import org.apache.flink.runtime.operators.testutils.DummyInvokable;
 import org.apache.flink.util.MutableObjectIterator;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.List;
 import java.util.Random;
@@ -45,6 +47,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class LargeRecordHandlerTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testEmptyRecordHandler() {
@@ -57,7 +61,7 @@ public class LargeRecordHandlerTest {
                             .setMemorySize(NUM_PAGES * PAGE_SIZE)
                             .setPageSize(PAGE_SIZE)
                             .build();
-            final AbstractInvokable owner = new DummyInvokable();
+            final AbstractInvokable owner = new DummyInvokable(tempFolder.newFolder());
             final List<MemorySegment> memory = memMan.allocatePages(owner, NUM_PAGES);
 
             final TupleTypeInfo<Tuple2<Long, String>> typeInfo =
@@ -115,7 +119,7 @@ public class LargeRecordHandlerTest {
                             .setMemorySize(NUM_PAGES * PAGE_SIZE)
                             .setPageSize(PAGE_SIZE)
                             .build();
-            final AbstractInvokable owner = new DummyInvokable();
+            final AbstractInvokable owner = new DummyInvokable(tempFolder.newFolder());
 
             final List<MemorySegment> initialMemory = memMan.allocatePages(owner, 6);
             final List<MemorySegment> sortMemory = memMan.allocatePages(owner, NUM_PAGES - 6);
@@ -208,7 +212,7 @@ public class LargeRecordHandlerTest {
                             .setMemorySize(NUM_PAGES * PAGE_SIZE)
                             .setPageSize(PAGE_SIZE)
                             .build();
-            final AbstractInvokable owner = new DummyInvokable();
+            final AbstractInvokable owner = new DummyInvokable(tempFolder.newFolder());
 
             final List<MemorySegment> initialMemory = memMan.allocatePages(owner, 6);
             final List<MemorySegment> sortMemory = memMan.allocatePages(owner, NUM_PAGES - 6);

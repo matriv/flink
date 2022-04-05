@@ -25,7 +25,9 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
 import org.apache.flink.shaded.guava30.com.google.common.collect.Lists;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -33,12 +35,16 @@ import static org.junit.Assert.assertTrue;
 /** Tests for {@link ProcessingTimeTrigger}. */
 public class ProcessingTimeTriggerTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     /** Verify that state of separate windows does not leak into other windows. */
     @Test
     public void testWindowSeparationAndFiring() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
                 new TriggerTestHarness<>(
-                        ProcessingTimeTrigger.create(), new TimeWindow.Serializer());
+                        ProcessingTimeTrigger.create(),
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         // inject several elements
         assertEquals(
@@ -85,7 +91,9 @@ public class ProcessingTimeTriggerTest {
     public void testClear() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
                 new TriggerTestHarness<>(
-                        ProcessingTimeTrigger.create(), new TimeWindow.Serializer());
+                        ProcessingTimeTrigger.create(),
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         assertEquals(
                 TriggerResult.CONTINUE,
@@ -119,7 +127,9 @@ public class ProcessingTimeTriggerTest {
     public void testMergingWindows() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
                 new TriggerTestHarness<>(
-                        ProcessingTimeTrigger.create(), new TimeWindow.Serializer());
+                        ProcessingTimeTrigger.create(),
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         assertTrue(ProcessingTimeTrigger.create().canMerge());
 
@@ -163,7 +173,9 @@ public class ProcessingTimeTriggerTest {
     public void testMergingLateWindows() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
                 new TriggerTestHarness<>(
-                        ProcessingTimeTrigger.create(), new TimeWindow.Serializer());
+                        ProcessingTimeTrigger.create(),
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         assertTrue(ProcessingTimeTrigger.create().canMerge());
 

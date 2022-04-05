@@ -29,8 +29,10 @@ import org.apache.flink.testutils.logging.TestLoggerResource;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.event.Level;
 
 import java.io.IOException;
@@ -53,6 +55,8 @@ import static org.junit.Assert.fail;
 
 /** Tests for {@link TwoPhaseCommitSinkFunction}. */
 public class TwoPhaseCommitSinkFunctionTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private ContentDumpSinkFunction sinkFunction;
 
@@ -88,7 +92,9 @@ public class TwoPhaseCommitSinkFunctionTest {
         sinkFunction = new ContentDumpSinkFunction();
         harness =
                 new OneInputStreamOperatorTestHarness<>(
-                        new StreamSink<>(sinkFunction), StringSerializer.INSTANCE);
+                        new StreamSink<>(sinkFunction),
+                        StringSerializer.INSTANCE,
+                        tempFolder.newFolder());
         harness.setup();
     }
 

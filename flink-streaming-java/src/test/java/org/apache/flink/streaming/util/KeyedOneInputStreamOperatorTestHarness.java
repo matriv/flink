@@ -30,6 +30,8 @@ import org.apache.flink.streaming.api.operators.OneInputStreamOperator;
 import org.apache.flink.streaming.api.operators.SimpleOperatorFactory;
 import org.apache.flink.streaming.api.operators.StreamOperatorFactory;
 
+import java.io.File;
+
 /**
  * Extension of {@link OneInputStreamOperatorTestHarness} that allows the operator to get a {@link
  * KeyedStateBackend}.
@@ -43,7 +45,8 @@ public class KeyedOneInputStreamOperatorTestHarness<K, IN, OUT>
             TypeInformation<K> keyType,
             int maxParallelism,
             int numSubtasks,
-            int subtaskIndex)
+            int subtaskIndex,
+            File tmpWorkingDir)
             throws Exception {
         this(
                 SimpleOperatorFactory.of(operator),
@@ -51,7 +54,8 @@ public class KeyedOneInputStreamOperatorTestHarness<K, IN, OUT>
                 keyType,
                 maxParallelism,
                 numSubtasks,
-                subtaskIndex);
+                subtaskIndex,
+                tmpWorkingDir);
     }
 
     public KeyedOneInputStreamOperatorTestHarness(
@@ -60,9 +64,10 @@ public class KeyedOneInputStreamOperatorTestHarness<K, IN, OUT>
             TypeInformation<K> keyType,
             int maxParallelism,
             int numSubtasks,
-            int subtaskIndex)
+            int subtaskIndex,
+            File tmpWorkingDir)
             throws Exception {
-        super(operatorFactory, maxParallelism, numSubtasks, subtaskIndex);
+        super(operatorFactory, maxParallelism, numSubtasks, subtaskIndex, tmpWorkingDir);
 
         ClosureCleaner.clean(keySelector, ExecutionConfig.ClosureCleanerLevel.RECURSIVE, false);
         config.setStatePartitioner(0, keySelector);
@@ -72,26 +77,29 @@ public class KeyedOneInputStreamOperatorTestHarness<K, IN, OUT>
     public KeyedOneInputStreamOperatorTestHarness(
             StreamOperatorFactory<OUT> operatorFactory,
             final KeySelector<IN, K> keySelector,
-            TypeInformation<K> keyType)
+            TypeInformation<K> keyType,
+            File tmpWorkingDir)
             throws Exception {
-        this(operatorFactory, keySelector, keyType, 1, 1, 0);
+        this(operatorFactory, keySelector, keyType, 1, 1, 0, tmpWorkingDir);
     }
 
     public KeyedOneInputStreamOperatorTestHarness(
             OneInputStreamOperator<IN, OUT> operator,
             final KeySelector<IN, K> keySelector,
-            TypeInformation<K> keyType)
+            TypeInformation<K> keyType,
+            File tmpWorkingDir)
             throws Exception {
-        this(operator, keySelector, keyType, 1, 1, 0);
+        this(operator, keySelector, keyType, 1, 1, 0, tmpWorkingDir);
     }
 
     public KeyedOneInputStreamOperatorTestHarness(
             final OneInputStreamOperator<IN, OUT> operator,
             final KeySelector<IN, K> keySelector,
             final TypeInformation<K> keyType,
-            final MockEnvironment environment)
+            final MockEnvironment environment,
+            File tmpWorkingDir)
             throws Exception {
-        super(operator, environment);
+        super(operator, environment, tmpWorkingDir);
 
         ClosureCleaner.clean(keySelector, ExecutionConfig.ClosureCleanerLevel.RECURSIVE, false);
         config.setStatePartitioner(0, keySelector);

@@ -24,7 +24,9 @@ import org.apache.flink.streaming.api.windowing.triggers.TriggerResult;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -47,6 +49,8 @@ import static org.mockito.Mockito.when;
 /** Tests for {@link PurgingTrigger}. */
 public class PurgingTriggerTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     /**
      * Check if {@link PurgingTrigger} implements all methods of {@link Trigger}, as a sanity check.
      */
@@ -66,7 +70,9 @@ public class PurgingTriggerTest {
 
         TriggerTestHarness<Object, TimeWindow> testHarness =
                 new TriggerTestHarness<>(
-                        PurgingTrigger.of(mockTrigger), new TimeWindow.Serializer());
+                        PurgingTrigger.of(mockTrigger),
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         when(mockTrigger.onElement(
                         Matchers.anyObject(), anyLong(), anyTimeWindow(), anyTriggerContext()))

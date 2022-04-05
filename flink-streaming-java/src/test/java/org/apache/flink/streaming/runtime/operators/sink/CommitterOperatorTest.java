@@ -30,9 +30,11 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamElement;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 
+import org.junit.ClassRule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +45,8 @@ import static org.apache.flink.streaming.runtime.operators.sink.SinkTestUtil.toC
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CommitterOperatorTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
@@ -72,7 +76,8 @@ class CommitterOperatorTest {
                 testHarness =
                         new OneInputStreamOperatorTestHarness<>(
                                 new CommitterOperatorFactory<>(
-                                        (TwoPhaseCommittingSink<?, String>) sink, false, true));
+                                        (TwoPhaseCommittingSink<?, String>) sink, false, true),
+                                tempFolder.newFolder());
         testHarness.open();
 
         final CommittableSummary<String> committableSummary =
@@ -278,7 +283,8 @@ class CommitterOperatorTest {
                                 new CommitterOperatorFactory<>(
                                         (TwoPhaseCommittingSink<?, String>) sink,
                                         false,
-                                        isCheckpointingEnabled));
+                                        isCheckpointingEnabled),
+                                tempFolder.newFolder());
         testHarness.open();
 
         final CommittableSummary<String> committableSummary =
@@ -341,7 +347,8 @@ class CommitterOperatorTest {
                                         .build()
                                         .asV2(),
                         isBatchMode,
-                        isCheckpointingEnabled));
+                        isCheckpointingEnabled),
+                tempFolder.newFolder());
     }
 
     private static class ForwardingCommitter extends TestSink.DefaultCommitter {

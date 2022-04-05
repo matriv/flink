@@ -25,9 +25,11 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 import org.apache.flink.util.TestLogger;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,8 @@ import static org.junit.Assert.assertThat;
 
 /** Tests for {@link StreamSink}. */
 public class StreamSinkOperatorTest extends TestLogger {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Rule public ExpectedException expectedException = ExpectedException.none();
 
@@ -53,7 +57,7 @@ public class StreamSinkOperatorTest extends TestLogger {
         StreamSink<String> operator = new StreamSink<>(bufferingSink);
 
         OneInputStreamOperatorTestHarness<String, Object> testHarness =
-                new OneInputStreamOperatorTestHarness<>(operator);
+                new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();

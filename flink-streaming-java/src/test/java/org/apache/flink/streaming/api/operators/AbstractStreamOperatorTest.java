@@ -46,7 +46,9 @@ import org.apache.flink.util.Preconditions;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +68,9 @@ import static org.hamcrest.Matchers.empty;
  * state and whether they are correctly checkpointed/restored with key-group reshuffling.
  */
 public class AbstractStreamOperatorTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     protected KeyedOneInputStreamOperatorTestHarness<Integer, Tuple2<Integer, String>, String>
             createTestHarness() throws Exception {
         return createTestHarness(1, 1, 0);
@@ -81,7 +86,8 @@ public class AbstractStreamOperatorTest {
                 BasicTypeInfo.INT_TYPE_INFO,
                 maxParalelism,
                 numSubtasks,
-                subtaskIndex);
+                subtaskIndex,
+                tempFolder.newFolder());
     }
 
     protected <K, IN, OUT> KeyedOneInputStreamOperatorTestHarness<K, IN, OUT> createTestHarness(
@@ -93,7 +99,13 @@ public class AbstractStreamOperatorTest {
             TypeInformation<K> keyTypeInfo)
             throws Exception {
         return new KeyedOneInputStreamOperatorTestHarness<>(
-                testOperator, keySelector, keyTypeInfo, maxParalelism, numSubtasks, subtaskIndex);
+                testOperator,
+                keySelector,
+                keyTypeInfo,
+                maxParalelism,
+                numSubtasks,
+                subtaskIndex,
+                tempFolder.newFolder());
     }
 
     @Test
@@ -485,7 +497,8 @@ public class AbstractStreamOperatorTest {
                         testOperator,
                         dummyKeySelector,
                         dummyKeySelector,
-                        BasicTypeInfo.INT_TYPE_INFO)) {
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder())) {
             testHarness.setup();
             testHarness.open();
             testHarness.processElement1(1L, 1L);
@@ -524,7 +537,8 @@ public class AbstractStreamOperatorTest {
                         testOperator,
                         dummyKeySelector,
                         dummyKeySelector,
-                        BasicTypeInfo.INT_TYPE_INFO)) {
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder())) {
             testHarness.setup();
             testHarness.open();
 

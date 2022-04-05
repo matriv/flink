@@ -26,12 +26,16 @@ import org.apache.flink.streaming.util.TwoInputStreamOperatorTestHarness;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.TestLogger;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /** Tests {@link CoProcessOperator}. */
 public class CoProcessOperatorTest extends TestLogger {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testTimestampAndWatermarkQuerying() throws Exception {
@@ -40,7 +44,7 @@ public class CoProcessOperatorTest extends TestLogger {
                 new CoProcessOperator<>(new WatermarkQueryingProcessFunction());
 
         TwoInputStreamOperatorTestHarness<Integer, String, String> testHarness =
-                new TwoInputStreamOperatorTestHarness<>(operator);
+                new TwoInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -73,7 +77,7 @@ public class CoProcessOperatorTest extends TestLogger {
                 new CoProcessOperator<>(new ProcessingTimeQueryingProcessFunction());
 
         TwoInputStreamOperatorTestHarness<Integer, String, String> testHarness =
-                new TwoInputStreamOperatorTestHarness<>(operator);
+                new TwoInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();

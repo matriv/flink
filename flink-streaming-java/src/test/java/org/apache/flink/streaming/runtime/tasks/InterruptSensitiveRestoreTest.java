@@ -79,7 +79,9 @@ import org.apache.flink.streaming.api.graph.StreamConfig;
 import org.apache.flink.streaming.api.operators.StreamSource;
 import org.apache.flink.util.SerializedValue;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -111,6 +113,8 @@ public class InterruptSensitiveRestoreTest {
     private static final int OPERATOR_RAW = 1;
     private static final int KEYED_MANAGED = 2;
     private static final int KEYED_RAW = 3;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testRestoreWithInterruptOperatorManaged() throws Exception {
@@ -289,7 +293,7 @@ public class InterruptSensitiveRestoreTest {
                 new FileCache(
                         new String[] {EnvironmentInformation.getTemporaryFileDirectory()},
                         VoidPermanentBlobService.INSTANCE),
-                new TestingTaskManagerRuntimeInfo(),
+                new TestingTaskManagerRuntimeInfo(tempFolder.newFolder()),
                 UnregisteredMetricGroups.createUnregisteredTaskMetricGroup(),
                 new NoOpResultPartitionConsumableNotifier(),
                 mock(PartitionProducerStateChecker.class),

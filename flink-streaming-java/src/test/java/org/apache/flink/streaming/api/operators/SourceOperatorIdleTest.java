@@ -24,7 +24,9 @@ import org.apache.flink.streaming.api.operators.source.CollectingDataOutput;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nullable;
 
@@ -39,12 +41,14 @@ import static org.junit.Assert.assertFalse;
 @SuppressWarnings("serial")
 public class SourceOperatorIdleTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Nullable private SourceOperatorTestContext context;
     @Nullable private SourceOperator<Integer, MockSourceSplit> operator;
 
     @Before
     public void setup() throws Exception {
-        context = new SourceOperatorTestContext();
+        context = new SourceOperatorTestContext(tempFolder.newFolder());
         operator = context.getOperator();
     }
 

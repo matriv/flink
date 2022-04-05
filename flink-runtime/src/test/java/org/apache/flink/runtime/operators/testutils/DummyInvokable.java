@@ -22,11 +22,13 @@ import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.runtime.jobgraph.tasks.AbstractInvokable;
 
+import java.io.File;
+
 /** An invokable that does nothing. */
 public class DummyInvokable extends AbstractInvokable {
 
-    public DummyInvokable() {
-        super(new DummyEnvironment("test", 1, 0));
+    public DummyInvokable(File tmpWorkingDir) {
+        super(new DummyEnvironment("test", 1, 0, tmpWorkingDir));
     }
 
     @Override

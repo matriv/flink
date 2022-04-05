@@ -50,9 +50,11 @@ import org.apache.flink.streaming.runtime.streamrecord.LatencyMarker;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.runtime.watermarkstatus.WatermarkStatus;
 
+import org.junit.ClassRule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +75,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class SourceReaderBaseTest extends SourceReaderTestBase<MockSourceSplit> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SourceReaderBaseTest.class);
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     void testExceptionInSplitReader() {
@@ -280,7 +284,8 @@ public class SourceReaderBaseTest extends SourceReaderTestBase<MockSourceSplit> 
                         reader,
                         WatermarkStrategy.forGenerator(
                                 (context) -> new OnEventWatermarkGenerator()),
-                        true);
+                        true,
+                        tempFolder.newFolder());
 
         MockSourceSplit splitA = new MockSourceSplit(0, 0, 3);
         splitA.addRecord(100);

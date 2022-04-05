@@ -43,7 +43,9 @@ import org.apache.flink.util.TestLogger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +71,9 @@ public class CombiningExternalSorterITCase extends TestLogger {
 
     public static final int MEMORY_SIZE = 1024 * 1024 * 256;
 
-    private final AbstractInvokable parentTask = new DummyInvokable();
+    @Rule private TemporaryFolder tempFolder = new TemporaryFolder();
+
+    private final AbstractInvokable parentTask;
 
     private IOManager ioManager;
 
@@ -80,6 +84,10 @@ public class CombiningExternalSorterITCase extends TestLogger {
 
     private TypeComparator<Tuple2<Integer, String>> comparator1;
     private TypeComparator<Tuple2<Integer, Integer>> comparator2;
+
+    public CombiningExternalSorterITCase() throws IOException {
+        parentTask = new DummyInvokable(tempFolder.newFolder());
+    }
 
     @Before
     public void beforeTest() {

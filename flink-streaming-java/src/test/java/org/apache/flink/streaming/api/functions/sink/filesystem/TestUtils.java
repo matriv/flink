@@ -64,7 +64,8 @@ public class TestUtils {
                     int totalParallelism,
                     int taskIdx,
                     long inactivityInterval,
-                    long partMaxSize)
+                    long partMaxSize,
+                    File tmpWorkingDir)
                     throws Exception {
 
         final RollingPolicy<Tuple2<String, Integer>, String> rollingPolicy =
@@ -82,7 +83,8 @@ public class TestUtils {
                 new TupleToStringBucketer(),
                 new Tuple2Encoder(),
                 rollingPolicy,
-                new DefaultBucketFactoryImpl<>());
+                new DefaultBucketFactoryImpl<>(),
+                tmpWorkingDir);
     }
 
     static OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object>
@@ -94,7 +96,8 @@ public class TestUtils {
                     final BucketAssigner<Tuple2<String, Integer>, String> bucketer,
                     final Encoder<Tuple2<String, Integer>> writer,
                     final RollingPolicy<Tuple2<String, Integer>, String> rollingPolicy,
-                    final BucketFactory<Tuple2<String, Integer>, String> bucketFactory)
+                    final BucketFactory<Tuple2<String, Integer>, String> bucketFactory,
+                    File tmpWorkingDir)
                     throws Exception {
 
         StreamingFileSink<Tuple2<String, Integer>> sink =
@@ -106,7 +109,7 @@ public class TestUtils {
                         .build();
 
         return new OneInputStreamOperatorTestHarness<>(
-                new StreamSink<>(sink), MAX_PARALLELISM, totalParallelism, taskIdx);
+                new StreamSink<>(sink), MAX_PARALLELISM, totalParallelism, taskIdx, tmpWorkingDir);
     }
 
     static <ID>
@@ -119,7 +122,8 @@ public class TestUtils {
                             final BucketAssigner<Tuple2<String, Integer>, ID> bucketer,
                             final Encoder<Tuple2<String, Integer>> writer,
                             final RollingPolicy<Tuple2<String, Integer>, ID> rollingPolicy,
-                            final BucketFactory<Tuple2<String, Integer>, ID> bucketFactory)
+                            final BucketFactory<Tuple2<String, Integer>, ID> bucketFactory,
+                            File tmpWorkingDir)
                             throws Exception {
 
         StreamingFileSink<Tuple2<String, Integer>> sink =
@@ -130,29 +134,7 @@ public class TestUtils {
                         .build();
 
         return new OneInputStreamOperatorTestHarness<>(
-                new StreamSink<>(sink), MAX_PARALLELISM, totalParallelism, taskIdx);
-    }
-
-    static OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object>
-            createTestSinkWithBulkEncoder(
-                    final File outDir,
-                    final int totalParallelism,
-                    final int taskIdx,
-                    final long bucketCheckInterval,
-                    final BucketAssigner<Tuple2<String, Integer>, String> bucketer,
-                    final BulkWriter.Factory<Tuple2<String, Integer>> writer,
-                    final BucketFactory<Tuple2<String, Integer>, String> bucketFactory)
-                    throws Exception {
-
-        return createTestSinkWithBulkEncoder(
-                outDir,
-                totalParallelism,
-                taskIdx,
-                bucketCheckInterval,
-                bucketer,
-                writer,
-                bucketFactory,
-                OutputFileConfig.builder().build());
+                new StreamSink<>(sink), MAX_PARALLELISM, totalParallelism, taskIdx, tmpWorkingDir);
     }
 
     static OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object>
@@ -164,7 +146,32 @@ public class TestUtils {
                     final BucketAssigner<Tuple2<String, Integer>, String> bucketer,
                     final BulkWriter.Factory<Tuple2<String, Integer>> writer,
                     final BucketFactory<Tuple2<String, Integer>, String> bucketFactory,
-                    final OutputFileConfig outputFileConfig)
+                    File tmpWorkingDir)
+                    throws Exception {
+
+        return createTestSinkWithBulkEncoder(
+                outDir,
+                totalParallelism,
+                taskIdx,
+                bucketCheckInterval,
+                bucketer,
+                writer,
+                bucketFactory,
+                OutputFileConfig.builder().build(),
+                tmpWorkingDir);
+    }
+
+    static OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object>
+            createTestSinkWithBulkEncoder(
+                    final File outDir,
+                    final int totalParallelism,
+                    final int taskIdx,
+                    final long bucketCheckInterval,
+                    final BucketAssigner<Tuple2<String, Integer>, String> bucketer,
+                    final BulkWriter.Factory<Tuple2<String, Integer>> writer,
+                    final BucketFactory<Tuple2<String, Integer>, String> bucketFactory,
+                    final OutputFileConfig outputFileConfig,
+                    File tmpWorkingDir)
                     throws Exception {
 
         StreamingFileSink<Tuple2<String, Integer>> sink =
@@ -177,30 +184,7 @@ public class TestUtils {
                         .build();
 
         return new OneInputStreamOperatorTestHarness<>(
-                new StreamSink<>(sink), MAX_PARALLELISM, totalParallelism, taskIdx);
-    }
-
-    static <ID>
-            OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object>
-                    createTestSinkWithCustomizedBulkEncoder(
-                            final File outDir,
-                            final int totalParallelism,
-                            final int taskIdx,
-                            final long bucketCheckInterval,
-                            final BucketAssigner<Tuple2<String, Integer>, ID> bucketer,
-                            final BulkWriter.Factory<Tuple2<String, Integer>> writer,
-                            final BucketFactory<Tuple2<String, Integer>, ID> bucketFactory)
-                            throws Exception {
-
-        return createTestSinkWithCustomizedBulkEncoder(
-                outDir,
-                totalParallelism,
-                taskIdx,
-                bucketCheckInterval,
-                bucketer,
-                writer,
-                bucketFactory,
-                OutputFileConfig.builder().build());
+                new StreamSink<>(sink), MAX_PARALLELISM, totalParallelism, taskIdx, tmpWorkingDir);
     }
 
     static <ID>
@@ -213,7 +197,33 @@ public class TestUtils {
                             final BucketAssigner<Tuple2<String, Integer>, ID> bucketer,
                             final BulkWriter.Factory<Tuple2<String, Integer>> writer,
                             final BucketFactory<Tuple2<String, Integer>, ID> bucketFactory,
-                            final OutputFileConfig outputFileConfig)
+                            File tmpWorkingDir)
+                            throws Exception {
+
+        return createTestSinkWithCustomizedBulkEncoder(
+                outDir,
+                totalParallelism,
+                taskIdx,
+                bucketCheckInterval,
+                bucketer,
+                writer,
+                bucketFactory,
+                OutputFileConfig.builder().build(),
+                tmpWorkingDir);
+    }
+
+    static <ID>
+            OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object>
+                    createTestSinkWithCustomizedBulkEncoder(
+                            final File outDir,
+                            final int totalParallelism,
+                            final int taskIdx,
+                            final long bucketCheckInterval,
+                            final BucketAssigner<Tuple2<String, Integer>, ID> bucketer,
+                            final BulkWriter.Factory<Tuple2<String, Integer>> writer,
+                            final BucketFactory<Tuple2<String, Integer>, ID> bucketFactory,
+                            final OutputFileConfig outputFileConfig,
+                            File tmpWorkingDir)
                             throws Exception {
 
         StreamingFileSink<Tuple2<String, Integer>> sink =
@@ -226,7 +236,7 @@ public class TestUtils {
                         .build();
 
         return new OneInputStreamOperatorTestHarness<>(
-                new StreamSink<>(sink), MAX_PARALLELISM, totalParallelism, taskIdx);
+                new StreamSink<>(sink), MAX_PARALLELISM, totalParallelism, taskIdx, tmpWorkingDir);
     }
 
     static void checkLocalFs(File outDir, int expectedInProgress, int expectedCompleted) {

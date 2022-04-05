@@ -49,13 +49,17 @@ import org.apache.flink.types.Record;
 import org.apache.flink.util.Collector;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** Metrics related tests for batch task chains. */
 public class ChainedOperatorsMetricTest extends TaskTestBase {
+
+    @ClassRule public static TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final int MEMORY_MANAGER_SIZE = 1024 * 1024 * 3;
 
@@ -74,7 +78,7 @@ public class ChainedOperatorsMetricTest extends TaskTestBase {
         initEnvironment(MEMORY_MANAGER_SIZE, NETWORK_BUFFER_SIZE);
 
         this.mockEnv =
-                new MockEnvironmentBuilder()
+                new MockEnvironmentBuilder(tempFolder.newFolder())
                         .setTaskName(HEAD_OPERATOR_NAME)
                         .setManagedMemorySize(MEMORY_MANAGER_SIZE)
                         .setInputSplitProvider(this.inputSplitProvider)

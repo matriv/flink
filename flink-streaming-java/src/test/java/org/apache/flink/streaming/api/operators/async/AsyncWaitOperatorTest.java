@@ -69,8 +69,10 @@ import org.apache.flink.shaded.guava30.com.google.common.collect.Lists;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.rules.Timeout;
 
 import java.util.ArrayDeque;
@@ -112,6 +114,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class AsyncWaitOperatorTest extends TestLogger {
     private static final long TIMEOUT = 1000L;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Rule public Timeout timeoutRule = new Timeout(100, TimeUnit.SECONDS);
     @Rule public final SharedObjects sharedObjects = SharedObjects.create();
@@ -669,7 +673,8 @@ public class AsyncWaitOperatorTest extends TestLogger {
 
         //noinspection unchecked
         final OneInputStreamOperatorTestHarness<Tuple1<Integer>, Integer> testHarness =
-                new OneInputStreamOperatorTestHarness(factory, inputSerializer);
+                new OneInputStreamOperatorTestHarness(
+                        factory, inputSerializer, tempFolder.newFolder());
         // enable object reuse
         testHarness.getExecutionConfig().enableObjectReuse();
 
@@ -825,7 +830,9 @@ public class AsyncWaitOperatorTest extends TestLogger {
     public void testTimeoutAfterComplete() throws Exception {
         StreamTaskMailboxTestHarnessBuilder<Integer> builder =
                 new StreamTaskMailboxTestHarnessBuilder<>(
-                                OneInputStreamTask::new, BasicTypeInfo.INT_TYPE_INFO)
+                                OneInputStreamTask::new,
+                                BasicTypeInfo.INT_TYPE_INFO,
+                                tempFolder.newFolder())
                         .addInput(BasicTypeInfo.INT_TYPE_INFO);
         try (StreamTaskMailboxTestHarness<Integer> harness =
                 builder.setupOutputForSingletonOperatorChain(
@@ -1032,7 +1039,9 @@ public class AsyncWaitOperatorTest extends TestLogger {
         // given: Async wait operator which are able to collect result futures.
         StreamTaskMailboxTestHarnessBuilder<Integer> builder =
                 new StreamTaskMailboxTestHarnessBuilder<>(
-                                OneInputStreamTask::new, BasicTypeInfo.INT_TYPE_INFO)
+                                OneInputStreamTask::new,
+                                BasicTypeInfo.INT_TYPE_INFO,
+                                tempFolder.newFolder())
                         .addInput(BasicTypeInfo.INT_TYPE_INFO);
         SharedReference<List<ResultFuture<?>>> resultFutures = sharedObjects.add(new ArrayList<>());
         try (StreamTaskMailboxTestHarness<Integer> harness =
@@ -1143,6 +1152,7 @@ public class AsyncWaitOperatorTest extends TestLogger {
 
         return new OneInputStreamOperatorTestHarness<>(
                 new AsyncWaitOperatorFactory<>(function, timeout, capacity, outputMode),
-                IntSerializer.INSTANCE);
+                IntSerializer.INSTANCE,
+                tempFolder.newFolder());
     }
 }

@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FlatMapTaskTest extends DriverTestBase<FlatMapFunction<Record, Record>> {
@@ -43,7 +44,7 @@ public class FlatMapTaskTest extends DriverTestBase<FlatMapFunction<Record, Reco
 
     private final CountingOutputCollector output = new CountingOutputCollector();
 
-    public FlatMapTaskTest(ExecutionConfig config) {
+    public FlatMapTaskTest(ExecutionConfig config) throws IOException {
         super(config, 0, 0);
     }
 

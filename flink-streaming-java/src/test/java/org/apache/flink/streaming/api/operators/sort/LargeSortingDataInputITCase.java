@@ -46,7 +46,9 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.runtime.watermarkstatus.WatermarkStatus;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
@@ -65,12 +67,15 @@ import static org.junit.Assert.assertThat;
  * @see MultiInputSortingDataInputsTest
  */
 public class LargeSortingDataInputITCase {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void intKeySorting() throws Exception {
         int numberOfRecords = 500_000;
         GeneratedRecordsDataInput input = new GeneratedRecordsDataInput(numberOfRecords, 0);
         KeySelector<Tuple3<Integer, String, byte[]>, Integer> keySelector = value -> value.f0;
-        try (MockEnvironment environment = MockEnvironment.builder().build();
+        try (MockEnvironment environment = MockEnvironment.builder(tempFolder.newFolder()).build();
                 SortingDataInput<Tuple3<Integer, String, byte[]>, Integer> sortingDataInput =
                         new SortingDataInput<>(
                                 input,
@@ -82,7 +87,7 @@ public class LargeSortingDataInputITCase {
                                 true,
                                 1.0,
                                 new Configuration(),
-                                new DummyInvokable(),
+                                new DummyInvokable(tempFolder.newFolder()),
                                 new ExecutionConfig())) {
             DataInputStatus inputStatus;
             VerifyingOutput<Integer> output = new VerifyingOutput<>(keySelector);
@@ -99,7 +104,7 @@ public class LargeSortingDataInputITCase {
         int numberOfRecords = 500_000;
         GeneratedRecordsDataInput input = new GeneratedRecordsDataInput(numberOfRecords, 0);
         KeySelector<Tuple3<Integer, String, byte[]>, String> keySelector = value -> value.f1;
-        try (MockEnvironment environment = MockEnvironment.builder().build();
+        try (MockEnvironment environment = MockEnvironment.builder(tempFolder.newFolder()).build();
                 SortingDataInput<Tuple3<Integer, String, byte[]>, String> sortingDataInput =
                         new SortingDataInput<>(
                                 input,
@@ -111,7 +116,7 @@ public class LargeSortingDataInputITCase {
                                 true,
                                 1.0,
                                 new Configuration(),
-                                new DummyInvokable(),
+                                new DummyInvokable(tempFolder.newFolder()),
                                 new ExecutionConfig())) {
             DataInputStatus inputStatus;
             VerifyingOutput<String> output = new VerifyingOutput<>(keySelector);
@@ -130,10 +135,11 @@ public class LargeSortingDataInputITCase {
         GeneratedRecordsDataInput input1 = new GeneratedRecordsDataInput(numberOfRecords, 0);
         GeneratedRecordsDataInput input2 = new GeneratedRecordsDataInput(numberOfRecords, 1);
         KeySelector<Tuple3<Integer, String, byte[]>, String> keySelector = value -> value.f1;
-        try (MockEnvironment environment = MockEnvironment.builder().build()) {
+        try (MockEnvironment environment =
+                MockEnvironment.builder(tempFolder.newFolder()).build()) {
             SelectableSortingInputs selectableSortingInputs =
                     MultiInputSortingDataInput.wrapInputs(
-                            new DummyInvokable(),
+                            new DummyInvokable(tempFolder.newFolder()),
                             new StreamTaskInput[] {input1, input2},
                             new KeySelector[] {keySelector, keySelector},
                             new TypeSerializer[] {

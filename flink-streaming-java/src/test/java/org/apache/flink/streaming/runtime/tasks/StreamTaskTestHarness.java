@@ -108,6 +108,8 @@ public class StreamTaskTestHarness<OUT> {
     private final FunctionWithException<Environment, ? extends StreamTask<OUT, ?>, Exception>
             taskFactory;
 
+    private final File tmpWorkingDir;
+
     public long memorySize;
     public int bufferSize;
 
@@ -116,12 +118,12 @@ public class StreamTaskTestHarness<OUT> {
     public Configuration jobConfig;
     public Configuration taskConfig;
     protected StreamConfig streamConfig;
-    protected TaskManagerRuntimeInfo taskManagerRuntimeInfo = new TestingTaskManagerRuntimeInfo();
+    protected TaskManagerRuntimeInfo taskManagerRuntimeInfo;
 
     protected TestTaskStateManager taskStateManager;
 
-    private TypeSerializer<OUT> outputSerializer;
-    private TypeSerializer<StreamElement> outputStreamRecordSerializer;
+    private final TypeSerializer<OUT> outputSerializer;
+    private final TypeSerializer<StreamElement> outputStreamRecordSerializer;
 
     private LinkedBlockingQueue<Object> outputList;
 
@@ -140,26 +142,32 @@ public class StreamTaskTestHarness<OUT> {
 
     public StreamTaskTestHarness(
             FunctionWithException<Environment, ? extends StreamTask<OUT, ?>, Exception> taskFactory,
-            TypeInformation<OUT> outputType) {
-        this(taskFactory, outputType, TestLocalRecoveryConfig.disabled());
+            TypeInformation<OUT> outputType,
+            File tmpWorkingDir) {
+        this(taskFactory, outputType, TestLocalRecoveryConfig.disabled(), tmpWorkingDir);
     }
 
     public StreamTaskTestHarness(
             FunctionWithException<Environment, ? extends StreamTask<OUT, ?>, Exception> taskFactory,
             TypeInformation<OUT> outputType,
-            File localRootDir) {
+            File localRootDir,
+            File tmpWorkingDir) {
         this(
                 taskFactory,
                 outputType,
                 new LocalRecoveryConfig(
                         new LocalRecoveryDirectoryProviderImpl(
-                                localRootDir, new JobID(), new JobVertexID(), 0)));
+                                localRootDir, new JobID(), new JobVertexID(), 0)),
+                tmpWorkingDir);
     }
 
     public StreamTaskTestHarness(
             FunctionWithException<Environment, ? extends StreamTask<OUT, ?>, Exception> taskFactory,
             TypeInformation<OUT> outputType,
-            LocalRecoveryConfig localRecoveryConfig) {
+            LocalRecoveryConfig localRecoveryConfig,
+            File tmpWorkingDir) {
+        this.tmpWorkingDir = tmpWorkingDir;
+        this.taskManagerRuntimeInfo = new TestingTaskManagerRuntimeInfo(tmpWorkingDir);
         this.taskFactory = checkNotNull(taskFactory);
         this.memorySize = DEFAULT_MEMORY_MANAGER_SIZE;
         this.bufferSize = DEFAULT_NETWORK_BUFFER_SIZE;
@@ -266,7 +274,8 @@ public class StreamTaskTestHarness<OUT> {
                         memorySize,
                         new MockInputSplitProvider(),
                         bufferSize,
-                        taskStateManager);
+                        taskStateManager,
+                        tmpWorkingDir);
         if (taskManagerRuntimeInfo != null) {
             streamMockEnvironment.setTaskManagerInfo(taskManagerRuntimeInfo);
         }

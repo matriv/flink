@@ -32,9 +32,7 @@ import org.apache.flink.types.IntValue;
 import org.apache.flink.types.Record;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +50,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class DataSinkTaskTest extends TaskTestBase {
-
-    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final Logger LOG = LoggerFactory.getLogger(DataSinkTaskTest.class);
 
@@ -137,7 +133,7 @@ public class DataSinkTaskTest extends TaskTestBase {
     }
 
     @Test
-    public void testUnionDataSinkTask() {
+    public void testUnionDataSinkTask() throws IOException {
         int keyCnt = 10;
         int valCnt = 20;
 
@@ -240,7 +236,7 @@ public class DataSinkTaskTest extends TaskTestBase {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testSortingDataSinkTask() {
+    public void testSortingDataSinkTask() throws IOException {
 
         int keyCnt = 100;
         int valCnt = 20;
@@ -329,7 +325,7 @@ public class DataSinkTaskTest extends TaskTestBase {
     }
 
     @Test
-    public void testFailingDataSinkTask() {
+    public void testFailingDataSinkTask() throws IOException {
 
         int keyCnt = 100;
         int valCnt = 20;
@@ -359,7 +355,7 @@ public class DataSinkTaskTest extends TaskTestBase {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testFailingSortingDataSinkTask() {
+    public void testFailingSortingDataSinkTask() throws IOException {
 
         int keyCnt = 100;
         int valCnt = 20;
@@ -446,7 +442,7 @@ public class DataSinkTaskTest extends TaskTestBase {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testCancelSortingDataSinkTask() {
+    public void testCancelSortingDataSinkTask() throws IOException {
         double memoryFraction = 1.0;
 
         super.initEnvironment(MEMORY_MANAGER_SIZE, NETWORK_BUFFER_SIZE);

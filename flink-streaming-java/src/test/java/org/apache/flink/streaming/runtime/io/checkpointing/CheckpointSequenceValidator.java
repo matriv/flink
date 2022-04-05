@@ -25,6 +25,7 @@ import org.apache.flink.runtime.checkpoint.CheckpointOptions;
 import org.apache.flink.runtime.jobgraph.tasks.AbstractInvokable;
 import org.apache.flink.runtime.operators.testutils.DummyEnvironment;
 
+import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -39,8 +40,8 @@ class CheckpointSequenceValidator extends AbstractInvokable {
 
     private int i = 0;
 
-    CheckpointSequenceValidator(long... checkpointIDs) {
-        super(new DummyEnvironment("test", 1, 0));
+    CheckpointSequenceValidator(File tmpWorkingDir, long... checkpointIDs) {
+        super(new DummyEnvironment("test", 1, 0, tmpWorkingDir));
         this.checkpointIDs = checkpointIDs;
     }
 

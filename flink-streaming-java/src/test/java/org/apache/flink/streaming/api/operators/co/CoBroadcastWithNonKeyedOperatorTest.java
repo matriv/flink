@@ -33,7 +33,9 @@ import org.apache.flink.util.OutputTag;
 import org.apache.flink.util.Preconditions;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -54,6 +56,8 @@ public class CoBroadcastWithNonKeyedOperatorTest {
                     "broadcast-state-A",
                     BasicTypeInfo.INT_TYPE_INFO,
                     BasicTypeInfo.STRING_TYPE_INFO);
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testMultiStateSupport() throws Exception {
@@ -244,6 +248,7 @@ public class CoBroadcastWithNonKeyedOperatorTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testScaleUp() throws Exception {
         final Set<String> keysToRegister = new HashSet<>();
         keysToRegister.add("test1");
@@ -337,6 +342,7 @@ public class CoBroadcastWithNonKeyedOperatorTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testScaleDown() throws Exception {
         final Set<String> keysToRegister = new HashSet<>();
         keysToRegister.add("test1");
@@ -591,7 +597,8 @@ public class CoBroadcastWithNonKeyedOperatorTest {
                                 Preconditions.checkNotNull(function), Arrays.asList(descriptors)),
                         maxParallelism,
                         numTasks,
-                        taskIdx);
+                        taskIdx,
+                        tempFolder.newFolder());
         testHarness.setup();
         testHarness.initializeState(initState);
         testHarness.open();

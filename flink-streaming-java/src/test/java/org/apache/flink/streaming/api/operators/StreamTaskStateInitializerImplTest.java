@@ -56,11 +56,14 @@ import org.apache.flink.streaming.runtime.tasks.TestProcessingTimeService;
 import org.apache.flink.util.CloseableIterable;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nonnull;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.OptionalLong;
@@ -76,6 +79,8 @@ import static org.mockito.Mockito.when;
 
 /** Test for {@link StreamTaskStateInitializerImpl}. */
 public class StreamTaskStateInitializerImplTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testNoRestore() throws Exception {
@@ -277,7 +282,8 @@ public class StreamTaskStateInitializerImplTest {
     private StreamTaskStateInitializer streamTaskStateManager(
             StateBackend stateBackend,
             JobManagerTaskRestore jobManagerTaskRestore,
-            boolean createTimerServiceManager) {
+            boolean createTimerServiceManager)
+            throws IOException {
 
         JobID jobID = new JobID(42L, 43L);
         ExecutionAttemptID executionAttemptID = new ExecutionAttemptID();
@@ -295,7 +301,8 @@ public class StreamTaskStateInitializerImplTest {
                         taskLocalStateStore,
                         changelogStorage);
 
-        DummyEnvironment dummyEnvironment = new DummyEnvironment("test-task", 1, 0);
+        DummyEnvironment dummyEnvironment =
+                new DummyEnvironment("test-task", 1, 0, tempFolder.newFolder());
         dummyEnvironment.setTaskStateManager(taskStateManager);
 
         if (createTimerServiceManager) {

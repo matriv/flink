@@ -32,7 +32,9 @@ import org.apache.flink.streaming.runtime.streamrecord.LatencyMarker;
 import org.apache.flink.streaming.util.SourceOperatorTestHarness;
 import org.apache.flink.util.TestLogger;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,6 +49,8 @@ public class SourceOperatorLatencyMetricsTest extends TestLogger {
 
     private static final long MAX_PROCESSING_TIME = 100L;
     private static final long LATENCY_MARK_INTERVAL = 10L;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     /** Verifies that by default no latency metrics are emitted. */
     @Test
@@ -118,9 +122,10 @@ public class SourceOperatorLatencyMetricsTest extends TestLogger {
                         new SourceOperatorFactory(
                                 new MockSource(Boundedness.CONTINUOUS_UNBOUNDED, 1),
                                 WatermarkStrategy.noWatermarks()),
-                        new MockEnvironmentBuilder()
+                        new MockEnvironmentBuilder(tempFolder.newFolder())
                                 .setTaskManagerRuntimeInfo(
-                                        new TestingTaskManagerRuntimeInfo(taskManagerConfig))
+                                        new TestingTaskManagerRuntimeInfo(
+                                                taskManagerConfig, tempFolder.newFolder()))
                                 .setExecutionConfig(executionConfig)
                                 .build())) {
             testHarness.open();

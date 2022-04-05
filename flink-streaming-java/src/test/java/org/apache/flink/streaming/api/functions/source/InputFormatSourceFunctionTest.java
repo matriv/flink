@@ -39,13 +39,17 @@ import org.apache.flink.streaming.api.operators.StreamingRuntimeContext;
 import org.apache.flink.streaming.api.watermark.Watermark;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.Collections;
 
 /** Tests for {@link InputFormatSourceFunction}. */
 public class InputFormatSourceFunctionTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testNormalOp() throws Exception {
@@ -67,7 +71,7 @@ public class InputFormatSourceFunctionTest {
                 new InputFormatSourceFunction<>(format, TypeInformation.of(Integer.class));
 
         try (MockEnvironment environment =
-                new MockEnvironmentBuilder()
+                new MockEnvironmentBuilder(tempFolder.newFolder())
                         .setTaskName("no")
                         .setManagedMemorySize(4 * MemoryManager.DEFAULT_PAGE_SIZE)
                         .build()) {

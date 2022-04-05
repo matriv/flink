@@ -25,26 +25,30 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
 import org.apache.flink.shaded.guava30.com.google.common.collect.Lists;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import static org.junit.Assert.assertEquals;
 
 /** Tests for {@link CountTrigger}. */
 public class CountTriggerTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     /** Verify that state of separate windows does not leak into other windows. */
     @Test
     public void testWindowSeparationAndFiring() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
                 new TriggerTestHarness<>(
-                        CountTrigger.<TimeWindow>of(3), new TimeWindow.Serializer());
+                        CountTrigger.of(3), new TimeWindow.Serializer(), tempFolder.newFolder());
 
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 2)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 2)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(2, 4)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(2, 4)));
 
         // shouldn't have any timers
         assertEquals(0, testHarness.numProcessingTimeTimers());
@@ -56,13 +60,13 @@ public class CountTriggerTest {
 
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 2)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 2)));
         assertEquals(
                 TriggerResult.FIRE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 2)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 2)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(2, 4)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(2, 4)));
 
         // right now, CountTrigger will clear it's state in onElement when firing
         // ideally, this should be moved to onFire()
@@ -72,7 +76,7 @@ public class CountTriggerTest {
 
         assertEquals(
                 TriggerResult.FIRE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(2, 4)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(2, 4)));
 
         // now all state should be gone
         assertEquals(0, testHarness.numStateEntries());
@@ -83,14 +87,14 @@ public class CountTriggerTest {
     public void testClear() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
                 new TriggerTestHarness<>(
-                        CountTrigger.<TimeWindow>of(3), new TimeWindow.Serializer());
+                        CountTrigger.of(3), new TimeWindow.Serializer(), tempFolder.newFolder());
 
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 2)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 2)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(2, 4)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(2, 4)));
 
         // shouldn't have any timers
         assertEquals(0, testHarness.numProcessingTimeTimers());
@@ -117,17 +121,17 @@ public class CountTriggerTest {
     public void testMergingWindows() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
                 new TriggerTestHarness<>(
-                        CountTrigger.<TimeWindow>of(3), new TimeWindow.Serializer());
+                        CountTrigger.of(3), new TimeWindow.Serializer(), tempFolder.newFolder());
 
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 2)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 2)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(2, 4)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(2, 4)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(4, 6)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(4, 6)));
 
         // shouldn't have any timers
         assertEquals(0, testHarness.numProcessingTimeTimers());
@@ -150,7 +154,7 @@ public class CountTriggerTest {
 
         assertEquals(
                 TriggerResult.FIRE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 4)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 4)));
 
         assertEquals(1, testHarness.numStateEntries());
         assertEquals(0, testHarness.numStateEntries(new TimeWindow(0, 4)));
@@ -158,10 +162,10 @@ public class CountTriggerTest {
 
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(4, 6)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(4, 6)));
         assertEquals(
                 TriggerResult.FIRE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(4, 6)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(4, 6)));
 
         assertEquals(0, testHarness.numStateEntries());
     }
@@ -170,14 +174,14 @@ public class CountTriggerTest {
     public void testMergeSubsumingWindow() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
                 new TriggerTestHarness<>(
-                        CountTrigger.<TimeWindow>of(3), new TimeWindow.Serializer());
+                        CountTrigger.of(3), new TimeWindow.Serializer(), tempFolder.newFolder());
 
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(2, 4)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(2, 4)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(4, 6)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(4, 6)));
 
         // shouldn't have any timers
         assertEquals(0, testHarness.numProcessingTimeTimers());
@@ -198,7 +202,7 @@ public class CountTriggerTest {
 
         assertEquals(
                 TriggerResult.FIRE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 8)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 8)));
 
         assertEquals(0, testHarness.numStateEntries());
     }

@@ -33,7 +33,9 @@ import org.apache.flink.streaming.runtime.operators.StreamOperatorChainingTest;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.MockStreamTaskBuilder;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +53,8 @@ import static org.junit.Assert.assertEquals;
  * StreamOperatorChainingTest}.
  */
 public class OperatorChainTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testPrepareCheckpointPreBarrier() throws Exception {
@@ -77,7 +81,7 @@ public class OperatorChainTest {
         checkNotNull(operators);
         checkArgument(operators.length > 0);
 
-        try (MockEnvironment env = MockEnvironment.builder().build()) {
+        try (MockEnvironment env = MockEnvironment.builder(tempFolder.newFolder()).build()) {
             final StreamTask<?, ?> containingTask = new MockStreamTaskBuilder(env).build();
 
             final StreamConfig cfg = new StreamConfig(new Configuration());

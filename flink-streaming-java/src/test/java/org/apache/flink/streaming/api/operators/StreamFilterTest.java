@@ -26,7 +26,9 @@ import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 import org.apache.flink.streaming.util.TestHarnessUtil;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -41,6 +43,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class StreamFilterTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     static class MyFilter implements FilterFunction<Integer> {
         private static final long serialVersionUID = 1L;
 
@@ -53,10 +57,11 @@ public class StreamFilterTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testFilter() throws Exception {
-        StreamFilter<Integer> operator = new StreamFilter<Integer>(new MyFilter());
+        StreamFilter<Integer> operator = new StreamFilter<>(new MyFilter());
 
         OneInputStreamOperatorTestHarness<Integer, Integer> testHarness =
-                new OneInputStreamOperatorTestHarness<Integer, Integer>(operator);
+                new OneInputStreamOperatorTestHarness<Integer, Integer>(
+                        operator, tempFolder.newFolder());
 
         long initialTime = 0L;
         ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<Object>();
@@ -86,7 +91,8 @@ public class StreamFilterTest {
         StreamFilter<String> operator = new StreamFilter<String>(new TestOpenCloseFilterFunction());
 
         OneInputStreamOperatorTestHarness<String, String> testHarness =
-                new OneInputStreamOperatorTestHarness<String, String>(operator);
+                new OneInputStreamOperatorTestHarness<String, String>(
+                        operator, tempFolder.newFolder());
 
         long initialTime = 0L;
 

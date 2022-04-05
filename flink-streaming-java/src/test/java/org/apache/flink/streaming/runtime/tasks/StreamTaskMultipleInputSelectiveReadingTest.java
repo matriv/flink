@@ -35,7 +35,9 @@ import org.apache.flink.streaming.util.TestAnyModeMultipleInputStreamOperator.To
 import org.apache.flink.streaming.util.TestSequentialMultipleInputStreamOperator;
 import org.apache.flink.util.ExceptionUtils;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -50,6 +52,8 @@ import static org.junit.Assert.fail;
 
 /** Test selective reading. */
 public class StreamTaskMultipleInputSelectiveReadingTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final StreamRecord<String>[] INPUT1 =
             new StreamRecord[] {
@@ -155,7 +159,9 @@ public class StreamTaskMultipleInputSelectiveReadingTest {
             throws Exception {
         try (StreamTaskMailboxTestHarness<String> testHarness =
                 new StreamTaskMailboxTestHarnessBuilder<>(
-                                MultipleInputStreamTask::new, BasicTypeInfo.STRING_TYPE_INFO)
+                                MultipleInputStreamTask::new,
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder())
                         .addInput(BasicTypeInfo.STRING_TYPE_INFO)
                         .addInput(BasicTypeInfo.INT_TYPE_INFO)
                         .setupOutputForSingletonOperatorChain(streamOperatorFactory)
@@ -192,7 +198,9 @@ public class StreamTaskMultipleInputSelectiveReadingTest {
     public void testInputStarvation() throws Exception {
         try (StreamTaskMailboxTestHarness<String> testHarness =
                 new StreamTaskMailboxTestHarnessBuilder<>(
-                                MultipleInputStreamTask::new, BasicTypeInfo.STRING_TYPE_INFO)
+                                MultipleInputStreamTask::new,
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder())
                         .addInput(BasicTypeInfo.STRING_TYPE_INFO)
                         .addInput(BasicTypeInfo.STRING_TYPE_INFO)
                         .addInput(BasicTypeInfo.STRING_TYPE_INFO)

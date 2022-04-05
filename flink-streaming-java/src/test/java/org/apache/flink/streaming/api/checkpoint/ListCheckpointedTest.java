@@ -24,7 +24,9 @@ import org.apache.flink.streaming.api.operators.StreamMap;
 import org.apache.flink.streaming.util.AbstractStreamOperatorTestHarness;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +37,8 @@ import static org.junit.Assert.assertTrue;
 
 /** Tests for {@link ListCheckpointed}. */
 public class ListCheckpointedTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testUDFReturningNull() throws Exception {
@@ -69,7 +73,8 @@ public class ListCheckpointedTest {
 
     private static AbstractStreamOperatorTestHarness<Integer> createTestHarness(
             TestUserFunction userFunction) throws Exception {
-        return new AbstractStreamOperatorTestHarness<>(new StreamMap<>(userFunction), 1, 1, 0);
+        return new AbstractStreamOperatorTestHarness<>(
+                new StreamMap<>(userFunction), 1, 1, 0, tempFolder.newFolder());
     }
 
     private static class TestUserFunction extends RichMapFunction<Integer, Integer>

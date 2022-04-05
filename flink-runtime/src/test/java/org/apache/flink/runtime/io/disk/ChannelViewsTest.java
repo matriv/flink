@@ -39,9 +39,12 @@ import org.apache.flink.runtime.operators.testutils.TestData.TupleGenerator.Valu
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.EOFException;
+import java.io.IOException;
 import java.util.List;
 
 /** */
@@ -64,16 +67,21 @@ public class ChannelViewsTest {
 
     private static final int NUM_MEMORY_SEGMENTS = 3;
 
-    private final AbstractInvokable parentTask = new DummyInvokable();
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
+    private AbstractInvokable parentTask;
 
     private IOManager ioManager;
 
     private MemoryManager memoryManager;
 
+    public ChannelViewsTest() throws IOException {}
+
     // --------------------------------------------------------------------------------------------
 
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws IOException {
+        this.parentTask = new DummyInvokable(tempFolder.newFolder());
         this.memoryManager =
                 MemoryManagerBuilder.newBuilder()
                         .setMemorySize(MEMORY_SIZE)

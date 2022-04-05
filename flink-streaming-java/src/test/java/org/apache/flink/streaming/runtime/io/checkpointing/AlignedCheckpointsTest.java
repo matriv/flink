@@ -47,13 +47,14 @@ import org.hamcrest.Description;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.IntStream;
 
 import static org.apache.flink.streaming.runtime.io.checkpointing.UnalignedCheckpointsTest.addSequence;
@@ -72,7 +73,7 @@ public class AlignedCheckpointsTest {
 
     protected static final int PAGE_SIZE = 512;
 
-    private static final Random RND = new Random();
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static int sizeCounter = 1;
 
@@ -130,9 +131,9 @@ public class AlignedCheckpointsTest {
     }
 
     private CheckpointedInputGate createCheckpointedInputGate(
-            int numberOfChannels, BufferOrEvent[] sequence) {
+            int numberOfChannels, BufferOrEvent[] sequence) throws IOException {
         return createCheckpointedInputGate(
-                numberOfChannels, sequence, new DummyCheckpointInvokable());
+                numberOfChannels, sequence, new DummyCheckpointInvokable(tempFolder.newFolder()));
     }
 
     private CheckpointedInputGate createCheckpointedInputGate(
@@ -243,7 +244,8 @@ public class AlignedCheckpointsTest {
             createBuffer(0),
             createEndOfPartition(0)
         };
-        ValidatingCheckpointHandler handler = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler handler =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(1, sequence, handler);
 
         handler.setNextExpectedCheckpointId(1L);
@@ -299,7 +301,8 @@ public class AlignedCheckpointsTest {
             createEndOfPartition(1),
             createEndOfPartition(2)
         };
-        ValidatingCheckpointHandler handler = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler handler =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, handler);
 
         handler.setNextExpectedCheckpointId(1L);
@@ -400,7 +403,8 @@ public class AlignedCheckpointsTest {
             /* 23 */ createBuffer(1),
             /* 24 */ createEndOfPartition(1)
         };
-        ValidatingCheckpointHandler handler = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler handler =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, handler, false);
 
         handler.setNextExpectedCheckpointId(1L);
@@ -460,7 +464,8 @@ public class AlignedCheckpointsTest {
     @Test
     public void testMetrics() throws Exception {
         List<BufferOrEvent> output = new ArrayList<>();
-        ValidatingCheckpointHandler handler = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler handler =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         int numberOfChannels = 3;
         inputGate = createCheckpointedInputGate(numberOfChannels, handler);
         int[] sequenceNumbers = new int[numberOfChannels];
@@ -535,7 +540,7 @@ public class AlignedCheckpointsTest {
             createCancellationBarrier(3L, 0),
             createBuffer(0)
         };
-        AbstractInvokable validator = new ValidatingCheckpointHandler();
+        AbstractInvokable validator = new ValidatingCheckpointHandler(tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(2, sequence, validator);
 
         for (BufferOrEvent boe : sequence) {
@@ -680,7 +685,8 @@ public class AlignedCheckpointsTest {
             createCancellationBarrier(6, 0),
             createBuffer(0)
         };
-        ValidatingCheckpointHandler toNotify = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler toNotify =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(1, sequence, toNotify);
 
         toNotify.setNextExpectedCheckpointId(1);
@@ -778,7 +784,8 @@ public class AlignedCheckpointsTest {
 
             /* 35 */ createBuffer(0)
         };
-        ValidatingCheckpointHandler toNotify = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler toNotify =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, toNotify);
 
         long startTs;
@@ -919,7 +926,8 @@ public class AlignedCheckpointsTest {
             createBuffer(1),
             createBuffer(2)
         };
-        ValidatingCheckpointHandler toNotify = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler toNotify =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, toNotify);
 
         long startTs;
@@ -1004,7 +1012,8 @@ public class AlignedCheckpointsTest {
             createBuffer(1),
             createBuffer(2)
         };
-        ValidatingCheckpointHandler toNotify = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler toNotify =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, toNotify);
 
         long startTs;
@@ -1058,7 +1067,8 @@ public class AlignedCheckpointsTest {
             createBarrier(1, 0), createBarrier(1, 1), createEndOfPartition(2)
         };
 
-        ValidatingCheckpointHandler validator = new ValidatingCheckpointHandler(-1L);
+        ValidatingCheckpointHandler validator =
+                new ValidatingCheckpointHandler(-1L, tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         for (BufferOrEvent bufferOrEvent : sequence) {
@@ -1079,7 +1089,8 @@ public class AlignedCheckpointsTest {
             /* 3 */ createBarrier(2, 2)
         };
 
-        ValidatingCheckpointHandler validator = new ValidatingCheckpointHandler(-1L);
+        ValidatingCheckpointHandler validator =
+                new ValidatingCheckpointHandler(-1L, tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         for (int i = 0; i <= 2; ++i) {
@@ -1106,7 +1117,8 @@ public class AlignedCheckpointsTest {
             /* 5 */ createBarrier(7, 0)
         };
 
-        ValidatingCheckpointHandler validator = new ValidatingCheckpointHandler(-1L);
+        ValidatingCheckpointHandler validator =
+                new ValidatingCheckpointHandler(-1L, tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         for (BufferOrEvent bufferOrEvent : sequence) {

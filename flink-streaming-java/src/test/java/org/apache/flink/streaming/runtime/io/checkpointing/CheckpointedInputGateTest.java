@@ -53,7 +53,9 @@ import org.apache.flink.util.clock.SystemClock;
 import org.apache.flink.shaded.guava30.com.google.common.io.Closer;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -68,6 +70,9 @@ import static org.junit.Assert.assertTrue;
 
 /** {@link CheckpointedInputGate} test. */
 public class CheckpointedInputGateTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     private final HashMap<Integer, Integer> channelIndexToSequenceNumber = new HashMap<>();
 
     @Before
@@ -135,7 +140,7 @@ public class CheckpointedInputGateTest {
             long checkpointId = 2L;
             long obsoleteCheckpointId = 1L;
             ValidatingCheckpointHandler validatingHandler =
-                    new ValidatingCheckpointHandler(checkpointId);
+                    new ValidatingCheckpointHandler(checkpointId, tempFolder.newFolder());
             RecordingChannelStateWriter stateWriter = new RecordingChannelStateWriter();
             CheckpointedInputGate gate =
                     setupInputGateWithAlternatingController(
@@ -224,7 +229,8 @@ public class CheckpointedInputGateTest {
                 MailboxExecutorImpl mailboxExecutor =
                         new MailboxExecutorImpl(mailbox, 0, StreamTaskActionExecutor.IMMEDIATE);
 
-                ValidatingCheckpointHandler validatingHandler = new ValidatingCheckpointHandler(1);
+                ValidatingCheckpointHandler validatingHandler =
+                        new ValidatingCheckpointHandler(1, tempFolder.newFolder());
                 SingleCheckpointBarrierHandler barrierHandler =
                         TestBarrierHandlerFactory.forTarget(validatingHandler)
                                 .create(singleInputGate, new MockChannelStateWriter());
@@ -341,7 +347,7 @@ public class CheckpointedInputGateTest {
         CheckpointBarrierTracker barrierHandler =
                 new CheckpointBarrierTracker(
                         numberOfChannels,
-                        new AbstractInvokable(new DummyEnvironment()) {
+                        new AbstractInvokable(new DummyEnvironment(tempFolder.newFolder())) {
                             @Override
                             public void invoke() {}
                         },

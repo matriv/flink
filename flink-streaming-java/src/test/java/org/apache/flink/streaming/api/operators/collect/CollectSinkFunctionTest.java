@@ -26,6 +26,7 @@ import org.apache.flink.util.TestLogger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,12 +38,15 @@ public class CollectSinkFunctionTest extends TestLogger {
 
     private static final TypeSerializer<Integer> serializer = IntSerializer.INSTANCE;
 
+    private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     private CollectSinkFunctionTestWrapper<Integer> functionWrapper;
 
     @Before
     public void before() throws Exception {
         // max bytes per batch = 3 * sizeof(int)
-        functionWrapper = new CollectSinkFunctionTestWrapper<>(serializer, 12);
+        functionWrapper =
+                new CollectSinkFunctionTestWrapper<>(serializer, 12, tempFolder.newFolder());
     }
 
     @After

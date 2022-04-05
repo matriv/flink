@@ -35,7 +35,9 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,9 +60,11 @@ import static org.junit.Assert.fail;
 /** Tests for {@link StreamOperatorWrapper}. */
 public class StreamOperatorWrapperTest extends TestLogger {
 
-    private static SystemProcessingTimeService timerService;
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final int numOperators = 3;
+
+    private static SystemProcessingTimeService timerService;
 
     private List<StreamOperatorWrapper<?, ?>> operatorWrappers;
 
@@ -84,7 +88,7 @@ public class StreamOperatorWrapperTest extends TestLogger {
         this.operatorWrappers = new ArrayList<>();
         this.output = new ConcurrentLinkedQueue<>();
 
-        try (MockEnvironment env = MockEnvironment.builder().build()) {
+        try (MockEnvironment env = MockEnvironment.builder(tempFolder.newFolder()).build()) {
             this.containingTask = new MockStreamTaskBuilder(env).build();
 
             // initialize operator wrappers

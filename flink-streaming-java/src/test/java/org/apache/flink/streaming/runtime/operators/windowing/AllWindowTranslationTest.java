@@ -56,9 +56,11 @@ import org.apache.flink.streaming.util.KeyedOneInputStreamOperatorTestHarness;
 import org.apache.flink.util.Collector;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.concurrent.TimeUnit;
 
@@ -74,6 +76,8 @@ import static org.junit.Assert.fail;
  */
 @SuppressWarnings("serial")
 public class AllWindowTranslationTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Rule public ExpectedException expectedException = ExpectedException.none();
 
@@ -254,7 +258,6 @@ public class AllWindowTranslationTest {
     }
 
     @Test
-    @SuppressWarnings("rawtypes")
     public void testReduceProcessingTime() throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -388,7 +391,6 @@ public class AllWindowTranslationTest {
     }
 
     @Test
-    @SuppressWarnings("rawtypes")
     public void testReduceWithProcessWindowFunctionEventTime() throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -439,7 +441,6 @@ public class AllWindowTranslationTest {
     }
 
     @Test
-    @SuppressWarnings("rawtypes")
     public void testReduceWithProcessWindowFunctionProcessingTime() throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -1312,7 +1313,8 @@ public class AllWindowTranslationTest {
             throws Exception {
 
         KeyedOneInputStreamOperatorTestHarness<K, IN, OUT> testHarness =
-                new KeyedOneInputStreamOperatorTestHarness<>(operator, keySelector, keyType);
+                new KeyedOneInputStreamOperatorTestHarness<>(
+                        operator, keySelector, keyType, tempFolder.newFolder());
 
         testHarness.open();
 

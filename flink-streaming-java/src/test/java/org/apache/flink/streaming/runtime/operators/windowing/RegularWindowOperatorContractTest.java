@@ -39,9 +39,10 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.KeyedOneInputStreamOperatorTestHarness;
 import org.apache.flink.util.OutputTag;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.Matchers;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
@@ -64,6 +65,8 @@ import static org.mockito.Mockito.when;
  * <p>These tests document the implicit contract that exists between the windowing components.
  */
 public class RegularWindowOperatorContractTest extends WindowOperatorContractTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testReducingWindow() throws Exception {
@@ -106,18 +109,16 @@ public class RegularWindowOperatorContractTest extends WindowOperatorContractTes
         testHarness.processElement(new StreamRecord<>(1, 0L));
 
         doAnswer(
-                        new Answer<TriggerResult>() {
-                            @Override
-                            public TriggerResult answer(InvocationOnMock invocation)
-                                    throws Exception {
-                                TimeWindow window = (TimeWindow) invocation.getArguments()[2];
-                                Trigger.TriggerContext context =
-                                        (Trigger.TriggerContext) invocation.getArguments()[3];
-                                context.registerEventTimeTimer(window.getEnd());
-                                context.getPartitionedState(valueStateDescriptor).update("hello");
-                                return TriggerResult.FIRE;
-                            }
-                        })
+                        (Answer<TriggerResult>)
+                                invocation -> {
+                                    TimeWindow window = (TimeWindow) invocation.getArguments()[2];
+                                    Trigger.TriggerContext context =
+                                            (Trigger.TriggerContext) invocation.getArguments()[3];
+                                    context.registerEventTimeTimer(window.getEnd());
+                                    context.getPartitionedState(valueStateDescriptor)
+                                            .update("hello");
+                                    return TriggerResult.FIRE;
+                                })
                 .when(mockTrigger)
                 .onElement(
                         Matchers.<Integer>anyObject(),
@@ -133,21 +134,21 @@ public class RegularWindowOperatorContractTest extends WindowOperatorContractTes
                         anyTimeWindow(),
                         anyInternalWindowContext(),
                         anyInt(),
-                        WindowOperatorContractTest.<Void>anyCollector());
+                        WindowOperatorContractTest.anyCollector());
         verify(mockWindowFunction, times(1))
                 .process(
                         eq(1),
                         eq(new TimeWindow(0, 2)),
                         anyInternalWindowContext(),
                         eq(3),
-                        WindowOperatorContractTest.<Void>anyCollector());
+                        WindowOperatorContractTest.anyCollector());
         verify(mockWindowFunction, times(1))
                 .process(
                         eq(1),
                         eq(new TimeWindow(2, 4)),
                         anyInternalWindowContext(),
                         eq(3),
-                        WindowOperatorContractTest.<Void>anyCollector());
+                        WindowOperatorContractTest.anyCollector());
 
         // clear is only called at cleanup time/GC time
         verify(mockTrigger, never()).clear(anyTimeWindow(), anyTriggerContext());
@@ -180,7 +181,6 @@ public class RegularWindowOperatorContractTest extends WindowOperatorContractTes
                     }
                 };
 
-        @SuppressWarnings("unchecked")
         WindowOperator<Integer, Integer, ACC, OUT, W> operator =
                 new WindowOperator<>(
                         assigner,
@@ -194,7 +194,7 @@ public class RegularWindowOperatorContractTest extends WindowOperatorContractTes
                         null /* late output tag */);
 
         return new KeyedOneInputStreamOperatorTestHarness<>(
-                operator, keySelector, BasicTypeInfo.INT_TYPE_INFO);
+                operator, keySelector, BasicTypeInfo.INT_TYPE_INFO, tempFolder.newFolder());
     }
 
     @Override
@@ -220,7 +220,6 @@ public class RegularWindowOperatorContractTest extends WindowOperatorContractTes
         ListStateDescriptor<Integer> intListDescriptor =
                 new ListStateDescriptor<>("int-list", IntSerializer.INSTANCE);
 
-        @SuppressWarnings("unchecked")
         WindowOperator<Integer, Integer, Iterable<Integer>, OUT, W> operator =
                 new WindowOperator<>(
                         assigner,
@@ -234,7 +233,7 @@ public class RegularWindowOperatorContractTest extends WindowOperatorContractTes
                         lateOutputTag);
 
         return new KeyedOneInputStreamOperatorTestHarness<>(
-                operator, keySelector, BasicTypeInfo.INT_TYPE_INFO);
+                operator, keySelector, BasicTypeInfo.INT_TYPE_INFO, tempFolder.newFolder());
     }
 
     @Override

@@ -33,7 +33,9 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -42,6 +44,8 @@ import java.util.List;
 /** Test snapshot state with {@link WrappingFunction}. */
 public class WrappingFunctionSnapshotRestoreTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testSnapshotAndRestoreWrappedCheckpointedFunction() throws Exception {
 
@@ -49,7 +53,7 @@ public class WrappingFunctionSnapshotRestoreTest {
                 new StreamMap<>(new WrappingTestFun(new WrappingTestFun(new InnerTestFun())));
 
         OneInputStreamOperatorTestHarness<Integer, Integer> testHarness =
-                new OneInputStreamOperatorTestHarness<>(operator);
+                new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -64,7 +68,7 @@ public class WrappingFunctionSnapshotRestoreTest {
         InnerTestFun innerTestFun = new InnerTestFun();
         operator = new StreamMap<>(new WrappingTestFun(new WrappingTestFun(innerTestFun)));
 
-        testHarness = new OneInputStreamOperatorTestHarness<>(operator);
+        testHarness = new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.initializeState(snapshot);
@@ -81,7 +85,7 @@ public class WrappingFunctionSnapshotRestoreTest {
                 new StreamMap<>(new WrappingTestFun(new WrappingTestFun(new InnerTestFunList())));
 
         OneInputStreamOperatorTestHarness<Integer, Integer> testHarness =
-                new OneInputStreamOperatorTestHarness<>(operator);
+                new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -96,7 +100,7 @@ public class WrappingFunctionSnapshotRestoreTest {
         InnerTestFunList innerTestFun = new InnerTestFunList();
         operator = new StreamMap<>(new WrappingTestFun(new WrappingTestFun(innerTestFun)));
 
-        testHarness = new OneInputStreamOperatorTestHarness<>(operator);
+        testHarness = new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.initializeState(snapshot);

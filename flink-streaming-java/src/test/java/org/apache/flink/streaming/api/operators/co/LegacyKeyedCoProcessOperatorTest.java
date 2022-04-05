@@ -35,7 +35,9 @@ import org.apache.flink.streaming.util.TwoInputStreamOperatorTestHarness;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.TestLogger;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -44,6 +46,8 @@ import static org.junit.Assert.assertEquals;
 
 /** Tests {@link LegacyKeyedCoProcessOperator}. */
 public class LegacyKeyedCoProcessOperatorTest extends TestLogger {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testTimestampAndWatermarkQuerying() throws Exception {
@@ -54,9 +58,10 @@ public class LegacyKeyedCoProcessOperatorTest extends TestLogger {
         TwoInputStreamOperatorTestHarness<Integer, String, String> testHarness =
                 new KeyedTwoInputStreamOperatorTestHarness<>(
                         operator,
-                        new IntToStringKeySelector<>(),
+                        new IntToStringKeySelector(),
                         new IdentityKeySelector<String>(),
-                        BasicTypeInfo.STRING_TYPE_INFO);
+                        BasicTypeInfo.STRING_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -91,9 +96,10 @@ public class LegacyKeyedCoProcessOperatorTest extends TestLogger {
         TwoInputStreamOperatorTestHarness<Integer, String, String> testHarness =
                 new KeyedTwoInputStreamOperatorTestHarness<>(
                         operator,
-                        new IntToStringKeySelector<>(),
-                        new IdentityKeySelector<String>(),
-                        BasicTypeInfo.STRING_TYPE_INFO);
+                        new IntToStringKeySelector(),
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.STRING_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -124,9 +130,10 @@ public class LegacyKeyedCoProcessOperatorTest extends TestLogger {
         TwoInputStreamOperatorTestHarness<Integer, String, String> testHarness =
                 new KeyedTwoInputStreamOperatorTestHarness<>(
                         operator,
-                        new IntToStringKeySelector<>(),
-                        new IdentityKeySelector<String>(),
-                        BasicTypeInfo.STRING_TYPE_INFO);
+                        new IntToStringKeySelector(),
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.STRING_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -164,9 +171,10 @@ public class LegacyKeyedCoProcessOperatorTest extends TestLogger {
         TwoInputStreamOperatorTestHarness<Integer, String, String> testHarness =
                 new KeyedTwoInputStreamOperatorTestHarness<>(
                         operator,
-                        new IntToStringKeySelector<>(),
-                        new IdentityKeySelector<String>(),
-                        BasicTypeInfo.STRING_TYPE_INFO);
+                        new IntToStringKeySelector(),
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.STRING_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -201,9 +209,10 @@ public class LegacyKeyedCoProcessOperatorTest extends TestLogger {
         TwoInputStreamOperatorTestHarness<Integer, String, String> testHarness =
                 new KeyedTwoInputStreamOperatorTestHarness<>(
                         operator,
-                        new IntToStringKeySelector<>(),
-                        new IdentityKeySelector<String>(),
-                        BasicTypeInfo.STRING_TYPE_INFO);
+                        new IntToStringKeySelector(),
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.STRING_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -253,9 +262,10 @@ public class LegacyKeyedCoProcessOperatorTest extends TestLogger {
         TwoInputStreamOperatorTestHarness<Integer, String, String> testHarness =
                 new KeyedTwoInputStreamOperatorTestHarness<>(
                         operator,
-                        new IntToStringKeySelector<>(),
-                        new IdentityKeySelector<String>(),
-                        BasicTypeInfo.STRING_TYPE_INFO);
+                        new IntToStringKeySelector(),
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.STRING_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -294,9 +304,10 @@ public class LegacyKeyedCoProcessOperatorTest extends TestLogger {
         TwoInputStreamOperatorTestHarness<Integer, String, String> testHarness =
                 new KeyedTwoInputStreamOperatorTestHarness<>(
                         operator,
-                        new IntToStringKeySelector<>(),
-                        new IdentityKeySelector<String>(),
-                        BasicTypeInfo.STRING_TYPE_INFO);
+                        new IntToStringKeySelector(),
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.STRING_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -314,9 +325,10 @@ public class LegacyKeyedCoProcessOperatorTest extends TestLogger {
         testHarness =
                 new KeyedTwoInputStreamOperatorTestHarness<>(
                         operator,
-                        new IntToStringKeySelector<>(),
-                        new IdentityKeySelector<String>(),
-                        BasicTypeInfo.STRING_TYPE_INFO);
+                        new IntToStringKeySelector(),
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.STRING_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.initializeState(snapshot);
@@ -339,7 +351,7 @@ public class LegacyKeyedCoProcessOperatorTest extends TestLogger {
     }
 
     /** A key selector which convert a integer key to string. */
-    private static class IntToStringKeySelector<T> implements KeySelector<Integer, String> {
+    private static class IntToStringKeySelector implements KeySelector<Integer, String> {
         private static final long serialVersionUID = 1L;
 
         @Override

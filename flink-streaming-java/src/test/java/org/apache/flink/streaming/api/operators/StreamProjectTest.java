@@ -30,7 +30,9 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 import org.apache.flink.streaming.util.TestHarnessUtil;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -44,12 +46,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class StreamProjectTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testProject() throws Exception {
 
         TypeInformation<Tuple5<Integer, String, Integer, String, Integer>> inType =
-                TypeExtractor.getForObject(
-                        new Tuple5<Integer, String, Integer, String, Integer>(2, "a", 3, "b", 4));
+                TypeExtractor.getForObject(new Tuple5<>(2, "a", 3, "b", 4));
 
         int[] fields = new int[] {4, 4, 3};
 
@@ -57,59 +60,37 @@ public class StreamProjectTest {
                 new TupleTypeInfo<Tuple3<Integer, Integer, String>>(
                                 StreamProjection.extractFieldTypes(fields, inType))
                         .createSerializer(new ExecutionConfig());
-        @SuppressWarnings("unchecked")
         StreamProject<
                         Tuple5<Integer, String, Integer, String, Integer>,
                         Tuple3<Integer, Integer, String>>
-                operator =
-                        new StreamProject<
-                                Tuple5<Integer, String, Integer, String, Integer>,
-                                Tuple3<Integer, Integer, String>>(fields, serializer);
+                operator = new StreamProject<>(fields, serializer);
 
         OneInputStreamOperatorTestHarness<
                         Tuple5<Integer, String, Integer, String, Integer>,
                         Tuple3<Integer, Integer, String>>
                 testHarness =
-                        new OneInputStreamOperatorTestHarness<
-                                Tuple5<Integer, String, Integer, String, Integer>,
-                                Tuple3<Integer, Integer, String>>(operator);
+                        new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         long initialTime = 0L;
-        ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<Object>();
+        ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<>();
 
         testHarness.open();
 
         testHarness.processElement(
-                new StreamRecord<Tuple5<Integer, String, Integer, String, Integer>>(
-                        new Tuple5<Integer, String, Integer, String, Integer>(2, "a", 3, "b", 4),
-                        initialTime + 1));
+                new StreamRecord<>(new Tuple5<>(2, "a", 3, "b", 4), initialTime + 1));
         testHarness.processElement(
-                new StreamRecord<Tuple5<Integer, String, Integer, String, Integer>>(
-                        new Tuple5<Integer, String, Integer, String, Integer>(2, "s", 3, "c", 2),
-                        initialTime + 2));
+                new StreamRecord<>(new Tuple5<>(2, "s", 3, "c", 2), initialTime + 2));
         testHarness.processElement(
-                new StreamRecord<Tuple5<Integer, String, Integer, String, Integer>>(
-                        new Tuple5<Integer, String, Integer, String, Integer>(2, "a", 3, "c", 2),
-                        initialTime + 3));
+                new StreamRecord<>(new Tuple5<>(2, "a", 3, "c", 2), initialTime + 3));
         testHarness.processWatermark(new Watermark(initialTime + 2));
         testHarness.processElement(
-                new StreamRecord<Tuple5<Integer, String, Integer, String, Integer>>(
-                        new Tuple5<Integer, String, Integer, String, Integer>(2, "a", 3, "a", 7),
-                        initialTime + 4));
+                new StreamRecord<>(new Tuple5<>(2, "a", 3, "a", 7), initialTime + 4));
 
-        expectedOutput.add(
-                new StreamRecord<Tuple3<Integer, Integer, String>>(
-                        new Tuple3<Integer, Integer, String>(4, 4, "b"), initialTime + 1));
-        expectedOutput.add(
-                new StreamRecord<Tuple3<Integer, Integer, String>>(
-                        new Tuple3<Integer, Integer, String>(2, 2, "c"), initialTime + 2));
-        expectedOutput.add(
-                new StreamRecord<Tuple3<Integer, Integer, String>>(
-                        new Tuple3<Integer, Integer, String>(2, 2, "c"), initialTime + 3));
+        expectedOutput.add(new StreamRecord<>(new Tuple3<>(4, 4, "b"), initialTime + 1));
+        expectedOutput.add(new StreamRecord<>(new Tuple3<>(2, 2, "c"), initialTime + 2));
+        expectedOutput.add(new StreamRecord<>(new Tuple3<>(2, 2, "c"), initialTime + 3));
         expectedOutput.add(new Watermark(initialTime + 2));
-        expectedOutput.add(
-                new StreamRecord<Tuple3<Integer, Integer, String>>(
-                        new Tuple3<Integer, Integer, String>(7, 7, "a"), initialTime + 4));
+        expectedOutput.add(new StreamRecord<>(new Tuple3<>(7, 7, "a"), initialTime + 4));
 
         TestHarnessUtil.assertOutputEquals(
                 "Output was not correct.", expectedOutput, testHarness.getOutput());

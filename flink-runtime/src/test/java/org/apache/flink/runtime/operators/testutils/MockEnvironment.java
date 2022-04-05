@@ -59,6 +59,7 @@ import org.apache.flink.util.concurrent.Executors;
 
 import com.sun.istack.NotNull;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -133,8 +134,8 @@ public class MockEnvironment implements Environment, AutoCloseable {
 
     private CheckpointStorageAccess checkpointStorageAccess;
 
-    public static MockEnvironmentBuilder builder() {
-        return new MockEnvironmentBuilder();
+    public static MockEnvironmentBuilder builder(File tmpWorkingDir) {
+        return new MockEnvironmentBuilder(tmpWorkingDir);
     }
 
     protected MockEnvironment(

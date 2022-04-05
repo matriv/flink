@@ -24,15 +24,18 @@ import org.apache.flink.streaming.api.windowing.triggers.TriggerResult;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
+import java.io.File;
+
 /**
  * Simple {@link TriggerTestHarness} that accepts integers and takes the value as the timestamp for
  * the {@link StreamRecord}.
  */
 public class SimpleTriggerTestHarness<W extends Window> extends TriggerTestHarness<Integer, W> {
 
-    public SimpleTriggerTestHarness(Trigger<Integer, W> trigger, TypeSerializer<W> windowSerializer)
+    public SimpleTriggerTestHarness(
+            Trigger<Integer, W> trigger, TypeSerializer<W> windowSerializer, File tmpWorkingDir)
             throws Exception {
-        super(trigger, windowSerializer);
+        super(trigger, windowSerializer, tmpWorkingDir);
     }
 
     public TriggerResult processElement(Integer element, W window) throws Exception {

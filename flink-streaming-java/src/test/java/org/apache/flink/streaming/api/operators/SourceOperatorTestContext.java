@@ -44,34 +44,36 @@ import org.apache.flink.streaming.runtime.tasks.TestProcessingTimeService;
 import org.apache.flink.streaming.util.MockOutput;
 import org.apache.flink.streaming.util.MockStreamConfig;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.apache.flink.util.Preconditions.checkState;
 
 /** Helper class for testing {@link SourceOperator}. */
-@SuppressWarnings("serial")
 public class SourceOperatorTestContext implements AutoCloseable {
 
     public static final int SUBTASK_INDEX = 1;
     public static final MockSourceSplit MOCK_SPLIT = new MockSourceSplit(1234, 10);
 
-    private MockSourceReader mockSourceReader;
-    private MockOperatorEventGateway mockGateway;
-    private TestProcessingTimeService timeService;
-    private SourceOperator<Integer, MockSourceSplit> operator;
+    private final MockSourceReader mockSourceReader;
+    private final MockOperatorEventGateway mockGateway;
+    private final TestProcessingTimeService timeService;
+    private final SourceOperator<Integer, MockSourceSplit> operator;
+    private final File tmpWorkingDir;
 
-    public SourceOperatorTestContext() throws Exception {
-        this(false);
+    public SourceOperatorTestContext(File tmpWorkingDir) throws Exception {
+        this(false, tmpWorkingDir);
     }
 
-    public SourceOperatorTestContext(boolean idle) throws Exception {
-        this(idle, WatermarkStrategy.noWatermarks());
+    public SourceOperatorTestContext(boolean idle, File tmpWorkingDir) throws Exception {
+        this(idle, WatermarkStrategy.noWatermarks(), tmpWorkingDir);
     }
 
-    public SourceOperatorTestContext(boolean idle, WatermarkStrategy<Integer> watermarkStrategy)
+    public SourceOperatorTestContext(
+            boolean idle, WatermarkStrategy<Integer> watermarkStrategy, File tmpWorkingDir)
             throws Exception {
-
+        this.tmpWorkingDir = tmpWorkingDir;
         mockSourceReader = new MockSourceReader(idle, idle);
         mockGateway = new MockOperatorEventGateway();
         timeService = new TestProcessingTimeService();
@@ -135,7 +137,7 @@ public class SourceOperatorTestContext implements AutoCloseable {
     }
 
     private OperatorStateStore createOperatorStateStore() throws Exception {
-        MockEnvironment env = new MockEnvironmentBuilder().build();
+        MockEnvironment env = new MockEnvironmentBuilder(tmpWorkingDir).build();
         final AbstractStateBackend abstractStateBackend = new MemoryStateBackend();
         CloseableRegistry cancelStreamRegistry = new CloseableRegistry();
         return abstractStateBackend.createOperatorStateBackend(
@@ -150,6 +152,7 @@ public class SourceOperatorTestContext implements AutoCloseable {
                 1L,
                 new MockInputSplitProvider(),
                 1,
-                new TestTaskStateManager());
+                new TestTaskStateManager(),
+                tmpWorkingDir);
     }
 }

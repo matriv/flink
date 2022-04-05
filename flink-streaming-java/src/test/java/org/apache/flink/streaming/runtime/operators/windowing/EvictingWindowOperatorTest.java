@@ -53,7 +53,9 @@ import org.apache.flink.streaming.util.TestHarnessUtil;
 import org.apache.flink.util.Collector;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Comparator;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -62,6 +64,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for {@link EvictingWindowOperator}. */
 public class EvictingWindowOperatorTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final TypeInformation<Tuple2<String, Integer>> STRING_INT_TUPLE =
             TypeInformation.of(new TypeHint<Tuple2<String, Integer>>() {});
@@ -94,7 +98,7 @@ public class EvictingWindowOperatorTest {
                                         new ExecutionConfig()),
                                 stateDesc,
                                 new InternalIterableWindowFunction<>(
-                                        new RichSumReducer<GlobalWindow>(closeCalled)),
+                                        new RichSumReducer<>(closeCalled)),
                                 CountTrigger.of(triggerCount),
                                 CountEvictor.of(windowSize, evictAfter),
                                 0,
@@ -103,7 +107,10 @@ public class EvictingWindowOperatorTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         long initialTime = 0L;
         ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<>();
@@ -186,7 +193,7 @@ public class EvictingWindowOperatorTest {
                                         new ExecutionConfig()),
                                 stateDesc,
                                 new InternalIterableWindowFunction<>(
-                                        new RichSumReducer<GlobalWindow>(closeCalled)),
+                                        new RichSumReducer<>(closeCalled)),
                                 CountTrigger.of(triggerCount),
                                 TimeEvictor.of(Time.seconds(2), evictAfter),
                                 0,
@@ -195,7 +202,10 @@ public class EvictingWindowOperatorTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         long initialTime = 0L;
         ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<>();
@@ -267,7 +277,7 @@ public class EvictingWindowOperatorTest {
                                         new ExecutionConfig()),
                                 stateDesc,
                                 new InternalIterableWindowFunction<>(
-                                        new RichSumReducer<TimeWindow>(closeCalled)),
+                                        new RichSumReducer<>(closeCalled)),
                                 CountTrigger.of(triggerCount),
                                 TimeEvictor.of(Time.seconds(2)),
                                 0,
@@ -276,7 +286,10 @@ public class EvictingWindowOperatorTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         long initialTime = 0L;
         ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<>();
@@ -352,7 +365,7 @@ public class EvictingWindowOperatorTest {
                                         new ExecutionConfig()),
                                 stateDesc,
                                 new InternalIterableWindowFunction<>(
-                                        new RichSumReducer<GlobalWindow>(closeCalled)),
+                                        new RichSumReducer<>(closeCalled)),
                                 CountTrigger.of(triggerCount),
                                 TimeEvictor.of(Time.seconds(2), evictAfter),
                                 0,
@@ -361,7 +374,10 @@ public class EvictingWindowOperatorTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<>();
 
@@ -433,18 +449,13 @@ public class EvictingWindowOperatorTest {
                                         new ExecutionConfig()),
                                 stateDesc,
                                 new InternalIterableWindowFunction<>(
-                                        new RichSumReducer<GlobalWindow>(closeCalled)),
+                                        new RichSumReducer<>(closeCalled)),
                                 CountTrigger.of(triggerCount),
                                 DeltaEvictor.of(
                                         threshold,
-                                        new DeltaFunction<Tuple2<String, Integer>>() {
-                                            @Override
-                                            public double getDelta(
-                                                    Tuple2<String, Integer> oldDataPoint,
-                                                    Tuple2<String, Integer> newDataPoint) {
-                                                return newDataPoint.f1 - oldDataPoint.f1;
-                                            }
-                                        },
+                                        (DeltaFunction<Tuple2<String, Integer>>)
+                                                (oldDataPoint, newDataPoint) ->
+                                                        newDataPoint.f1 - oldDataPoint.f1,
                                         evictAfter),
                                 0,
                                 null /* late data output tag */);
@@ -452,7 +463,10 @@ public class EvictingWindowOperatorTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         long initialTime = 0L;
         ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<>();
@@ -527,18 +541,13 @@ public class EvictingWindowOperatorTest {
                                         new ExecutionConfig()),
                                 stateDesc,
                                 new InternalIterableWindowFunction<>(
-                                        new RichSumReducer<GlobalWindow>(closeCalled)),
+                                        new RichSumReducer<>(closeCalled)),
                                 CountTrigger.of(triggerCount),
                                 DeltaEvictor.of(
                                         threshold,
-                                        new DeltaFunction<Tuple2<String, Integer>>() {
-                                            @Override
-                                            public double getDelta(
-                                                    Tuple2<String, Integer> oldDataPoint,
-                                                    Tuple2<String, Integer> newDataPoint) {
-                                                return newDataPoint.f1 - oldDataPoint.f1;
-                                            }
-                                        },
+                                        (DeltaFunction<Tuple2<String, Integer>>)
+                                                (oldDataPoint, newDataPoint) ->
+                                                        newDataPoint.f1 - oldDataPoint.f1,
                                         evictAfter),
                                 0,
                                 null /* late data output tag */);
@@ -546,7 +555,10 @@ public class EvictingWindowOperatorTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         long initialTime = 0L;
         ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<>();
@@ -624,10 +636,7 @@ public class EvictingWindowOperatorTest {
                                                 new SumReducer(),
                                                 // on some versions of Java we seem to need the
                                                 // explicit type
-                                                new PassThroughWindowFunction<
-                                                        String,
-                                                        GlobalWindow,
-                                                        Tuple2<String, Integer>>())),
+                                                new PassThroughWindowFunction<>())),
                                 CountTrigger.of(windowSlide),
                                 CountEvictor.of(windowSize),
                                 0,
@@ -636,7 +645,10 @@ public class EvictingWindowOperatorTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         long initialTime = 0L;
         ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<>();
@@ -711,7 +723,7 @@ public class EvictingWindowOperatorTest {
                                         new ExecutionConfig()),
                                 stateDesc,
                                 new InternalIterableWindowFunction<>(
-                                        new RichSumReducer<GlobalWindow>(closeCalled)),
+                                        new RichSumReducer<>(closeCalled)),
                                 CountTrigger.of(windowSlide),
                                 CountEvictor.of(windowSize),
                                 0,
@@ -720,7 +732,10 @@ public class EvictingWindowOperatorTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         long initialTime = 0L;
         ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<>();
@@ -795,7 +810,7 @@ public class EvictingWindowOperatorTest {
                                         new ExecutionConfig()),
                                 stateDesc,
                                 new InternalIterableWindowFunction<>(
-                                        new RichSumReducer<TimeWindow>(closeCalled)),
+                                        new RichSumReducer<>(closeCalled)),
                                 EventTimeTrigger.create(),
                                 CountEvictor.of(windowSize),
                                 0,
@@ -804,7 +819,10 @@ public class EvictingWindowOperatorTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         long initialTime = 0L;
 

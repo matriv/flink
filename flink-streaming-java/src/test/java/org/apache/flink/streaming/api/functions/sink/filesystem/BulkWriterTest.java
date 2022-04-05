@@ -40,11 +40,11 @@ import java.util.Map;
 /** Tests for the {@link StreamingFileSink} with {@link BulkWriter}. */
 public class BulkWriterTest extends TestLogger {
 
-    @ClassRule public static final TemporaryFolder TEMP_FOLDER = new TemporaryFolder();
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testCustomBulkWriter() throws Exception {
-        final File outDir = TEMP_FOLDER.newFolder();
+        final File outDir = tempFolder.newFolder();
 
         // we set the max bucket size to small so that we can know when it rolls
         try (OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness =
@@ -55,7 +55,8 @@ public class BulkWriterTest extends TestLogger {
                         10L,
                         new TestUtils.TupleToStringBucketer(),
                         new TestBulkWriterFactory(),
-                        new DefaultBucketFactoryImpl<>())) {
+                        new DefaultBucketFactoryImpl<>(),
+                        tempFolder.newFolder())) {
             testPartFilesWithStringBucketer(
                     testHarness, outDir, ".part-0-0.inprogress", ".part-0-1.inprogress");
         }
@@ -63,7 +64,7 @@ public class BulkWriterTest extends TestLogger {
 
     @Test
     public void testCustomBulkWriterWithBucketAssigner() throws Exception {
-        final File outDir = TEMP_FOLDER.newFolder();
+        final File outDir = tempFolder.newFolder();
 
         // we set the max bucket size to small so that we can know when it rolls
         try (OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness =
@@ -75,7 +76,8 @@ public class BulkWriterTest extends TestLogger {
                         // use a customized bucketer with Integer bucket ID
                         new TestUtils.TupleToIntegerBucketer(),
                         new TestBulkWriterFactory(),
-                        new DefaultBucketFactoryImpl<>())) {
+                        new DefaultBucketFactoryImpl<>(),
+                        tempFolder.newFolder())) {
             testPartFilesWithIntegerBucketer(
                     testHarness,
                     outDir,
@@ -87,7 +89,7 @@ public class BulkWriterTest extends TestLogger {
 
     @Test
     public void testCustomBulkWriterWithPartConfig() throws Exception {
-        final File outDir = TEMP_FOLDER.newFolder();
+        final File outDir = tempFolder.newFolder();
 
         // we set the max bucket size to small so that we can know when it rolls
         try (OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Object> testHarness =
@@ -102,7 +104,8 @@ public class BulkWriterTest extends TestLogger {
                         OutputFileConfig.builder()
                                 .withPartPrefix("prefix")
                                 .withPartSuffix(".ext")
-                                .build())) {
+                                .build(),
+                        tempFolder.newFolder())) {
             testPartFilesWithStringBucketer(
                     testHarness,
                     outDir,

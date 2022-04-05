@@ -49,8 +49,11 @@ import org.apache.flink.util.TestLogger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -76,7 +79,9 @@ public class ReusingHashJoinIteratorITCase extends TestLogger {
     private static final long SEED1 = 561349061987311L;
     private static final long SEED2 = 231434613412342L;
 
-    private final AbstractInvokable parentTask = new DummyInvokable();
+    @ClassRule public static TemporaryFolder tempFolder = new TemporaryFolder();
+
+    private final AbstractInvokable parentTask;
 
     private IOManager ioManager;
     private MemoryManager memoryManager;
@@ -91,6 +96,10 @@ public class ReusingHashJoinIteratorITCase extends TestLogger {
     private TypeComparator<IntPair> pairComparator;
     private TypePairComparator<IntPair, Tuple2<Integer, String>> pairRecordPairComparator;
     private TypePairComparator<Tuple2<Integer, String>, IntPair> recordPairPairComparator;
+
+    public ReusingHashJoinIteratorITCase() throws IOException {
+        parentTask = new DummyInvokable(tempFolder.newFolder());
+    }
 
     @SuppressWarnings("unchecked")
     @Before

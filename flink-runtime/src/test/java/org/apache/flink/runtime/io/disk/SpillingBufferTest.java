@@ -36,9 +36,12 @@ import org.apache.flink.runtime.operators.testutils.TestData.TupleGenerator.Valu
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.EOFException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class SpillingBufferTest {
@@ -57,11 +60,17 @@ public class SpillingBufferTest {
 
     private static final int NUM_MEMORY_SEGMENTS = 23;
 
-    private final AbstractInvokable parentTask = new DummyInvokable();
+    @Rule TemporaryFolder tempFolder = new TemporaryFolder();
+
+    private final AbstractInvokable parentTask;
 
     private IOManager ioManager;
 
     private MemoryManager memoryManager;
+
+    public SpillingBufferTest() throws IOException {
+        parentTask = new DummyInvokable(tempFolder.newFolder());
+    }
 
     // --------------------------------------------------------------------------------------------
 

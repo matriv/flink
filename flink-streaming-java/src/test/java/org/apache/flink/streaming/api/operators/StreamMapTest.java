@@ -26,7 +26,9 @@ import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 import org.apache.flink.streaming.util.TestHarnessUtil;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -41,6 +43,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class StreamMapTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     private static class Map implements MapFunction<Integer, String> {
         private static final long serialVersionUID = 1L;
 
@@ -52,25 +56,25 @@ public class StreamMapTest {
 
     @Test
     public void testMap() throws Exception {
-        StreamMap<Integer, String> operator = new StreamMap<Integer, String>(new Map());
+        StreamMap<Integer, String> operator = new StreamMap<>(new Map());
 
         OneInputStreamOperatorTestHarness<Integer, String> testHarness =
-                new OneInputStreamOperatorTestHarness<Integer, String>(operator);
+                new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         long initialTime = 0L;
-        ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<Object>();
+        ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<>();
 
         testHarness.open();
 
-        testHarness.processElement(new StreamRecord<Integer>(1, initialTime + 1));
-        testHarness.processElement(new StreamRecord<Integer>(2, initialTime + 2));
+        testHarness.processElement(new StreamRecord<>(1, initialTime + 1));
+        testHarness.processElement(new StreamRecord<>(2, initialTime + 2));
         testHarness.processWatermark(new Watermark(initialTime + 2));
-        testHarness.processElement(new StreamRecord<Integer>(3, initialTime + 3));
+        testHarness.processElement(new StreamRecord<>(3, initialTime + 3));
 
-        expectedOutput.add(new StreamRecord<String>("+2", initialTime + 1));
-        expectedOutput.add(new StreamRecord<String>("+3", initialTime + 2));
+        expectedOutput.add(new StreamRecord<>("+2", initialTime + 1));
+        expectedOutput.add(new StreamRecord<>("+3", initialTime + 2));
         expectedOutput.add(new Watermark(initialTime + 2));
-        expectedOutput.add(new StreamRecord<String>("+4", initialTime + 3));
+        expectedOutput.add(new StreamRecord<>("+4", initialTime + 3));
 
         TestHarnessUtil.assertOutputEquals(
                 "Output was not correct.", expectedOutput, testHarness.getOutput());
@@ -78,17 +82,16 @@ public class StreamMapTest {
 
     @Test
     public void testOpenClose() throws Exception {
-        StreamMap<String, String> operator =
-                new StreamMap<String, String>(new TestOpenCloseMapFunction());
+        StreamMap<String, String> operator = new StreamMap<>(new TestOpenCloseMapFunction());
 
         OneInputStreamOperatorTestHarness<String, String> testHarness =
-                new OneInputStreamOperatorTestHarness<String, String>(operator);
+                new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         long initialTime = 0L;
 
         testHarness.open();
 
-        testHarness.processElement(new StreamRecord<String>("Hello", initialTime));
+        testHarness.processElement(new StreamRecord<>("Hello", initialTime));
 
         testHarness.close();
 

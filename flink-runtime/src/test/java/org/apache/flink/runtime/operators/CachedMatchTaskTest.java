@@ -37,6 +37,7 @@ import org.apache.flink.util.Collector;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -59,7 +60,7 @@ public class CachedMatchTaskTest extends DriverTestBase<FlatJoinFunction<Record,
 
     private final List<Record> outList = new ArrayList<Record>();
 
-    public CachedMatchTaskTest(ExecutionConfig config) {
+    public CachedMatchTaskTest(ExecutionConfig config) throws IOException {
         super(config, HASH_MEM, 2, SORT_MEM);
     }
 

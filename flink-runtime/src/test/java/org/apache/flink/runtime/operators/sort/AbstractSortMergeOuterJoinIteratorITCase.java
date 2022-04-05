@@ -58,7 +58,10 @@ import org.apache.flink.util.TestLogger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -79,8 +82,10 @@ public abstract class AbstractSortMergeOuterJoinIteratorITCase extends TestLogge
 
     private static final long SEED2 = 231434613412342L;
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     // dummy abstract task
-    private final AbstractInvokable parentTask = new DummyInvokable();
+    private AbstractInvokable parentTask;
 
     private IOManager ioManager;
     private MemoryManager memoryManager;
@@ -92,7 +97,8 @@ public abstract class AbstractSortMergeOuterJoinIteratorITCase extends TestLogge
     private TypePairComparator<Tuple2<String, String>, Tuple2<String, Integer>> pairComp;
 
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws IOException {
+        parentTask = new DummyInvokable(tempFolder.newFolder());
         ExecutionConfig config = new ExecutionConfig();
         config.disableObjectReuse();
 

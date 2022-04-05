@@ -42,9 +42,7 @@ import org.apache.flink.types.Record;
 import org.apache.flink.util.Collector;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,8 +51,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class ChainTaskTest extends TaskTestBase {
-
-    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final int MEMORY_MANAGER_SIZE = 1024 * 1024 * 3;
 

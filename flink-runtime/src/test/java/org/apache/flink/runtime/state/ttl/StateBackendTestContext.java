@@ -38,6 +38,9 @@ import org.apache.flink.runtime.state.StateBackend;
 import org.apache.flink.runtime.state.internal.InternalKvState;
 import org.apache.flink.util.Preconditions;
 
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
+
 import javax.annotation.Nonnull;
 
 import java.io.IOException;
@@ -50,6 +53,8 @@ import java.util.concurrent.RunnableFuture;
 /** Base class for state backend test context. */
 public abstract class StateBackendTestContext {
     public static final int NUMBER_OF_KEY_GROUPS = 10;
+
+    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private final StateBackend stateBackend;
     private final CheckpointOptions checkpointOptions;
@@ -94,11 +99,12 @@ public abstract class StateBackendTestContext {
         }
     }
 
-    void createAndRestoreKeyedStateBackend(KeyedStateHandle snapshot) {
+    void createAndRestoreKeyedStateBackend(KeyedStateHandle snapshot) throws IOException {
         createAndRestoreKeyedStateBackend(NUMBER_OF_KEY_GROUPS, snapshot);
     }
 
-    void createAndRestoreKeyedStateBackend(int numberOfKeyGroups, KeyedStateHandle snapshot) {
+    void createAndRestoreKeyedStateBackend(int numberOfKeyGroups, KeyedStateHandle snapshot)
+            throws IOException {
         Collection<KeyedStateHandle> stateHandles;
         if (snapshot == null) {
             stateHandles = Collections.emptyList();
@@ -106,7 +112,7 @@ public abstract class StateBackendTestContext {
             stateHandles = new ArrayList<>(1);
             stateHandles.add(snapshot);
         }
-        env = MockEnvironment.builder().build();
+        env = MockEnvironment.builder(tempFolder.newFolder()).build();
         try {
             disposeKeyedStateBackend();
             keyedStateBackend =

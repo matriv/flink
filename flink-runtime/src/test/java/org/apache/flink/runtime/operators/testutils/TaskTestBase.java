@@ -40,10 +40,15 @@ import org.apache.flink.util.MutableObjectIterator;
 import org.apache.flink.util.TestLogger;
 
 import org.junit.After;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
 import java.util.List;
 
 public abstract class TaskTestBase extends TestLogger {
+
+    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
     protected long memorySize = 0;
 
@@ -51,11 +56,11 @@ public abstract class TaskTestBase extends TestLogger {
 
     protected MockEnvironment mockEnv;
 
-    public void initEnvironment(long memorySize, int bufferSize) {
+    public void initEnvironment(long memorySize, int bufferSize) throws IOException {
         this.memorySize = memorySize;
         this.inputSplitProvider = new MockInputSplitProvider();
         this.mockEnv =
-                new MockEnvironmentBuilder()
+                new MockEnvironmentBuilder(tempFolder.newFolder())
                         .setTaskName("mock task")
                         .setManagedMemorySize(this.memorySize)
                         .setInputSplitProvider(this.inputSplitProvider)

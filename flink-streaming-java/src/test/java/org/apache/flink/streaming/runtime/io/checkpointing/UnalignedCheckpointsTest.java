@@ -49,7 +49,9 @@ import org.apache.flink.util.clock.SystemClock;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nullable;
 
@@ -74,6 +76,8 @@ import static org.junit.Assert.assertTrue;
 public class UnalignedCheckpointsTest {
 
     private static final long DEFAULT_CHECKPOINT_ID = 0L;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private int sizeCounter = 1;
 
@@ -713,7 +717,7 @@ public class UnalignedCheckpointsTest {
      * Tests {@link
      * SingleCheckpointBarrierHandler#processCancellationBarrier(CancelCheckpointMarker,
      * InputChannelInfo)} abort the current pending checkpoint triggered by {@link
-     * CheckpointBarrierHandler#processBarrier(CheckpointBarrier, InputChannelInfo)}.
+     * CheckpointBarrierHandler#processBarrier(CheckpointBarrier, InputChannelInfo, boolean)}.
      */
     @Test
     public void testProcessCancellationBarrierAfterProcessBarrier() throws Exception {
@@ -1071,8 +1075,8 @@ public class UnalignedCheckpointsTest {
             extends org.apache.flink.streaming.runtime.io.checkpointing
                     .ValidatingCheckpointHandler {
 
-        public ValidatingCheckpointHandler(long nextExpectedCheckpointId) {
-            super(nextExpectedCheckpointId);
+        public ValidatingCheckpointHandler(long nextExpectedCheckpointId) throws IOException {
+            super(nextExpectedCheckpointId, tempFolder.newFolder());
         }
 
         @Override
@@ -1085,7 +1089,7 @@ public class UnalignedCheckpointsTest {
     static class ValidateAsyncFutureNotCompleted extends ValidatingCheckpointHandler {
         private @Nullable CheckpointedInputGate inputGate;
 
-        public ValidateAsyncFutureNotCompleted(long nextExpectedCheckpointId) {
+        public ValidateAsyncFutureNotCompleted(long nextExpectedCheckpointId) throws IOException {
             super(nextExpectedCheckpointId);
         }
 
@@ -1114,7 +1118,7 @@ public class UnalignedCheckpointsTest {
         private long abortedCheckpointId;
 
         ValidatingCheckpointInvokable() throws Exception {
-            super(new DummyEnvironment("test", 1, 0));
+            super(new DummyEnvironment("test", 1, 0, tempFolder.newFolder()));
         }
 
         @Override

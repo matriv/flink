@@ -23,11 +23,13 @@ import org.apache.flink.runtime.checkpoint.CheckpointMetaData;
 import org.apache.flink.runtime.checkpoint.CheckpointMetricsBuilder;
 import org.apache.flink.runtime.checkpoint.CheckpointOptions;
 
+import java.io.File;
+
 /** An invokable that does nothing with checkpoint. */
 public class DummyCheckpointInvokable extends DummyInvokable {
 
-    public DummyCheckpointInvokable() {
-        super();
+    public DummyCheckpointInvokable(File tmpWorkingDir) {
+        super(tmpWorkingDir);
     }
 
     public void triggerCheckpointOnBarrier(

@@ -63,6 +63,7 @@ import org.apache.flink.util.UserCodeClassLoader;
 
 import javax.annotation.Nullable;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -120,7 +121,7 @@ public class StreamMockEnvironment implements Environment {
 
     private TaskEventDispatcher taskEventDispatcher = mock(TaskEventDispatcher.class);
 
-    private TaskManagerRuntimeInfo taskManagerRuntimeInfo = new TestingTaskManagerRuntimeInfo();
+    private TaskManagerRuntimeInfo taskManagerRuntimeInfo;
 
     private TaskMetricGroup taskMetricGroup =
             UnregisteredMetricGroups.createUnregisteredTaskMetricGroup();
@@ -134,7 +135,8 @@ public class StreamMockEnvironment implements Environment {
             long memorySize,
             MockInputSplitProvider inputSplitProvider,
             int bufferSize,
-            TaskStateManager taskStateManager) {
+            TaskStateManager taskStateManager,
+            File tmpWorkingDir) {
         this(
                 new JobID(),
                 new ExecutionAttemptID(),
@@ -145,7 +147,8 @@ public class StreamMockEnvironment implements Environment {
                 inputSplitProvider,
                 bufferSize,
                 taskStateManager,
-                false);
+                false,
+                tmpWorkingDir);
     }
 
     public StreamMockEnvironment(
@@ -158,7 +161,8 @@ public class StreamMockEnvironment implements Environment {
             MockInputSplitProvider inputSplitProvider,
             int bufferSize,
             TaskStateManager taskStateManager,
-            boolean collectNetworkEvents) {
+            boolean collectNetworkEvents,
+            File tmpWorkingDir) {
 
         this.jobID = jobID;
         this.executionAttemptID = executionAttemptID;
@@ -189,6 +193,7 @@ public class StreamMockEnvironment implements Environment {
         KvStateRegistry registry = new KvStateRegistry();
         this.kvStateRegistry = registry.createTaskRegistry(jobID, getJobVertexId());
         this.collectNetworkEvents = collectNetworkEvents;
+        this.taskManagerRuntimeInfo = new TestingTaskManagerRuntimeInfo(tmpWorkingDir);
     }
 
     public StreamMockEnvironment(
@@ -197,8 +202,8 @@ public class StreamMockEnvironment implements Environment {
             long memorySize,
             MockInputSplitProvider inputSplitProvider,
             int bufferSize,
-            TaskStateManager taskStateManager) {
-
+            TaskStateManager taskStateManager,
+            File tmpWorkingDir) {
         this(
                 jobConfig,
                 taskConfig,
@@ -206,7 +211,8 @@ public class StreamMockEnvironment implements Environment {
                 memorySize,
                 inputSplitProvider,
                 bufferSize,
-                taskStateManager);
+                taskStateManager,
+                tmpWorkingDir);
     }
 
     public void addInputGate(IndexedInputGate gate) {

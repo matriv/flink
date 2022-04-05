@@ -23,6 +23,8 @@ import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.runtime.watermarkstatus.WatermarkStatus;
 
+import java.io.File;
+
 /**
  * A test harness for testing a {@link TwoInputStreamOperator}.
  *
@@ -35,18 +37,19 @@ public class TwoInputStreamOperatorTestHarness<IN1, IN2, OUT>
 
     private final TwoInputStreamOperator<IN1, IN2, OUT> twoInputOperator;
 
-    public TwoInputStreamOperatorTestHarness(TwoInputStreamOperator<IN1, IN2, OUT> operator)
-            throws Exception {
-        this(operator, 1, 1, 0);
+    public TwoInputStreamOperatorTestHarness(
+            TwoInputStreamOperator<IN1, IN2, OUT> operator, File tmpWorkingDir) throws Exception {
+        this(operator, 1, 1, 0, tmpWorkingDir);
     }
 
     public TwoInputStreamOperatorTestHarness(
             TwoInputStreamOperator<IN1, IN2, OUT> operator,
             int maxParallelism,
             int numSubtasks,
-            int subtaskIndex)
+            int subtaskIndex,
+            File tmpWorkingDir)
             throws Exception {
-        super(operator, maxParallelism, numSubtasks, subtaskIndex);
+        super(operator, maxParallelism, numSubtasks, subtaskIndex, tmpWorkingDir);
 
         this.twoInputOperator = operator;
     }

@@ -33,9 +33,11 @@ import org.apache.flink.streaming.api.operators.source.CollectingDataOutput;
 import org.apache.flink.streaming.runtime.io.DataInputStatus;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
+import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nullable;
 
@@ -57,6 +59,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SuppressWarnings("serial")
 public class SourceOperatorAlignmentTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Nullable private SourceOperatorTestContext context;
     @Nullable private SourceOperator<Integer, MockSourceSplit> operator;
 
@@ -68,7 +72,8 @@ public class SourceOperatorAlignmentTest {
                         WatermarkStrategy.forGenerator(ctx -> new PunctuatedGenerator())
                                 .withTimestampAssigner((r, t) -> r)
                                 .withWatermarkAlignment(
-                                        "group1", Duration.ofMillis(100), Duration.ofMillis(1)));
+                                        "group1", Duration.ofMillis(100), Duration.ofMillis(1)),
+                        tempFolder.newFolder());
         operator = context.getOperator();
     }
 
@@ -141,7 +146,8 @@ public class SourceOperatorAlignmentTest {
                                                         PunctuatedGenerator.GenerationMode.ODD))
                                 .withWatermarkAlignment(
                                         "group1", Duration.ofMillis(100), Duration.ofMillis(1))
-                                .withTimestampAssigner((r, t) -> r))) {
+                                .withTimestampAssigner((r, t) -> r),
+                        tempFolder.newFolder())) {
             final SourceOperator<Integer, MockSourceSplit> operator = context.getOperator();
             operator.initializeState(context.createStateContext());
             operator.open();

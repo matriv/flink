@@ -38,6 +38,7 @@ import org.apache.flink.streaming.util.MockStreamingRuntimeContext;
 
 import org.junit.Assert;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -65,14 +66,15 @@ public class CollectSinkFunctionTestWrapper<IN> {
 
     private CollectSinkFunction<IN> function;
 
-    public CollectSinkFunctionTestWrapper(TypeSerializer<IN> serializer, int maxBytesPerBatch)
+    public CollectSinkFunctionTestWrapper(
+            TypeSerializer<IN> serializer, int maxBytesPerBatch, File tmpWorkingDir)
             throws Exception {
         this.serializer = serializer;
         this.maxBytesPerBatch = maxBytesPerBatch;
 
         this.ioManager = new IOManagerAsync();
         MockEnvironment environment =
-                new MockEnvironmentBuilder()
+                new MockEnvironmentBuilder(tmpWorkingDir)
                         .setTaskName("mockTask")
                         .setManagedMemorySize(4 * MemoryManager.DEFAULT_PAGE_SIZE)
                         .setIOManager(ioManager)

@@ -27,6 +27,8 @@ import org.apache.flink.runtime.state.heap.HeapKeyedStateBackend;
 import org.apache.flink.streaming.api.operators.AbstractStreamOperator;
 import org.apache.flink.streaming.api.operators.TwoInputStreamOperator;
 
+import java.io.File;
+
 /**
  * Extension of {@link TwoInputStreamOperatorTestHarness} that allows the operator to get a {@link
  * KeyedStateBackend}.
@@ -41,9 +43,10 @@ public class KeyedTwoInputStreamOperatorTestHarness<K, IN1, IN2, OUT>
             TypeInformation<K> keyType,
             int maxParallelism,
             int numSubtasks,
-            int subtaskIndex)
+            int subtaskIndex,
+            File tmpWorkingDir)
             throws Exception {
-        super(operator, maxParallelism, numSubtasks, subtaskIndex);
+        super(operator, maxParallelism, numSubtasks, subtaskIndex, tmpWorkingDir);
 
         ClosureCleaner.clean(keySelector1, ExecutionConfig.ClosureCleanerLevel.RECURSIVE, false);
         ClosureCleaner.clean(keySelector2, ExecutionConfig.ClosureCleanerLevel.RECURSIVE, false);
@@ -56,9 +59,10 @@ public class KeyedTwoInputStreamOperatorTestHarness<K, IN1, IN2, OUT>
             TwoInputStreamOperator<IN1, IN2, OUT> operator,
             final KeySelector<IN1, K> keySelector1,
             final KeySelector<IN2, K> keySelector2,
-            TypeInformation<K> keyType)
+            TypeInformation<K> keyType,
+            File tmpWorkingDir)
             throws Exception {
-        this(operator, keySelector1, keySelector2, keyType, 1, 1, 0);
+        this(operator, keySelector1, keySelector2, keyType, 1, 1, 0, tmpWorkingDir);
     }
 
     public int numKeyedStateEntries() {

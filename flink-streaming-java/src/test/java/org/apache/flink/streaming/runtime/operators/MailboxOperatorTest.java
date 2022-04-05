@@ -28,7 +28,9 @@ import org.apache.flink.streaming.runtime.tasks.StreamTaskMailboxTestHarnessBuil
 import org.apache.flink.util.TestLogger;
 import org.apache.flink.util.function.RunnableWithException;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nonnull;
 
@@ -45,13 +47,17 @@ import static org.junit.Assert.assertThat;
  */
 public class MailboxOperatorTest extends TestLogger {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testAvoidTaskStarvation() throws Exception {
         final int numRecords = 3;
 
         StreamTaskMailboxTestHarnessBuilder<Integer> builder =
                 new StreamTaskMailboxTestHarnessBuilder<>(
-                                OneInputStreamTask::new, BasicTypeInfo.INT_TYPE_INFO)
+                                OneInputStreamTask::new,
+                                BasicTypeInfo.INT_TYPE_INFO,
+                                tempFolder.newFolder())
                         .addInput(BasicTypeInfo.INT_TYPE_INFO)
                         .setupOperatorChain(new StreamMap<>(i1 -> i1))
                         .chain(new StreamMap<>(i -> i), IntSerializer.INSTANCE)

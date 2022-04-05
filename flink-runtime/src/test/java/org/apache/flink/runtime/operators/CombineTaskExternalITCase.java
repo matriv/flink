@@ -34,6 +34,7 @@ import org.apache.flink.util.Collector;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -50,7 +51,7 @@ public class CombineTaskExternalITCase extends DriverTestBase<RichGroupReduceFun
             new RecordComparator(
                     new int[] {0}, (Class<? extends Value>[]) new Class<?>[] {IntValue.class});
 
-    public CombineTaskExternalITCase(ExecutionConfig config) {
+    public CombineTaskExternalITCase(ExecutionConfig config) throws IOException {
         super(config, COMBINE_MEM, 0);
 
         combine_frac = (double) COMBINE_MEM / this.getMemoryManager().getMemorySize();

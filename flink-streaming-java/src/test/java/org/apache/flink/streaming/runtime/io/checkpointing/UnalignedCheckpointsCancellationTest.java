@@ -33,10 +33,13 @@ import org.apache.flink.runtime.operators.testutils.DummyEnvironment;
 import org.apache.flink.streaming.runtime.tasks.TestSubtaskCheckpointCoordinator;
 import org.apache.flink.util.clock.SystemClock;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,6 +48,9 @@ import static org.junit.Assert.assertEquals;
 /** Unaligned checkpoints cancellation test. */
 @RunWith(Parameterized.class)
 public class UnalignedCheckpointsCancellationTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     private final List<RuntimeEvent> events;
     private final boolean expectTriggerCheckpoint;
     private final boolean expectAbortCheckpoint;
@@ -131,8 +137,8 @@ public class UnalignedCheckpointsCancellationTest {
     }
 
     private static class TestInvokable extends AbstractInvokable {
-        TestInvokable() {
-            super(new DummyEnvironment());
+        TestInvokable() throws IOException {
+            super(new DummyEnvironment(tempFolder.newFolder()));
         }
 
         private boolean checkpointAborted;

@@ -22,17 +22,24 @@ import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.runtime.tasks.StreamIterationHead;
 import org.apache.flink.streaming.runtime.tasks.StreamTaskTestHarness;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import static org.junit.Assert.assertEquals;
 
 /** Tests for {@link StreamIterationHead}. */
 public class StreamIterationHeadTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testIterationHeadWatermarkEmission() throws Exception {
         StreamTaskTestHarness<Integer> harness =
-                new StreamTaskTestHarness<>(StreamIterationHead::new, BasicTypeInfo.INT_TYPE_INFO);
+                new StreamTaskTestHarness<>(
+                        StreamIterationHead::new,
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder());
         harness.setupOutputForSingletonOperatorChain();
         harness.getStreamConfig().setIterationId("1");
         harness.getStreamConfig().setIterationWaitTime(1);

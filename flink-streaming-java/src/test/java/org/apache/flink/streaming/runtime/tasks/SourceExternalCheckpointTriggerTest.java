@@ -33,7 +33,9 @@ import org.apache.flink.streaming.api.operators.StreamSource;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -46,6 +48,8 @@ import static org.junit.Assert.assertTrue;
  */
 @SuppressWarnings("serial")
 public class SourceExternalCheckpointTriggerTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static OneShotLatch ready = new OneShotLatch();
     private static MultiShotLatch sync = new MultiShotLatch();
@@ -61,7 +65,10 @@ public class SourceExternalCheckpointTriggerTest {
     public void testCheckpointsTriggeredBySource() throws Exception {
         // set up the basic test harness
         final StreamTaskTestHarness<Long> testHarness =
-                new StreamTaskTestHarness<>(SourceStreamTask::new, BasicTypeInfo.LONG_TYPE_INFO);
+                new StreamTaskTestHarness<>(
+                        SourceStreamTask::new,
+                        BasicTypeInfo.LONG_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setupOutputForSingletonOperatorChain();
         testHarness.getExecutionConfig().setLatencyTrackingInterval(-1);

@@ -18,7 +18,6 @@
 
 package org.apache.flink.streaming.api.operators.co;
 
-import org.apache.flink.api.common.state.ListState;
 import org.apache.flink.api.common.state.ListStateDescriptor;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
@@ -27,7 +26,6 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.runtime.checkpoint.OperatorSubtaskState;
-import org.apache.flink.runtime.state.KeyedStateFunction;
 import org.apache.flink.streaming.api.functions.co.KeyedBroadcastProcessFunction;
 import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
@@ -39,7 +37,9 @@ import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 import org.apache.flink.util.Preconditions;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,6 +61,8 @@ import static org.junit.Assert.fail;
 
 /** Tests for the {@link CoBroadcastWithKeyedOperator}. */
 public class CoBroadcastWithKeyedOperatorTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final MapStateDescriptor<String, Integer> STATE_DESCRIPTOR =
             new MapStateDescriptor<>(
@@ -96,7 +98,11 @@ public class CoBroadcastWithKeyedOperatorTest {
         try (TwoInputStreamOperatorTestHarness<Tuple2<Integer, String>, String, String>
                 testHarness =
                         new KeyedTwoInputStreamOperatorTestHarness<>(
-                                operator, (in) -> in.f0, null, BasicTypeInfo.INT_TYPE_INFO)) {
+                                operator,
+                                (in) -> in.f0,
+                                null,
+                                BasicTypeInfo.INT_TYPE_INFO,
+                                tempFolder.newFolder())) {
 
             testHarness.setup();
             testHarness.open();
@@ -188,17 +194,14 @@ public class CoBroadcastWithKeyedOperatorTest {
             // put an element in the broadcast state
             ctx.applyToKeyedState(
                     listStateDesc,
-                    new KeyedStateFunction<String, ListState<String>>() {
-                        @Override
-                        public void process(String key, ListState<String> state) throws Exception {
-                            final Iterator<String> it = state.get().iterator();
+                    (key, state) -> {
+                        final Iterator<String> it = state.get().iterator();
 
-                            final List<String> list = new ArrayList<>();
-                            while (it.hasNext()) {
-                                list.add(it.next());
-                            }
-                            assertEquals(expectedKeyedStates.get(key), list);
+                        final List<String> list = new ArrayList<>();
+                        while (it.hasNext()) {
+                            list.add(it.next());
                         }
+                        assertEquals(expectedKeyedStates.get(key), list);
                     });
         }
 
@@ -404,8 +407,8 @@ public class CoBroadcastWithKeyedOperatorTest {
             String outputElem = (String) outputRec.getValue();
 
             expectedBroadcastState.put("51.key", 51);
-            List<Map.Entry<String, Integer>> expectedEntries = new ArrayList<>();
-            expectedEntries.addAll(expectedBroadcastState.entrySet());
+            List<Map.Entry<String, Integer>> expectedEntries =
+                    new ArrayList<>(expectedBroadcastState.entrySet());
             String expected = "TS:41 " + mapToString(expectedEntries);
             assertEquals(expected, outputElem);
 
@@ -482,6 +485,7 @@ public class CoBroadcastWithKeyedOperatorTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testScaleUp() throws Exception {
         final Set<String> keysToRegister = new HashSet<>();
@@ -821,7 +825,8 @@ public class CoBroadcastWithKeyedOperatorTest {
                         keyTypeInfo,
                         maxParallelism,
                         numTasks,
-                        taskIdx);
+                        taskIdx,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.initializeState(initState);

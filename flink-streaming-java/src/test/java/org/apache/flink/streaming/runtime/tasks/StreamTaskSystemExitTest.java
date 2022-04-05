@@ -70,7 +70,9 @@ import org.apache.flink.util.concurrent.Executors;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Collections;
 
@@ -84,7 +86,11 @@ import static org.mockito.Mockito.mock;
  * StreamTask}.
  */
 public class StreamTaskSystemExitTest extends TestLogger {
+
     private static final int TEST_EXIT_CODE = 123;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     private SecurityManager originalSecurityManager;
 
     /**
@@ -130,7 +136,7 @@ public class StreamTaskSystemExitTest extends TestLogger {
 
     @Test(expected = UserSystemExitException.class)
     public void testCancelSystemExitStreamTask() throws Exception {
-        Environment mockEnvironment = new MockEnvironmentBuilder().build();
+        Environment mockEnvironment = new MockEnvironmentBuilder(tempFolder.newFolder()).build();
         SystemExitStreamTask systemExitStreamTask =
                 new SystemExitStreamTask(mockEnvironment, SystemExitStreamTask.ExitPoint.CANCEL);
         systemExitStreamTask.cancel();
@@ -173,7 +179,8 @@ public class StreamTaskSystemExitTest extends TestLogger {
                         invokableClassName,
                         taskConfiguration);
 
-        final TaskManagerRuntimeInfo taskManagerRuntimeInfo = new TestingTaskManagerRuntimeInfo();
+        final TaskManagerRuntimeInfo taskManagerRuntimeInfo =
+                new TestingTaskManagerRuntimeInfo(tempFolder.newFolder());
 
         final ShuffleEnvironment<?, ?> shuffleEnvironment =
                 new NettyShuffleEnvironmentBuilder().build();

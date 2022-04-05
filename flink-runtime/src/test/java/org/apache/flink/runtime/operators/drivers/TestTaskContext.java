@@ -39,9 +39,11 @@ import org.apache.flink.runtime.util.TestingTaskManagerRuntimeInfo;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.MutableObjectIterator;
 
+import java.io.File;
+
 public class TestTaskContext<S, T> implements TaskContext<S, T> {
 
-    private final AbstractInvokable owner = new DummyInvokable();
+    private AbstractInvokable owner;
 
     private MutableObjectIterator<?> input1;
 
@@ -73,9 +75,10 @@ public class TestTaskContext<S, T> implements TaskContext<S, T> {
 
     public TestTaskContext() {}
 
-    public TestTaskContext(long memoryInBytes) {
+    public TestTaskContext(long memoryInBytes, File tmpWorkingDir) {
         this.memoryManager = MemoryManagerBuilder.newBuilder().setMemorySize(memoryInBytes).build();
-        this.taskManageInfo = new TestingTaskManagerRuntimeInfo();
+        this.owner = new DummyInvokable(tmpWorkingDir);
+        this.taskManageInfo = new TestingTaskManagerRuntimeInfo(tmpWorkingDir);
     }
 
     // --------------------------------------------------------------------------------------------
@@ -96,7 +99,7 @@ public class TestTaskContext<S, T> implements TaskContext<S, T> {
     public <X> void setInput1(MutableObjectIterator<X> input, TypeSerializer<X> serializer) {
         this.input1 = input;
         this.serializer1 =
-                new RuntimeSerializerFactory<X>(
+                new RuntimeSerializerFactory<>(
                         serializer, (Class<X>) serializer.createInstance().getClass());
     }
 
@@ -104,7 +107,7 @@ public class TestTaskContext<S, T> implements TaskContext<S, T> {
     public <X> void setInput2(MutableObjectIterator<X> input, TypeSerializer<X> serializer) {
         this.input2 = input;
         this.serializer2 =
-                new RuntimeSerializerFactory<X>(
+                new RuntimeSerializerFactory<>(
                         serializer, (Class<X>) serializer.createInstance().getClass());
     }
 

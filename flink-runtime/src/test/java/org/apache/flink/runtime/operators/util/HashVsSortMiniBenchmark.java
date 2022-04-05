@@ -45,7 +45,11 @@ import org.apache.flink.util.MutableObjectIterator;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import java.io.IOException;
 
 @SuppressWarnings("deprecation")
 public class HashVsSortMiniBenchmark {
@@ -70,8 +74,10 @@ public class HashVsSortMiniBenchmark {
 
     private static final long SEED2 = 231434613412342L;
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     // dummy abstract task
-    private final AbstractInvokable parentTask = new DummyInvokable();
+    private AbstractInvokable parentTask;
 
     // memory and io manager
     private IOManager ioManager;
@@ -85,7 +91,8 @@ public class HashVsSortMiniBenchmark {
 
     @SuppressWarnings("unchecked")
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws IOException {
+        parentTask = new DummyInvokable(tempFolder.newFolder());
         this.serializer1 = TestData.getIntStringTupleSerializerFactory();
         this.serializer2 = TestData.getIntStringTupleSerializerFactory();
         this.comparator1 = TestData.getIntStringTupleComparator();

@@ -47,6 +47,8 @@ import org.apache.flink.util.TestLogger;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -59,6 +61,8 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public abstract class BinaryOperatorTestBase<S extends Function, IN, OUT> extends TestLogger
         implements TaskContext<S, OUT> {
+
+    @ClassRule public static TemporaryFolder tempFolder = new TemporaryFolder();
 
     protected static final int PAGE_SIZE = 32 * 1024;
 
@@ -92,12 +96,13 @@ public abstract class BinaryOperatorTestBase<S extends Function, IN, OUT> extend
 
     private volatile boolean running = true;
 
-    private ExecutionConfig executionConfig;
+    private final ExecutionConfig executionConfig;
 
-    private List<TypeSerializer<IN>> inputSerializers = new ArrayList<>();
+    private final List<TypeSerializer<IN>> inputSerializers = new ArrayList<>();
 
     protected BinaryOperatorTestBase(
-            ExecutionConfig executionConfig, long memory, int maxNumSorters, long perSortMemory) {
+            ExecutionConfig executionConfig, long memory, int maxNumSorters, long perSortMemory)
+            throws IOException {
         if (memory < 0 || maxNumSorters < 0 || perSortMemory < 0) {
             throw new IllegalArgumentException();
         }
@@ -116,10 +121,10 @@ public abstract class BinaryOperatorTestBase<S extends Function, IN, OUT> extend
         this.comparators = new ArrayList<>();
         this.sorters = new ArrayList<>();
 
-        this.owner = new DummyInvokable();
+        this.owner = new DummyInvokable(tempFolder.newFolder());
         this.taskConfig = new TaskConfig(new Configuration());
         this.executionConfig = executionConfig;
-        this.taskManageInfo = new TestingTaskManagerRuntimeInfo();
+        this.taskManageInfo = new TestingTaskManagerRuntimeInfo(tempFolder.newFolder());
     }
 
     @Parameterized.Parameters

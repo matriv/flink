@@ -42,7 +42,9 @@ import org.apache.flink.util.MutableObjectIterator;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.List;
 import java.util.Random;
@@ -54,6 +56,8 @@ public class FixedLengthRecordSorterTest {
     private static final int MEMORY_SIZE = 1024 * 1024 * 64;
 
     private static final int MEMORY_PAGE_SIZE = 32 * 1024;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private MemoryManager memoryManager;
 
@@ -101,7 +105,8 @@ public class FixedLengthRecordSorterTest {
     public void testWriteAndRead() throws Exception {
         final int numSegments = MEMORY_SIZE / MEMORY_PAGE_SIZE;
         final List<MemorySegment> memory =
-                this.memoryManager.allocatePages(new DummyInvokable(), numSegments);
+                this.memoryManager.allocatePages(
+                        new DummyInvokable(tempFolder.newFolder()), numSegments);
 
         FixedLengthRecordSorter<IntPair> sorter = newSortBuffer(memory);
         RandomIntPairGenerator generator = new RandomIntPairGenerator(SEED);
@@ -151,7 +156,8 @@ public class FixedLengthRecordSorterTest {
     public void testWriteAndIterator() throws Exception {
         final int numSegments = MEMORY_SIZE / MEMORY_PAGE_SIZE;
         final List<MemorySegment> memory =
-                this.memoryManager.allocatePages(new DummyInvokable(), numSegments);
+                this.memoryManager.allocatePages(
+                        new DummyInvokable(tempFolder.newFolder()), numSegments);
 
         FixedLengthRecordSorter<IntPair> sorter = newSortBuffer(memory);
         RandomIntPairGenerator generator = new RandomIntPairGenerator(SEED);
@@ -197,7 +203,8 @@ public class FixedLengthRecordSorterTest {
     public void testReset() throws Exception {
         final int numSegments = MEMORY_SIZE / MEMORY_PAGE_SIZE;
         final List<MemorySegment> memory =
-                this.memoryManager.allocatePages(new DummyInvokable(), numSegments);
+                this.memoryManager.allocatePages(
+                        new DummyInvokable(tempFolder.newFolder()), numSegments);
 
         FixedLengthRecordSorter<IntPair> sorter = newSortBuffer(memory);
         RandomIntPairGenerator generator = new RandomIntPairGenerator(SEED);
@@ -260,7 +267,8 @@ public class FixedLengthRecordSorterTest {
     public void testSwap() throws Exception {
         final int numSegments = MEMORY_SIZE / MEMORY_PAGE_SIZE;
         final List<MemorySegment> memory =
-                this.memoryManager.allocatePages(new DummyInvokable(), numSegments);
+                this.memoryManager.allocatePages(
+                        new DummyInvokable(tempFolder.newFolder()), numSegments);
 
         FixedLengthRecordSorter<IntPair> sorter = newSortBuffer(memory);
         RandomIntPairGenerator generator = new RandomIntPairGenerator(SEED);
@@ -311,7 +319,8 @@ public class FixedLengthRecordSorterTest {
     public void testCompare() throws Exception {
         final int numSegments = MEMORY_SIZE / MEMORY_PAGE_SIZE;
         final List<MemorySegment> memory =
-                this.memoryManager.allocatePages(new DummyInvokable(), numSegments);
+                this.memoryManager.allocatePages(
+                        new DummyInvokable(tempFolder.newFolder()), numSegments);
 
         FixedLengthRecordSorter<IntPair> sorter = newSortBuffer(memory);
         UniformIntPairGenerator generator = new UniformIntPairGenerator(Integer.MAX_VALUE, 1, true);
@@ -349,7 +358,8 @@ public class FixedLengthRecordSorterTest {
         final int NUM_RECORDS = 559273;
         final int numSegments = MEMORY_SIZE / MEMORY_PAGE_SIZE;
         final List<MemorySegment> memory =
-                this.memoryManager.allocatePages(new DummyInvokable(), numSegments);
+                this.memoryManager.allocatePages(
+                        new DummyInvokable(tempFolder.newFolder()), numSegments);
 
         FixedLengthRecordSorter<IntPair> sorter = newSortBuffer(memory);
         RandomIntPairGenerator generator = new RandomIntPairGenerator(SEED);
@@ -394,7 +404,7 @@ public class FixedLengthRecordSorterTest {
         // Insert IntPair which would fill 2 memory pages.
         final int NUM_RECORDS = 2 * MEMORY_PAGE_SIZE / 8;
         final List<MemorySegment> memory =
-                this.memoryManager.allocatePages(new DummyInvokable(), 3);
+                this.memoryManager.allocatePages(new DummyInvokable(tempFolder.newFolder()), 3);
 
         FixedLengthRecordSorter<IntPair> sorter = newSortBuffer(memory);
         UniformIntPairGenerator generator =
@@ -412,7 +422,7 @@ public class FixedLengthRecordSorterTest {
         BlockChannelWriter<MemorySegment> blockChannelWriter =
                 this.ioManager.createBlockChannelWriter(channelID);
         final List<MemorySegment> writeBuffer =
-                this.memoryManager.allocatePages(new DummyInvokable(), 3);
+                this.memoryManager.allocatePages(new DummyInvokable(tempFolder.newFolder()), 3);
         ChannelWriterOutputView outputView =
                 new ChannelWriterOutputView(
                         blockChannelWriter, writeBuffer, writeBuffer.get(0).size());
@@ -424,11 +434,11 @@ public class FixedLengthRecordSorterTest {
         BlockChannelReader<MemorySegment> blockChannelReader =
                 this.ioManager.createBlockChannelReader(channelID);
         final List<MemorySegment> readBuffer =
-                this.memoryManager.allocatePages(new DummyInvokable(), 3);
+                this.memoryManager.allocatePages(new DummyInvokable(tempFolder.newFolder()), 3);
         ChannelReaderInputView readerInputView =
                 new ChannelReaderInputView(blockChannelReader, readBuffer, false);
         final List<MemorySegment> dataBuffer =
-                this.memoryManager.allocatePages(new DummyInvokable(), 3);
+                this.memoryManager.allocatePages(new DummyInvokable(tempFolder.newFolder()), 3);
         ChannelReaderInputViewIterator<IntPair> iterator =
                 new ChannelReaderInputViewIterator(readerInputView, dataBuffer, this.serializer);
 
@@ -453,7 +463,7 @@ public class FixedLengthRecordSorterTest {
         // Insert IntPair which would fill 2 memory pages.
         final int NUM_RECORDS = 2 * MEMORY_PAGE_SIZE / 8;
         final List<MemorySegment> memory =
-                this.memoryManager.allocatePages(new DummyInvokable(), 3);
+                this.memoryManager.allocatePages(new DummyInvokable(tempFolder.newFolder()), 3);
 
         FixedLengthRecordSorter<IntPair> sorter = newSortBuffer(memory);
         UniformIntPairGenerator generator =
@@ -471,7 +481,7 @@ public class FixedLengthRecordSorterTest {
         BlockChannelWriter<MemorySegment> blockChannelWriter =
                 this.ioManager.createBlockChannelWriter(channelID);
         final List<MemorySegment> writeBuffer =
-                this.memoryManager.allocatePages(new DummyInvokable(), 3);
+                this.memoryManager.allocatePages(new DummyInvokable(tempFolder.newFolder()), 3);
         ChannelWriterOutputView outputView =
                 new ChannelWriterOutputView(
                         blockChannelWriter, writeBuffer, writeBuffer.get(0).size());
@@ -483,11 +493,11 @@ public class FixedLengthRecordSorterTest {
         BlockChannelReader<MemorySegment> blockChannelReader =
                 this.ioManager.createBlockChannelReader(channelID);
         final List<MemorySegment> readBuffer =
-                this.memoryManager.allocatePages(new DummyInvokable(), 3);
+                this.memoryManager.allocatePages(new DummyInvokable(tempFolder.newFolder()), 3);
         ChannelReaderInputView readerInputView =
                 new ChannelReaderInputView(blockChannelReader, readBuffer, false);
         final List<MemorySegment> dataBuffer =
-                this.memoryManager.allocatePages(new DummyInvokable(), 3);
+                this.memoryManager.allocatePages(new DummyInvokable(tempFolder.newFolder()), 3);
         ChannelReaderInputViewIterator<IntPair> iterator =
                 new ChannelReaderInputViewIterator(readerInputView, dataBuffer, this.serializer);
 

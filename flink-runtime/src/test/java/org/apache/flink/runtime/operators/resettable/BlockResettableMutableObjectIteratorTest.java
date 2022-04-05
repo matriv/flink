@@ -32,8 +32,11 @@ import org.apache.flink.util.MutableObjectIterator;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,15 +46,21 @@ public class BlockResettableMutableObjectIteratorTest {
 
     private static final int NUM_VALUES = 20000;
 
+    @ClassRule public static TemporaryFolder tempFolder = new TemporaryFolder();
+
     private final TypeSerializer<Record> serializer = RecordSerializer.get();
 
-    private final AbstractInvokable memOwner = new DummyInvokable();
+    private final AbstractInvokable memOwner;
 
     private MemoryManager memman;
 
     private MutableObjectIterator<Record> reader;
 
     private List<Record> objects;
+
+    public BlockResettableMutableObjectIteratorTest() throws IOException {
+        memOwner = new DummyInvokable(tempFolder.newFolder());
+    }
 
     @Before
     public void startup() {

@@ -61,6 +61,7 @@ import org.apache.flink.util.function.FunctionWithException;
 
 import javax.annotation.Nullable;
 
+import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,18 +100,23 @@ public class StreamTaskMailboxTestHarnessBuilder<OUT> {
 
     protected final ArrayList<ResultPartitionWriter> additionalOutputs = new ArrayList<>();
 
+    private final File tmpWorkingDir;
+
     private boolean setupCalled = false;
 
-    private TaskManagerRuntimeInfo taskManagerRuntimeInfo = new TestingTaskManagerRuntimeInfo();
+    private TaskManagerRuntimeInfo taskManagerRuntimeInfo;
     private Function<SingleInputGateBuilder, SingleInputGateBuilder> modifyGateBuilder =
             Function.identity();
 
     public StreamTaskMailboxTestHarnessBuilder(
             FunctionWithException<Environment, ? extends StreamTask<OUT, ?>, Exception> taskFactory,
-            TypeInformation<OUT> outputType) {
+            TypeInformation<OUT> outputType,
+            File tmpWorkingDir) {
         this.taskFactory = checkNotNull(taskFactory);
         outputSerializer = outputType.createSerializer(executionConfig);
         streamConfig.setTimeCharacteristic(TimeCharacteristic.EventTime);
+        this.tmpWorkingDir = tmpWorkingDir;
+        taskManagerRuntimeInfo = new TestingTaskManagerRuntimeInfo(tmpWorkingDir);
     }
 
     public <T> StreamTaskMailboxTestHarnessBuilder<OUT> modifyExecutionConfig(
@@ -229,7 +235,8 @@ public class StreamTaskMailboxTestHarnessBuilder<OUT> {
                         new MockInputSplitProvider(),
                         bufferSize,
                         taskStateManager,
-                        collectNetworkEvents);
+                        collectNetworkEvents,
+                        tmpWorkingDir);
 
         streamMockEnvironment.setCheckpointResponder(taskStateManager.getCheckpointResponder());
         streamMockEnvironment.setTaskManagerInfo(taskManagerRuntimeInfo);

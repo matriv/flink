@@ -28,8 +28,6 @@ import org.apache.flink.metrics.MetricGroup;
 import org.apache.flink.runtime.broadcast.BroadcastVariableManager;
 import org.apache.flink.runtime.checkpoint.CheckpointOptions;
 import org.apache.flink.runtime.clusterframework.types.AllocationID;
-import org.apache.flink.runtime.deployment.InputGateDeploymentDescriptor;
-import org.apache.flink.runtime.deployment.ResultPartitionDeploymentDescriptor;
 import org.apache.flink.runtime.execution.Environment;
 import org.apache.flink.runtime.execution.ExecutionState;
 import org.apache.flink.runtime.execution.librarycache.TestingClassLoaderLease;
@@ -84,7 +82,9 @@ import org.apache.flink.util.TestLogger;
 import org.apache.flink.util.concurrent.Executors;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nonnull;
 
@@ -109,6 +109,8 @@ public class StreamTaskTerminationTest extends TestLogger {
     private static final OneShotLatch RUN_LATCH = new OneShotLatch();
     private static final AtomicBoolean SNAPSHOT_HAS_STARTED = new AtomicBoolean();
     private static final OneShotLatch CLEANUP_LATCH = new OneShotLatch();
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     /**
      * FLINK-6833
@@ -149,7 +151,8 @@ public class StreamTaskTerminationTest extends TestLogger {
                         BlockingStreamTask.class.getName(),
                         taskConfiguration);
 
-        final TaskManagerRuntimeInfo taskManagerRuntimeInfo = new TestingTaskManagerRuntimeInfo();
+        final TaskManagerRuntimeInfo taskManagerRuntimeInfo =
+                new TestingTaskManagerRuntimeInfo(tempFolder.newFolder());
 
         final ShuffleEnvironment<?, ?> shuffleEnvironment =
                 new NettyShuffleEnvironmentBuilder().build();
@@ -162,8 +165,8 @@ public class StreamTaskTerminationTest extends TestLogger {
                         new AllocationID(),
                         0,
                         0,
-                        Collections.<ResultPartitionDeploymentDescriptor>emptyList(),
-                        Collections.<InputGateDeploymentDescriptor>emptyList(),
+                        Collections.emptyList(),
+                        Collections.emptyList(),
                         MemoryManagerBuilder.newBuilder().setMemorySize(32L * 1024L).build(),
                         new IOManagerAsync(),
                         shuffleEnvironment,
@@ -186,7 +189,7 @@ public class StreamTaskTerminationTest extends TestLogger {
                         Executors.directExecutor());
 
         CompletableFuture<Void> taskRun =
-                CompletableFuture.runAsync(() -> task.run(), TestingUtils.defaultExecutor());
+                CompletableFuture.runAsync(task, TestingUtils.defaultExecutor());
 
         // wait until the stream task started running
         RUN_LATCH.await();

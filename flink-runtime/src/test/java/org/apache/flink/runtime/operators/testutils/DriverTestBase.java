@@ -48,6 +48,8 @@ import org.apache.flink.util.TestLogger;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -60,6 +62,8 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public abstract class DriverTestBase<S extends Function> extends TestLogger
         implements TaskContext<S, Record> {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     protected static final long DEFAULT_PER_SORT_MEM = 16 * 1024 * 1024;
 
@@ -97,12 +101,14 @@ public abstract class DriverTestBase<S extends Function> extends TestLogger
 
     private ExecutionConfig executionConfig;
 
-    protected DriverTestBase(ExecutionConfig executionConfig, long memory, int maxNumSorters) {
+    protected DriverTestBase(ExecutionConfig executionConfig, long memory, int maxNumSorters)
+            throws IOException {
         this(executionConfig, memory, maxNumSorters, DEFAULT_PER_SORT_MEM);
     }
 
     protected DriverTestBase(
-            ExecutionConfig executionConfig, long memory, int maxNumSorters, long perSortMemory) {
+            ExecutionConfig executionConfig, long memory, int maxNumSorters, long perSortMemory)
+            throws IOException {
         if (memory < 0 || maxNumSorters < 0 || perSortMemory < 0) {
             throw new IllegalArgumentException();
         }
@@ -121,16 +127,16 @@ public abstract class DriverTestBase<S extends Function> extends TestLogger
         this.comparators = new ArrayList<>();
         this.sorters = new ArrayList<>();
 
-        this.owner = new DummyInvokable();
+        this.owner = new DummyInvokable(tempFolder.newFolder());
         this.taskConfig = new TaskConfig(new Configuration());
         this.executionConfig = executionConfig;
-        this.taskManageInfo = new TestingTaskManagerRuntimeInfo();
+        this.taskManageInfo = new TestingTaskManagerRuntimeInfo(tempFolder.newFolder());
     }
 
     @Parameterized.Parameters
     public static Collection<Object[]> getConfigurations() {
 
-        LinkedList<Object[]> configs = new LinkedList<Object[]>();
+        LinkedList<Object[]> configs = new LinkedList<>();
 
         ExecutionConfig withReuse = new ExecutionConfig();
         withReuse.enableObjectReuse();

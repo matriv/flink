@@ -39,7 +39,9 @@ import org.apache.flink.runtime.state.internal.InternalKvState;
 import org.apache.flink.runtime.state.ttl.TtlTimeProvider;
 import org.apache.flink.util.Preconditions;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Collections;
 
@@ -47,12 +49,15 @@ import static org.junit.Assert.assertEquals;
 
 /** Test base for latency tracking state. */
 public abstract class LatencyTrackingStateTestBase<K> {
+
+    @ClassRule public static TemporaryFolder tempFolder = new TemporaryFolder();
+
     protected static final int SAMPLE_INTERVAL = 10;
 
     protected AbstractKeyedStateBackend<K> createKeyedBackend(TypeSerializer<K> keySerializer)
             throws Exception {
 
-        Environment env = new DummyEnvironment();
+        Environment env = new DummyEnvironment(tempFolder.newFolder());
         KeyGroupRange keyGroupRange = new KeyGroupRange(0, 127);
         int numberOfKeyGroups = keyGroupRange.getNumberOfKeyGroups();
         Configuration configuration = new Configuration();

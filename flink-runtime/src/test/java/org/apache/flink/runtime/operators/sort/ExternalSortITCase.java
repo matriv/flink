@@ -40,9 +40,13 @@ import org.apache.flink.util.TestLogger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class ExternalSortITCase extends TestLogger {
 
@@ -61,7 +65,9 @@ public class ExternalSortITCase extends TestLogger {
 
     private static final int MEMORY_SIZE = 1024 * 1024 * 78;
 
-    private final AbstractInvokable parentTask = new DummyInvokable();
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
+    private AbstractInvokable parentTask;
 
     private IOManager ioManager;
 
@@ -77,7 +83,8 @@ public class ExternalSortITCase extends TestLogger {
 
     @SuppressWarnings("unchecked")
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws IOException {
+        parentTask = new DummyInvokable(tempFolder.newFolder());
         this.memoryManager = MemoryManagerBuilder.newBuilder().setMemorySize(MEMORY_SIZE).build();
         this.ioManager = new IOManagerAsync();
 

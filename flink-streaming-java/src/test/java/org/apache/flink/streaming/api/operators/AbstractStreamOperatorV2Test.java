@@ -32,7 +32,9 @@ import org.apache.flink.streaming.util.KeyedMultiInputStreamOperatorTestHarness;
 import org.apache.flink.streaming.util.KeyedOneInputStreamOperatorTestHarness;
 import org.apache.flink.streaming.util.TestHarnessUtil;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,6 +46,9 @@ import static org.hamcrest.Matchers.empty;
 
 /** Tests for the facilities provided by {@link AbstractStreamOperatorV2}. */
 public class AbstractStreamOperatorV2Test extends AbstractStreamOperatorTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Override
     protected KeyedOneInputStreamOperatorTestHarness<Integer, Tuple2<Integer, String>, String>
             createTestHarness(int maxParalelism, int numSubtasks, int subtaskIndex)
@@ -54,7 +59,8 @@ public class AbstractStreamOperatorV2Test extends AbstractStreamOperatorTest {
                 BasicTypeInfo.INT_TYPE_INFO,
                 maxParalelism,
                 numSubtasks,
-                subtaskIndex);
+                subtaskIndex,
+                tempFolder.newFolder());
     }
 
     private static class TestOperatorFactory extends AbstractStreamOperatorFactory<String> {

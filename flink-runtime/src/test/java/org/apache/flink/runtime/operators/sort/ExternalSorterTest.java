@@ -35,7 +35,9 @@ import org.apache.flink.util.Collector;
 import org.apache.flink.util.MutableObjectIterator;
 import org.apache.flink.util.TestLogger;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,6 +55,8 @@ import static org.junit.Assert.assertTrue;
 /** Tests for the {@link ExternalSorter}. */
 public class ExternalSorterTest extends TestLogger {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testInMemorySorterDisposal() throws Exception {
         final TestingInMemorySorterFactory<Tuple2<Integer, Integer>> inMemorySorterFactory =
@@ -63,7 +67,7 @@ public class ExternalSorterTest extends TestLogger {
                 MemoryManagerBuilder.newBuilder()
                         .setMemorySize(MemoryManager.DEFAULT_PAGE_SIZE * numPages)
                         .build();
-        final DummyInvokable parentTask = new DummyInvokable();
+        final DummyInvokable parentTask = new DummyInvokable(tempFolder.newFolder());
 
         try (final IOManagerAsync ioManager = new IOManagerAsync()) {
             final List<MemorySegment> memory = memoryManager.allocatePages(parentTask, numPages);
@@ -107,7 +111,7 @@ public class ExternalSorterTest extends TestLogger {
                 MemoryManagerBuilder.newBuilder()
                         .setMemorySize(MemoryManager.DEFAULT_PAGE_SIZE * numPages)
                         .build();
-        final DummyInvokable parentTask = new DummyInvokable();
+        final DummyInvokable parentTask = new DummyInvokable(tempFolder.newFolder());
 
         Configuration config = new Configuration();
         config.set(testOption, "TEST");

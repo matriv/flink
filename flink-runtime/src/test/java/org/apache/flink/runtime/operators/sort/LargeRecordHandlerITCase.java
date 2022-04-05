@@ -42,7 +42,9 @@ import org.apache.flink.types.Value;
 import org.apache.flink.util.MutableObjectIterator;
 import org.apache.flink.util.TestLogger;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,6 +58,8 @@ import static org.junit.Assert.fail;
 
 public class LargeRecordHandlerITCase extends TestLogger {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testRecordHandlerCompositeKey() {
         final int PAGE_SIZE = 4 * 1024;
@@ -68,7 +72,7 @@ public class LargeRecordHandlerITCase extends TestLogger {
                             .setMemorySize(NUM_PAGES * PAGE_SIZE)
                             .setPageSize(PAGE_SIZE)
                             .build();
-            final AbstractInvokable owner = new DummyInvokable();
+            final AbstractInvokable owner = new DummyInvokable(tempFolder.newFolder());
 
             final List<MemorySegment> initialMemory = memMan.allocatePages(owner, 6);
             final List<MemorySegment> sortMemory = memMan.allocatePages(owner, NUM_PAGES - 6);
@@ -215,7 +219,7 @@ public class LargeRecordHandlerITCase extends TestLogger {
                             .setMemorySize(NUM_PAGES * PAGE_SIZE)
                             .setPageSize(PAGE_SIZE)
                             .build();
-            final AbstractInvokable owner = new DummyInvokable();
+            final AbstractInvokable owner = new DummyInvokable(tempFolder.newFolder());
 
             final List<MemorySegment> memory = memMan.allocatePages(owner, NUM_PAGES);
 

@@ -26,7 +26,9 @@ import org.apache.flink.streaming.api.windowing.triggers.TriggerResult;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.time.Duration;
 
@@ -36,13 +38,16 @@ import static org.junit.Assert.assertEquals;
 /** Tests for {@link ProcessingTimeoutTrigger}. */
 public class ProcessingTimeoutTriggerTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testWindowFireWithoutResetTimer() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
                 new TriggerTestHarness<>(
                         ProcessingTimeoutTrigger.of(
                                 CountTrigger.of(3), Duration.ofMillis(50), false, true),
-                        new TimeWindow.Serializer());
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         assertEquals(
                 TriggerResult.CONTINUE,
@@ -88,7 +93,8 @@ public class ProcessingTimeoutTriggerTest {
                 new TriggerTestHarness<>(
                         ProcessingTimeoutTrigger.of(
                                 CountTrigger.of(3), Duration.ofMillis(50), true, true),
-                        new TimeWindow.Serializer());
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         assertThrows(
                 "Must have exactly one timer firing. Fired timers: []",
@@ -142,7 +148,8 @@ public class ProcessingTimeoutTriggerTest {
                 new TriggerTestHarness<>(
                         ProcessingTimeoutTrigger.of(
                                 CountTrigger.of(3), Duration.ofMillis(50), false, false),
-                        new TimeWindow.Serializer());
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         assertEquals(
                 TriggerResult.CONTINUE,
@@ -176,7 +183,8 @@ public class ProcessingTimeoutTriggerTest {
                                 Duration.ofMillis(50),
                                 false,
                                 false),
-                        new TimeWindow.Serializer());
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         assertEquals(
                 TriggerResult.CONTINUE,

@@ -47,8 +47,11 @@ import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +66,8 @@ public class StreamOperatorChainingTest {
     private static List<String> sink1Results;
     private static List<String> sink2Results;
     private static List<String> sink3Results;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testMultiChainingWithObjectReuse() throws Exception {
@@ -148,8 +153,8 @@ public class StreamOperatorChainingTest {
         }
     }
 
-    private MockEnvironment createMockEnvironment(String taskName) {
-        return new MockEnvironmentBuilder()
+    private MockEnvironment createMockEnvironment(String taskName) throws IOException {
+        return new MockEnvironmentBuilder(tempFolder.newFolder())
                 .setTaskName(taskName)
                 .setManagedMemorySize(3 * 1024 * 1024)
                 .setInputSplitProvider(new MockInputSplitProvider())

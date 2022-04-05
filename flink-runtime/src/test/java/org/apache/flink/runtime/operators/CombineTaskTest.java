@@ -40,9 +40,12 @@ import org.apache.flink.util.MutableObjectIterator;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CombineTaskTest
         extends UnaryOperatorTestBase<
@@ -68,7 +71,7 @@ public class CombineTaskTest
                     new TypeComparator<?>[] {new IntComparator(true)},
                     new TypeSerializer<?>[] {IntSerializer.INSTANCE});
 
-    public CombineTaskTest(ExecutionConfig config) {
+    public CombineTaskTest(ExecutionConfig config) throws IOException {
         super(config, COMBINE_MEM, 0);
 
         combine_frac = (double) COMBINE_MEM / this.getMemoryManager().getMemorySize();

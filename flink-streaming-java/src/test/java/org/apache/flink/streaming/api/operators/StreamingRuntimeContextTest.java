@@ -61,11 +61,14 @@ import org.apache.flink.streaming.runtime.tasks.TestProcessingTimeService;
 import org.apache.flink.streaming.util.CollectorOutput;
 import org.apache.flink.streaming.util.MockStreamTaskBuilder;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
@@ -81,6 +84,8 @@ import static org.mockito.Mockito.when;
 
 /** Tests for {@link StreamingRuntimeContext}. */
 public class StreamingRuntimeContextTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testValueStateInstantiation() throws Exception {
@@ -250,7 +255,9 @@ public class StreamingRuntimeContextTest {
 
     private StreamingRuntimeContext createRuntimeContext() throws Exception {
         return new StreamingRuntimeContext(
-                createListPlainMockOp(), MockEnvironment.builder().build(), Collections.emptyMap());
+                createListPlainMockOp(),
+                MockEnvironment.builder(tempFolder.newFolder()).build(),
+                Collections.emptyMap());
     }
 
     private StreamingRuntimeContext createRuntimeContext(
@@ -258,13 +265,16 @@ public class StreamingRuntimeContextTest {
         return createDescriptorCapturingMockOp(
                         descriptorCapture,
                         config,
-                        MockEnvironment.builder().setExecutionConfig(config).build())
+                        MockEnvironment.builder(tempFolder.newFolder())
+                                .setExecutionConfig(config)
+                                .build())
                 .getRuntimeContext();
     }
 
-    private StreamingRuntimeContext createRuntimeContext(AbstractStreamOperator<?> operator) {
+    private StreamingRuntimeContext createRuntimeContext(AbstractStreamOperator<?> operator)
+            throws IOException {
         return new StreamingRuntimeContext(
-                MockEnvironment.builder().build(),
+                MockEnvironment.builder(tempFolder.newFolder()).build(),
                 Collections.emptyMap(),
                 operator.getMetricGroup(),
                 operator.getOperatorID(),
@@ -351,7 +361,11 @@ public class StreamingRuntimeContextTest {
                                 AbstractKeyedStateBackend<Integer> backend =
                                         new MemoryStateBackend()
                                                 .createKeyedStateBackend(
-                                                        new DummyEnvironment("test_task", 1, 0),
+                                                        new DummyEnvironment(
+                                                                "test_task",
+                                                                1,
+                                                                0,
+                                                                tempFolder.newFolder()),
                                                         new JobID(),
                                                         "test_op",
                                                         IntSerializer.INSTANCE,
@@ -407,7 +421,11 @@ public class StreamingRuntimeContextTest {
                                 AbstractKeyedStateBackend<Integer> backend =
                                         new MemoryStateBackend()
                                                 .createKeyedStateBackend(
-                                                        new DummyEnvironment("test_task", 1, 0),
+                                                        new DummyEnvironment(
+                                                                "test_task",
+                                                                1,
+                                                                0,
+                                                                tempFolder.newFolder()),
                                                         new JobID(),
                                                         "test_op",
                                                         IntSerializer.INSTANCE,

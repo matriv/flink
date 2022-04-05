@@ -42,8 +42,10 @@ import org.apache.flink.streaming.util.OperatorSnapshotUtil;
 
 import com.amazonaws.services.kinesis.model.SequenceNumberRange;
 import com.amazonaws.services.kinesis.model.Shard;
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -93,6 +95,8 @@ public class FlinkKinesisConsumerMigrationTest {
 
         TEST_STATE.put(shardMetadata, TEST_SEQUENCE_NUMBER);
     }
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private final FlinkVersion testMigrateVersion;
 
@@ -151,7 +155,7 @@ public class FlinkKinesisConsumerMigrationTest {
                 new TestFetcher<>(
                         Collections.singletonList(TEST_STREAM_NAME),
                         new TestSourceContext<>(),
-                        new TestRuntimeContext(true, 1, 0),
+                        new TestRuntimeContext(true, 1, 0, tempFolder.newFolder()),
                         TestUtils.getStandardProperties(),
                         new KinesisDeserializationSchemaWrapper<>(new SimpleStringSchema()),
                         null,
@@ -217,7 +221,7 @@ public class FlinkKinesisConsumerMigrationTest {
                 new TestFetcher<>(
                         Collections.singletonList(TEST_STREAM_NAME),
                         new TestSourceContext<>(),
-                        new TestRuntimeContext(true, 1, 0),
+                        new TestRuntimeContext(true, 1, 0, tempFolder.newFolder()),
                         TestUtils.getStandardProperties(),
                         new KinesisDeserializationSchemaWrapper<>(new SimpleStringSchema()),
                         null,
@@ -310,7 +314,7 @@ public class FlinkKinesisConsumerMigrationTest {
                 new TestFetcher<>(
                         Collections.singletonList(TEST_STREAM_NAME),
                         new TestSourceContext<>(),
-                        new TestRuntimeContext(true, 1, 0),
+                        new TestRuntimeContext(true, 1, 0, tempFolder.newFolder()),
                         TestUtils.getStandardProperties(),
                         new KinesisDeserializationSchemaWrapper<>(new SimpleStringSchema()),
                         null,
@@ -385,7 +389,6 @@ public class FlinkKinesisConsumerMigrationTest {
 
     // ------------------------------------------------------------------------
 
-    @SuppressWarnings("unchecked")
     private void writeSnapshot(String path, HashMap<StreamShardMetadata, SequenceNumber> state)
             throws Exception {
         final List<StreamShardHandle> initialDiscoveryShards = new ArrayList<>(state.size());
@@ -404,7 +407,7 @@ public class FlinkKinesisConsumerMigrationTest {
                 new TestFetcher<>(
                         Collections.singletonList(TEST_STREAM_NAME),
                         new TestSourceContext<>(),
-                        new TestRuntimeContext(true, 1, 0),
+                        new TestRuntimeContext(true, 1, 0, tempFolder.newFolder()),
                         TestUtils.getStandardProperties(),
                         new KinesisDeserializationSchemaWrapper<>(new SimpleStringSchema()),
                         state,
@@ -430,17 +433,15 @@ public class FlinkKinesisConsumerMigrationTest {
 
         // run the source asynchronously
         Thread runner =
-                new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            consumer.run(new TestSourceContext<>());
-                        } catch (Throwable t) {
-                            t.printStackTrace();
-                            error.set(t);
-                        }
-                    }
-                };
+                new Thread(
+                        () -> {
+                            try {
+                                consumer.run(new TestSourceContext<>());
+                            } catch (Throwable t) {
+                                t.printStackTrace();
+                                error.set(t);
+                            }
+                        });
         runner.start();
 
         fetcher.waitUntilRun();
@@ -460,9 +461,9 @@ public class FlinkKinesisConsumerMigrationTest {
 
         private static final long serialVersionUID = -1573896262106029446L;
 
-        private KinesisDataFetcher<T> mockFetcher;
+        private final KinesisDataFetcher<T> mockFetcher;
 
-        private static Properties dummyConfig = TestUtils.getStandardProperties();
+        private static final Properties dummyConfig = TestUtils.getStandardProperties();
 
         DummyFlinkKinesisConsumer(
                 KinesisDataFetcher<T> mockFetcher, KinesisDeserializationSchema<T> schema) {

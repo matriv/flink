@@ -40,9 +40,16 @@ import org.apache.flink.util.TestLogger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class ReOpenableHashTableTestBase extends TestLogger {
 
@@ -54,7 +61,9 @@ public abstract class ReOpenableHashTableTestBase extends TestLogger {
 
     protected static final int NUM_PROBES = 3; // number of reopenings of hash join
 
-    protected final AbstractInvokable parentTask = new DummyInvokable();
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
+    protected AbstractInvokable parentTask;
 
     protected IOManager ioManager;
     protected MemoryManager memoryManager;
@@ -74,7 +83,8 @@ public abstract class ReOpenableHashTableTestBase extends TestLogger {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws IOException {
+        parentTask = new DummyInvokable(tempFolder.newFolder());
         this.recordSerializer = TestData.getIntStringTupleSerializer();
 
         this.record1Comparator = TestData.getIntStringTupleComparator();
@@ -196,10 +206,7 @@ public abstract class ReOpenableHashTableTestBase extends TestLogger {
         Map<Integer, Collection<TupleMatch>> copy = new HashMap<>(expectedSecondMatchesMap.size());
         for (Map.Entry<Integer, Collection<TupleMatch>> entry :
                 expectedSecondMatchesMap.entrySet()) {
-            List<TupleMatch> matches = new ArrayList<TupleMatch>(entry.getValue().size());
-            for (TupleMatch m : entry.getValue()) {
-                matches.add(m);
-            }
+            List<TupleMatch> matches = new ArrayList<>(entry.getValue());
             copy.put(entry.getKey(), matches);
         }
         return copy;

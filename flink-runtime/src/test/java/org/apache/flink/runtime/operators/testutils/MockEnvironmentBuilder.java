@@ -38,6 +38,8 @@ import org.apache.flink.runtime.util.TestingTaskManagerRuntimeInfo;
 import org.apache.flink.runtime.util.TestingUserCodeClassLoader;
 import org.apache.flink.util.UserCodeClassLoader;
 
+import java.io.File;
+
 public class MockEnvironmentBuilder {
     private String taskName = "mock-task";
     private MockInputSplitProvider inputSplitProvider = null;
@@ -55,12 +57,18 @@ public class MockEnvironmentBuilder {
     private JobVertexID jobVertexID = new JobVertexID();
     private TaskMetricGroup taskMetricGroup =
             UnregisteredMetricGroups.createUnregisteredTaskMetricGroup();
-    private TaskManagerRuntimeInfo taskManagerRuntimeInfo = new TestingTaskManagerRuntimeInfo();
+    private TaskManagerRuntimeInfo taskManagerRuntimeInfo;
     private IOManager ioManager;
     private MemoryManager memoryManager =
             buildMemoryManager(1024 * MemoryManager.DEFAULT_PAGE_SIZE);
     private ExternalResourceInfoProvider externalResourceInfoProvider =
             ExternalResourceInfoProvider.NO_EXTERNAL_RESOURCES;
+
+    private MockEnvironmentBuilder() {}
+
+    public MockEnvironmentBuilder(File tmpWorkingDir) {
+        this.taskManagerRuntimeInfo = new TestingTaskManagerRuntimeInfo(tmpWorkingDir);
+    }
 
     private MemoryManager buildMemoryManager(long memorySize) {
         return MemoryManagerBuilder.newBuilder().setMemorySize(memorySize).build();

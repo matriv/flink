@@ -47,7 +47,9 @@ import org.apache.flink.streaming.api.operators.StreamOperatorStateHandler.Check
 import org.apache.flink.streaming.runtime.tasks.TestProcessingTimeService;
 import org.apache.flink.util.ExceptionUtils;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Optional;
 import java.util.concurrent.FutureTask;
@@ -63,6 +65,9 @@ import static org.junit.Assert.fail;
 
 /** Tests for {@link StreamOperatorStateHandlerTest}. */
 public class StreamOperatorStateHandlerTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     /**
      * Tests that a failing snapshot method call to the keyed state backend will trigger the closing
      * of the StateSnapshotContextSynchronousImpl and the cancellation of the
@@ -104,7 +109,8 @@ public class StreamOperatorStateHandlerTest {
 
             StreamTaskStateInitializerImpl stateInitializer =
                     new StreamTaskStateInitializerImpl(
-                            new MockEnvironmentBuilder().build(), new MemoryStateBackend());
+                            new MockEnvironmentBuilder(tempFolder.newFolder()).build(),
+                            new MemoryStateBackend());
             StreamOperatorStateContext stateContext =
                     stateInitializer.streamOperatorStateContext(
                             new OperatorID(),

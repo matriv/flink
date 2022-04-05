@@ -44,7 +44,9 @@ import org.apache.flink.util.clock.Clock;
 import org.apache.flink.util.clock.ManualClock;
 import org.apache.flink.util.concurrent.FutureUtils;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nonnull;
 
@@ -81,6 +83,8 @@ import static org.junit.Assert.assertFalse;
 /** Timing out aligned checkpoints tests. */
 public class AlternatingCheckpointsTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     private final ClockWithDelayedActions clock = new ClockWithDelayedActions();
 
     private TestBarrierHandlerFactory getTestBarrierHandlerFactory(
@@ -100,7 +104,9 @@ public class AlternatingCheckpointsTest {
         RecordingChannelStateWriter stateWriter = new RecordingChannelStateWriter();
         try (CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
-                                2, getTestBarrierHandlerFactory(new ValidatingCheckpointHandler()))
+                                2,
+                                getTestBarrierHandlerFactory(
+                                        new ValidatingCheckpointHandler(tempFolder.newFolder())))
                         .withChannelStateWriter(stateWriter)
                         .withRemoteChannels()
                         .withMailboxExecutor()
@@ -134,7 +140,8 @@ public class AlternatingCheckpointsTest {
      */
     @Test
     public void testSwitchToUnalignedByUpstream() throws Exception {
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         try (CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(2, getTestBarrierHandlerFactory(target))
                         .build()) {
@@ -174,7 +181,8 @@ public class AlternatingCheckpointsTest {
     public void testAlternation() throws Exception {
         int numBarriers = 123;
         int numChannels = 123;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         try (CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -205,7 +213,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testAlignedAfterTimedOut() throws Exception {
         int numChannels = 1;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         long alignmentTimeOut = 100L;
         try (CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
@@ -249,7 +258,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testAlignedNeverTimeoutableCheckpoint() throws Exception {
         int numChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         try (CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -267,7 +277,8 @@ public class AlternatingCheckpointsTest {
 
     @Test
     public void testTimeoutAlignment() throws Exception {
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         try (CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(2, getTestBarrierHandlerFactory(target))
                         .withRemoteChannels()
@@ -280,7 +291,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testTimeoutAlignmentAfterProcessingBarrier() throws Exception {
         int numChannels = 3;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         try (CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -341,7 +353,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testTimeoutAlignmentOnFirstBarrier() throws Exception {
         int numChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -372,7 +385,8 @@ public class AlternatingCheckpointsTest {
     public void testTimeoutAlignmentBeforeFirstBarrier() throws Exception {
         // given: Local channels.
         int numChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -396,7 +410,8 @@ public class AlternatingCheckpointsTest {
     public void testTimeoutAlignmentWhenLocalBarrierFirst() throws Exception {
         // given: Gate with remote and local channels.
         int numChannels = 3;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -452,7 +467,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testActiveTimeoutAfterLocalBarrierPassiveTimeout() throws Exception {
         int numChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         try (CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -495,7 +511,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testTimeoutAlignmentOnAnnouncementForSecondCheckpoint() throws Exception {
         int numChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -548,7 +565,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testPassiveTimeoutAlignmentOnAnnouncement() throws Exception {
         int numChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -574,7 +592,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testActiveTimeoutAlignmentOnFirstBarrier() throws Exception {
         int numberOfChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numberOfChannels, getTestBarrierHandlerFactory(target))
@@ -596,7 +615,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testAllChannelsUnblockedAfterAlignmentTimeout() throws Exception {
         int numberOfChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numberOfChannels, getTestBarrierHandlerFactory(target))
@@ -636,7 +656,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testNoActiveTimeoutAlignmentAfterLastBarrier() throws Exception {
         int numberOfChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numberOfChannels, getTestBarrierHandlerFactory(target))
@@ -659,7 +680,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testNoActiveTimeoutAlignmentAfterAbort() throws Exception {
         int numberOfChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numberOfChannels, getTestBarrierHandlerFactory(target))
@@ -690,7 +712,8 @@ public class AlternatingCheckpointsTest {
                         return () -> {};
                     }
                 };
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numberOfChannels,
@@ -714,7 +737,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testActiveTimeoutAlignmentOnAnnouncement() throws Exception {
         int numChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         try (CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -751,7 +775,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testActiveTimeoutAfterAnnouncementPassiveTimeout() throws Exception {
         int numChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         try (CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -792,7 +817,8 @@ public class AlternatingCheckpointsTest {
     public void testActiveTimeoutBeforeFirstAnnouncementPassiveTimeout() throws Exception {
         // given: Two barriers from two channels.
         int numChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         try (CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -835,7 +861,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testActiveTimeoutAfterBarrierPassiveTimeout() throws Exception {
         int numChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         try (CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -880,7 +907,8 @@ public class AlternatingCheckpointsTest {
      */
     @Test
     public void testTimeoutAlignmentOnUnalignedCheckpoint() throws Exception {
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         RecordingChannelStateWriter channelStateWriter = new RecordingChannelStateWriter();
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(3, getTestBarrierHandlerFactory(target))
@@ -922,7 +950,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testTimeoutAlignmentAfterReceivedEndOfPartition() throws Exception {
         int numChannels = 3;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         long alignmentTimeOut = 100L;
 
         try (CheckpointedInputGate gate =
@@ -978,7 +1007,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testStartNewCheckpointViaAnnouncement() throws Exception {
         int numChannels = 3;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         long alignmentTimeOut = 10000L;
 
         try (CheckpointedInputGate gate =
@@ -1037,7 +1067,8 @@ public class AlternatingCheckpointsTest {
     public void testMetricsAlternation() throws Exception {
         int numChannels = 2;
         int bufferSize = 1000;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -1132,7 +1163,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testMetricsSingleChannel() throws Exception {
         int numChannels = 1;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numChannels, getTestBarrierHandlerFactory(target))
@@ -1192,7 +1224,8 @@ public class AlternatingCheckpointsTest {
             new TestInputChannel(inputGate, 0), new TestInputChannel(inputGate, 1)
         };
         inputGate.setInputChannels(channels);
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         SingleCheckpointBarrierHandler barrierHandler =
                 getTestBarrierHandlerFactory(target).create(inputGate);
 
@@ -1235,7 +1268,8 @@ public class AlternatingCheckpointsTest {
         SingleInputGate inputGate = new SingleInputGateBuilder().setNumberOfChannels(2).build();
         inputGate.setInputChannels(
                 new TestInputChannel(inputGate, 0), new TestInputChannel(inputGate, 1));
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         SingleCheckpointBarrierHandler barrierHandler =
                 getTestBarrierHandlerFactory(target).create(inputGate);
 
@@ -1257,7 +1291,8 @@ public class AlternatingCheckpointsTest {
         TestInputChannel firstChannel = new TestInputChannel(inputGate, 0);
         TestInputChannel secondChannel = new TestInputChannel(inputGate, 1);
         inputGate.setInputChannels(firstChannel, secondChannel);
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         SingleCheckpointBarrierHandler barrierHandler =
                 getTestBarrierHandlerFactory(target).create(inputGate);
 
@@ -1289,7 +1324,8 @@ public class AlternatingCheckpointsTest {
     @Test
     public void testNextFirstCheckpointBarrierOvertakesCancellationBarrier() throws Exception {
         int numberOfChannels = 2;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         CheckpointedInputGate gate =
                 new TestCheckpointedInputGateBuilder(
                                 numberOfChannels, getTestBarrierHandlerFactory(target))
@@ -1316,7 +1352,8 @@ public class AlternatingCheckpointsTest {
 
     private void testBarrierHandling(SnapshotType checkpointType) throws Exception {
         final long barrierId = 123L;
-        ValidatingCheckpointHandler target = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler target =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         SingleInputGate gate = new SingleInputGateBuilder().setNumberOfChannels(2).build();
         TestInputChannel fast = new TestInputChannel(gate, 0, false, true);
         TestInputChannel slow = new TestInputChannel(gate, 1, false, true);

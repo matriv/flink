@@ -45,6 +45,7 @@ import org.apache.flink.streaming.util.MockOutput;
 import org.apache.flink.streaming.util.MockStreamConfig;
 import org.apache.flink.streaming.util.MockStreamingRuntimeContext;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -120,13 +121,14 @@ public class TestingSourceOperator<T> extends SourceOperator<T, MockSourceSplit>
     public static <T> SourceOperator<T, MockSourceSplit> createTestOperator(
             SourceReader<T, MockSourceSplit> reader,
             WatermarkStrategy<T> watermarkStrategy,
-            boolean emitProgressiveWatermarks)
+            boolean emitProgressiveWatermarks,
+            File tmpWorkingDir)
             throws Exception {
 
         final OperatorStateStore operatorStateStore =
                 new HashMapStateBackend()
                         .createOperatorStateBackend(
-                                new MockEnvironmentBuilder().build(),
+                                new MockEnvironmentBuilder(tmpWorkingDir).build(),
                                 "test-operator",
                                 Collections.emptyList(),
                                 new CloseableRegistry());
@@ -150,7 +152,8 @@ public class TestingSourceOperator<T> extends SourceOperator<T, MockSourceSplit>
                                 1L,
                                 new MockInputSplitProvider(),
                                 1,
-                                new TestTaskStateManager())),
+                                new TestTaskStateManager(),
+                                tmpWorkingDir)),
                 new MockStreamConfig(new Configuration(), 1),
                 new MockOutput<>(new ArrayList<>()));
         sourceOperator.initializeState(stateContext);

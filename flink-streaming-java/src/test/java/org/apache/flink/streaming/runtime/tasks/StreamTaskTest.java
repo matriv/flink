@@ -145,9 +145,11 @@ import org.apache.flink.util.function.SupplierWithException;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -224,6 +226,8 @@ import static org.mockito.Mockito.when;
 
 /** Tests for {@link StreamTask}. */
 public class StreamTaskTest extends TestLogger {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Rule public ExpectedException thrown = ExpectedException.none();
 
@@ -407,8 +411,9 @@ public class StreamTaskTest extends TestLogger {
      * AsynchronousException and propagates this to the environment.
      */
     @Test
-    public void streamTaskAsyncExceptionHandler_handleException_forwardsMessageProperly() {
-        MockEnvironment mockEnvironment = MockEnvironment.builder().build();
+    public void streamTaskAsyncExceptionHandler_handleException_forwardsMessageProperly()
+            throws IOException {
+        MockEnvironment mockEnvironment = MockEnvironment.builder(tempFolder.newFolder()).build();
         RuntimeException expectedException = new RuntimeException("RUNTIME EXCEPTION");
 
         final StreamTask.StreamTaskAsyncExceptionHandler asyncExceptionHandler =
@@ -446,7 +451,7 @@ public class StreamTaskTest extends TestLogger {
         try (NettyShuffleEnvironment shuffleEnvironment =
                 new NettyShuffleEnvironmentBuilder().build()) {
             final Task task =
-                    new TestTaskBuilder(shuffleEnvironment)
+                    new TestTaskBuilder(shuffleEnvironment, tempFolder.newFolder())
                             .setInvokable(SourceStreamTask.class)
                             .setTaskConfig(cfg.getConfiguration())
                             .setTaskManagerActions(taskManagerActions)
@@ -553,7 +558,7 @@ public class StreamTaskTest extends TestLogger {
 
     @Test
     public void testDecliningCheckpointStreamOperator() throws Exception {
-        DummyEnvironment dummyEnvironment = new DummyEnvironment();
+        DummyEnvironment dummyEnvironment = new DummyEnvironment(tempFolder.newFolder());
 
         // mock the returned snapshots
         OperatorSnapshotFutures operatorSnapshotResult1 = mock(OperatorSnapshotFutures.class);
@@ -689,7 +694,8 @@ public class StreamTaskTest extends TestLogger {
 
         when(operatorSnapshotResult3.getOperatorStateRawFuture()).thenReturn(failingFuture);
 
-        try (MockEnvironment mockEnvironment = new MockEnvironmentBuilder().build()) {
+        try (MockEnvironment mockEnvironment =
+                new MockEnvironmentBuilder(tempFolder.newFolder()).build()) {
             RunningTask<MockStreamTask> task =
                     runTask(
                             () ->
@@ -807,7 +813,7 @@ public class StreamTaskTest extends TestLogger {
                         DoneFuture.of(SnapshotResult.empty()));
 
         try (MockEnvironment mockEnvironment =
-                new MockEnvironmentBuilder()
+                new MockEnvironmentBuilder(tempFolder.newFolder())
                         .setTaskName("mock-task")
                         .setTaskStateManager(taskStateManager)
                         .build()) {
@@ -990,7 +996,9 @@ public class StreamTaskTest extends TestLogger {
                 streamOperatorWithSnapshot(new OperatorSnapshotFutures());
 
         try (MockEnvironment mockEnvironment =
-                new MockEnvironmentBuilder().setTaskStateManager(taskStateManager).build()) {
+                new MockEnvironmentBuilder(tempFolder.newFolder())
+                        .setTaskStateManager(taskStateManager)
+                        .build()) {
 
             RunningTask<MockStreamTask> task =
                     runTask(
@@ -1120,7 +1128,8 @@ public class StreamTaskTest extends TestLogger {
     @Test
     public void testExecuteMailboxActionsAfterLeavingInputProcessorMailboxLoop() throws Exception {
         OneShotLatch latch = new OneShotLatch();
-        try (MockEnvironment mockEnvironment = new MockEnvironmentBuilder().build()) {
+        try (MockEnvironment mockEnvironment =
+                new MockEnvironmentBuilder(tempFolder.newFolder()).build()) {
             RunningTask<StreamTask<?, ?>> task =
                     runTask(
                             () ->
@@ -1156,7 +1165,9 @@ public class StreamTaskTest extends TestLogger {
         streamConfig.setStreamOperator(new StreamMap<>(value -> value));
         streamConfig.setOperatorID(new OperatorID());
         try (MockEnvironment mockEnvironment =
-                new MockEnvironmentBuilder().setTaskConfiguration(taskConfiguration).build()) {
+                new MockEnvironmentBuilder(tempFolder.newFolder())
+                        .setTaskConfiguration(taskConfiguration)
+                        .build()) {
 
             ClassLoader taskClassLoader = new TestUserCodeClassLoader();
 
@@ -1240,7 +1251,7 @@ public class StreamTaskTest extends TestLogger {
     }
 
     private TestTaskBuilder taskBuilderWithConfiguredRecordWriter(
-            NettyShuffleEnvironment shuffleEnvironment) {
+            NettyShuffleEnvironment shuffleEnvironment) throws IOException {
         Configuration taskConfiguration = new Configuration();
         outputEdgeConfiguration(taskConfiguration);
 
@@ -1250,7 +1261,7 @@ public class StreamTaskTest extends TestLogger {
                         NettyShuffleDescriptorBuilder.newBuilder().buildLocal(),
                         1,
                         false);
-        return new TestTaskBuilder(shuffleEnvironment)
+        return new TestTaskBuilder(shuffleEnvironment, tempFolder.newFolder())
                 .setInvokable(NoOpStreamTask.class)
                 .setTaskConfig(taskConfiguration)
                 .setResultPartitions(singletonList(descriptor));
@@ -1471,7 +1482,7 @@ public class StreamTaskTest extends TestLogger {
         // given: the operator with empty snapshot result (all state handles are null)
         OneInputStreamOperator<String, String> statelessOperator =
                 streamOperatorWithSnapshot(new OperatorSnapshotFutures());
-        DummyEnvironment dummyEnvironment = new DummyEnvironment();
+        DummyEnvironment dummyEnvironment = new DummyEnvironment(tempFolder.newFolder());
 
         // when: Invoke the restore explicitly before launching the task.
         RunningTask<MockStreamTask> task =
@@ -1498,7 +1509,7 @@ public class StreamTaskTest extends TestLogger {
         // given: the operator with empty snapshot result (all state handles are null)
         OneInputStreamOperator<String, String> statelessOperator =
                 streamOperatorWithSnapshot(new OperatorSnapshotFutures());
-        DummyEnvironment dummyEnvironment = new DummyEnvironment();
+        DummyEnvironment dummyEnvironment = new DummyEnvironment(tempFolder.newFolder());
 
         // when: Launch the task.
         RunningTask<MockStreamTask> task =
@@ -1519,7 +1530,8 @@ public class StreamTaskTest extends TestLogger {
     public void testQuiesceOfMailboxRightBeforeSubmittingActionViaTimerService() throws Exception {
         // given: the stream task with configured handle async exception.
         AtomicBoolean submitThroughputFail = new AtomicBoolean();
-        MockEnvironment mockEnvironment = new MockEnvironmentBuilder().build();
+        MockEnvironment mockEnvironment =
+                new MockEnvironmentBuilder(tempFolder.newFolder()).build();
 
         final UnAvailableTestInputProcessor inputProcessor = new UnAvailableTestInputProcessor();
         RunningTask<StreamTask<?, ?>> task =
@@ -1668,7 +1680,8 @@ public class StreamTaskTest extends TestLogger {
 
         try (StreamTaskMailboxTestHarness<String> harness =
                 new StreamTaskMailboxTestHarnessBuilder<>(OneInputStreamTask::new, STRING_TYPE_INFO)
-                        .setTaskManagerRuntimeInfo(new TestingTaskManagerRuntimeInfo(config))
+                        .setTaskManagerRuntimeInfo(
+                                new TestingTaskManagerRuntimeInfo(config, tempFolder.newFolder()))
                         .addInput(STRING_TYPE_INFO, inputChannels)
                         .addInput(STRING_TYPE_INFO, inputChannels)
                         .modifyGateBuilder(
@@ -1741,7 +1754,8 @@ public class StreamTaskTest extends TestLogger {
                 };
         try (StreamTaskMailboxTestHarness<String> harness =
                 new StreamTaskMailboxTestHarnessBuilder<>(OneInputStreamTask::new, STRING_TYPE_INFO)
-                        .setTaskManagerRuntimeInfo(new TestingTaskManagerRuntimeInfo(config))
+                        .setTaskManagerRuntimeInfo(
+                                new TestingTaskManagerRuntimeInfo(config, tempFolder.newFolder()))
                         .addInput(STRING_TYPE_INFO, inputChannelsGate1)
                         .addInput(STRING_TYPE_INFO, inputChannelsGate2)
                         .modifyGateBuilder(
@@ -1777,7 +1791,8 @@ public class StreamTaskTest extends TestLogger {
      */
     @Test
     public void testMailboxMetricsScheduling() throws Exception {
-        try (MockEnvironment mockEnvironment = new MockEnvironmentBuilder().build()) {
+        try (MockEnvironment mockEnvironment =
+                new MockEnvironmentBuilder(tempFolder.newFolder()).build()) {
             Gauge<Integer> mailboxSizeMetric =
                     mockEnvironment.getMetricGroup().getIOMetricGroup().getMailboxSize();
             Histogram mailboxLatencyMetric =
@@ -1880,7 +1895,7 @@ public class StreamTaskTest extends TestLogger {
         return (TestInputChannel) inputGate.getChannel(idx);
     }
 
-    private MockEnvironment setupEnvironment(boolean... outputAvailabilities) {
+    private MockEnvironment setupEnvironment(boolean... outputAvailabilities) throws IOException {
         final Configuration configuration = new Configuration();
         new MockStreamConfig(configuration, outputAvailabilities.length);
 
@@ -1890,7 +1905,9 @@ public class StreamTaskTest extends TestLogger {
         }
 
         final MockEnvironment environment =
-                new MockEnvironmentBuilder().setTaskConfiguration(configuration).build();
+                new MockEnvironmentBuilder(tempFolder.newFolder())
+                        .setTaskConfiguration(configuration)
+                        .build();
         environment.addOutputs(writers);
         return environment;
     }
@@ -2105,7 +2122,7 @@ public class StreamTaskTest extends TestLogger {
             Configuration taskManagerConfig)
             throws Exception {
 
-        return new TestTaskBuilder(shuffleEnvironment)
+        return new TestTaskBuilder(shuffleEnvironment, tempFolder.newFolder())
                 .setTaskManagerConfig(taskManagerConfig)
                 .setInvokable(invokable)
                 .setTaskConfig(taskConfig.getConfiguration())
@@ -2577,6 +2594,10 @@ public class StreamTaskTest extends TestLogger {
         private final CompletableFuture<Long> acknowledgeCheckpointFuture =
                 new CompletableFuture<>();
 
+        public AcknowledgeDummyEnvironment() throws IOException {
+            super(tempFolder.newFolder());
+        }
+
         public CompletableFuture<Long> getAcknowledgeCheckpointFuture() {
             return acknowledgeCheckpointFuture;
         }
@@ -2662,7 +2683,8 @@ public class StreamTaskTest extends TestLogger {
 
         final RuntimeException failingCause;
 
-        private FailingDummyEnvironment(RuntimeException failingCause) {
+        private FailingDummyEnvironment(RuntimeException failingCause) throws IOException {
+            super(tempFolder.newFolder());
             this.failingCause = failingCause;
         }
 

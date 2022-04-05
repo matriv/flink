@@ -59,7 +59,9 @@ import org.apache.flink.streaming.util.KeyedOneInputStreamOperatorTestHarness;
 import org.apache.flink.util.Collector;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.concurrent.TimeUnit;
 
@@ -73,8 +75,9 @@ import static org.junit.Assert.fail;
  * <p>We also create a test harness and push one element into the operator to verify that we get
  * some output.
  */
-@SuppressWarnings("serial")
 public class WindowTranslationTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     // ------------------------------------------------------------------------
     //  Rich Pre-Aggregation Functions
@@ -1485,7 +1488,8 @@ public class WindowTranslationTest {
             throws Exception {
 
         KeyedOneInputStreamOperatorTestHarness<K, IN, OUT> testHarness =
-                new KeyedOneInputStreamOperatorTestHarness<>(operator, keySelector, keyType);
+                new KeyedOneInputStreamOperatorTestHarness<>(
+                        operator, keySelector, keyType, tempFolder.newFolder());
 
         if (operator instanceof OutputTypeConfigurable) {
             // use a dummy type since window functions just need the ExecutionConfig

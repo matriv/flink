@@ -48,6 +48,7 @@ import org.apache.flink.streaming.api.windowing.triggers.TriggerResult;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,14 +65,15 @@ public class TriggerTestHarness<T, W extends Window> {
     private final HeapKeyedStateBackend<Integer> stateBackend;
     private final TestInternalTimerService<Integer, W> internalTimerService;
 
-    public TriggerTestHarness(Trigger<T, W> trigger, TypeSerializer<W> windowSerializer)
+    public TriggerTestHarness(
+            Trigger<T, W> trigger, TypeSerializer<W> windowSerializer, File tmpWorkingDir)
             throws Exception {
         this.trigger = trigger;
         this.windowSerializer = windowSerializer;
 
         // we only ever use one key, other tests make sure that windows work across different
         // keys
-        DummyEnvironment dummyEnv = new DummyEnvironment("test", 1, 0);
+        DummyEnvironment dummyEnv = new DummyEnvironment("test", 1, 0, tmpWorkingDir);
         MemoryStateBackend backend = new MemoryStateBackend();
 
         @SuppressWarnings("unchecked")

@@ -35,12 +35,16 @@ import org.apache.flink.util.TestLogger;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.EOFException;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FileChannelStreamsITCase extends TestLogger {
 
@@ -59,6 +63,8 @@ public class FileChannelStreamsITCase extends TestLogger {
     private static final int MEMORY_PAGE_SIZE = 32 * 1024;
 
     private static final int NUM_MEMORY_SEGMENTS = 3;
+
+    @Rule TemporaryFolder tempFolder = new TemporaryFolder();
 
     private IOManager ioManager;
 
@@ -88,7 +94,8 @@ public class FileChannelStreamsITCase extends TestLogger {
     public void testWriteReadSmallRecords() {
         try {
             List<MemorySegment> memory =
-                    memManager.allocatePages(new DummyInvokable(), NUM_MEMORY_SEGMENTS);
+                    memManager.allocatePages(
+                            new DummyInvokable(tempFolder.newFolder()), NUM_MEMORY_SEGMENTS);
 
             final PairGenerator generator =
                     new PairGenerator(
@@ -115,7 +122,8 @@ public class FileChannelStreamsITCase extends TestLogger {
 
             // create the reader input view
             List<MemorySegment> readMemory =
-                    memManager.allocatePages(new DummyInvokable(), NUM_MEMORY_SEGMENTS);
+                    memManager.allocatePages(
+                            new DummyInvokable(tempFolder.newFolder()), NUM_MEMORY_SEGMENTS);
 
             final BlockChannelReader<MemorySegment> reader =
                     ioManager.createBlockChannelReader(channel);
@@ -144,7 +152,8 @@ public class FileChannelStreamsITCase extends TestLogger {
     public void testWriteAndReadLongRecords() {
         try {
             final List<MemorySegment> memory =
-                    memManager.allocatePages(new DummyInvokable(), NUM_MEMORY_SEGMENTS);
+                    memManager.allocatePages(
+                            new DummyInvokable(tempFolder.newFolder()), NUM_MEMORY_SEGMENTS);
 
             final PairGenerator generator =
                     new PairGenerator(
@@ -171,7 +180,8 @@ public class FileChannelStreamsITCase extends TestLogger {
 
             // create the reader input view
             List<MemorySegment> readMemory =
-                    memManager.allocatePages(new DummyInvokable(), NUM_MEMORY_SEGMENTS);
+                    memManager.allocatePages(
+                            new DummyInvokable(tempFolder.newFolder()), NUM_MEMORY_SEGMENTS);
 
             final BlockChannelReader<MemorySegment> reader =
                     ioManager.createBlockChannelReader(channel);
@@ -200,7 +210,8 @@ public class FileChannelStreamsITCase extends TestLogger {
     public void testReadTooMany() {
         try {
             final List<MemorySegment> memory =
-                    memManager.allocatePages(new DummyInvokable(), NUM_MEMORY_SEGMENTS);
+                    memManager.allocatePages(
+                            new DummyInvokable(tempFolder.newFolder()), NUM_MEMORY_SEGMENTS);
 
             final PairGenerator generator =
                     new PairGenerator(
@@ -227,7 +238,8 @@ public class FileChannelStreamsITCase extends TestLogger {
 
             // create the reader input view
             List<MemorySegment> readMemory =
-                    memManager.allocatePages(new DummyInvokable(), NUM_MEMORY_SEGMENTS);
+                    memManager.allocatePages(
+                            new DummyInvokable(tempFolder.newFolder()), NUM_MEMORY_SEGMENTS);
 
             final BlockChannelReader<MemorySegment> reader =
                     ioManager.createBlockChannelReader(channel);
@@ -261,7 +273,8 @@ public class FileChannelStreamsITCase extends TestLogger {
     @Test
     public void testWriteReadOneBufferOnly() {
         try {
-            final List<MemorySegment> memory = memManager.allocatePages(new DummyInvokable(), 1);
+            final List<MemorySegment> memory =
+                    memManager.allocatePages(new DummyInvokable(tempFolder.newFolder()), 1);
 
             final PairGenerator generator =
                     new PairGenerator(
@@ -287,7 +300,8 @@ public class FileChannelStreamsITCase extends TestLogger {
             outView.close();
 
             // create the reader input view
-            List<MemorySegment> readMemory = memManager.allocatePages(new DummyInvokable(), 1);
+            List<MemorySegment> readMemory =
+                    memManager.allocatePages(new DummyInvokable(tempFolder.newFolder()), 1);
 
             final BlockChannelReader<MemorySegment> reader =
                     ioManager.createBlockChannelReader(channel);
@@ -316,7 +330,8 @@ public class FileChannelStreamsITCase extends TestLogger {
     public void testWriteReadNotAll() {
         try {
             final List<MemorySegment> memory =
-                    memManager.allocatePages(new DummyInvokable(), NUM_MEMORY_SEGMENTS);
+                    memManager.allocatePages(
+                            new DummyInvokable(tempFolder.newFolder()), NUM_MEMORY_SEGMENTS);
 
             final PairGenerator generator =
                     new PairGenerator(
@@ -343,7 +358,8 @@ public class FileChannelStreamsITCase extends TestLogger {
 
             // create the reader input view
             List<MemorySegment> readMemory =
-                    memManager.allocatePages(new DummyInvokable(), NUM_MEMORY_SEGMENTS);
+                    memManager.allocatePages(
+                            new DummyInvokable(tempFolder.newFolder()), NUM_MEMORY_SEGMENTS);
 
             final BlockChannelReader<MemorySegment> reader =
                     ioManager.createBlockChannelReader(channel);

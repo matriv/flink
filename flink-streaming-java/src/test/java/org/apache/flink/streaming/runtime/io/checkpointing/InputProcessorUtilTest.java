@@ -39,7 +39,9 @@ import org.apache.flink.streaming.runtime.tasks.TestSubtaskCheckpointCoordinator
 import org.apache.flink.streaming.util.MockStreamTask;
 import org.apache.flink.streaming.util.MockStreamTaskBuilder;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,10 +56,13 @@ import static org.junit.Assert.assertTrue;
  */
 public class InputProcessorUtilTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testCreateCheckpointedMultipleInputGate() throws Exception {
         try (CloseableRegistry registry = new CloseableRegistry()) {
-            MockEnvironment environment = new MockEnvironmentBuilder().build();
+            MockEnvironment environment =
+                    new MockEnvironmentBuilder(tempFolder.newFolder()).build();
             MockStreamTask streamTask = new MockStreamTaskBuilder(environment).build();
             StreamConfig streamConfig = new StreamConfig(environment.getJobConfiguration());
             streamConfig.setCheckpointMode(CheckpointingMode.EXACTLY_ONCE);

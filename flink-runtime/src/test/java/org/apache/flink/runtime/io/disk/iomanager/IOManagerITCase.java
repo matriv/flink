@@ -31,7 +31,9 @@ import org.apache.flink.util.TestLogger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.EOFException;
 import java.io.File;
@@ -51,6 +53,8 @@ public class IOManagerITCase extends TestLogger {
     private final int NUM_CHANNELS = 29;
 
     private final int NUMBERS_TO_BE_WRITTEN = NUM_CHANNELS * 1000000;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private IOManager ioManager;
 
@@ -84,7 +88,7 @@ public class IOManagerITCase extends TestLogger {
     @SuppressWarnings("unchecked")
     public void parallelChannelsTest() throws Exception {
         final Random rnd = new Random(SEED);
-        final AbstractInvokable memOwner = new DummyInvokable();
+        final AbstractInvokable memOwner = new DummyInvokable(tempFolder.newFolder());
 
         FileIOChannel.ID[] ids = new FileIOChannel.ID[NUM_CHANNELS];
         BlockChannelWriter<MemorySegment>[] writers = new BlockChannelWriter[NUM_CHANNELS];

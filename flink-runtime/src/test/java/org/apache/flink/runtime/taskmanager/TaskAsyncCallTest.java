@@ -62,7 +62,9 @@ import org.apache.flink.util.TestLogger;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -88,6 +90,8 @@ public class TaskAsyncCallTest extends TestLogger {
      * CheckpointOptions)} was called {@link #numCalls} times.
      */
     private static OneShotLatch triggerLatch;
+
+    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private ShuffleEnvironment<?, ?> shuffleEnvironment;
 
@@ -219,7 +223,7 @@ public class TaskAsyncCallTest extends TestLogger {
                 new TestGlobalAggregateManager(),
                 classLoaderHandle,
                 mock(FileCache.class),
-                new TestingTaskManagerRuntimeInfo(),
+                new TestingTaskManagerRuntimeInfo(tempFolder.newFolder()),
                 taskMetricGroup,
                 consumableNotifier,
                 partitionProducerStateChecker,

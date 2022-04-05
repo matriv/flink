@@ -57,7 +57,7 @@ public class ReduceTaskTest extends DriverTestBase<RichGroupReduceFunction<Recor
 
     private final List<Record> outList = new ArrayList<>();
 
-    public ReduceTaskTest(ExecutionConfig config) {
+    public ReduceTaskTest(ExecutionConfig config) throws IOException {
         super(config, 0, 1, 3 * 1024 * 1024);
     }
 

@@ -39,9 +39,11 @@ import org.apache.flink.streaming.runtime.tasks.TestProcessingTimeService;
 import org.apache.flink.util.TestLogger;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,6 +63,8 @@ import static org.junit.Assert.fail;
 public class BatchExecutionInternalTimeServiceTest extends TestLogger {
     public static final IntSerializer KEY_SERIALIZER = new IntSerializer();
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Rule public ExpectedException expectedException = ExpectedException.none();
 
     @Test
@@ -69,7 +73,7 @@ public class BatchExecutionInternalTimeServiceTest extends TestLogger {
         expectedException.expectMessage(
                 "Batch execution specific time service can work only with BatchExecutionKeyedStateBackend");
 
-        MockEnvironment mockEnvironment = MockEnvironment.builder().build();
+        MockEnvironment mockEnvironment = MockEnvironment.builder(tempFolder.newFolder()).build();
         AbstractKeyedStateBackend<Integer> stateBackend =
                 new MemoryStateBackend()
                         .createKeyedStateBackend(

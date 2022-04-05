@@ -27,18 +27,26 @@ import org.apache.flink.streaming.api.operators.TwoInputStreamOperator;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import java.io.IOException;
 
 /** Tests for the {@link StreamTaskTestHarness}. */
 public class StreamTaskTestHarnessTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
-    public void testMultipleSetupsThrowsException() {
+    public void testMultipleSetupsThrowsException() throws IOException {
         StreamTaskTestHarness<String> harness;
 
         harness =
                 new StreamTaskTestHarness<>(
-                        OneInputStreamTask::new, BasicTypeInfo.STRING_TYPE_INFO);
+                        OneInputStreamTask::new,
+                        BasicTypeInfo.STRING_TYPE_INFO,
+                        tempFolder.newFolder());
         harness.setupOutputForSingletonOperatorChain();
 
         try {
@@ -62,7 +70,9 @@ public class StreamTaskTestHarnessTest {
 
         harness =
                 new StreamTaskTestHarness<>(
-                        OneInputStreamTask::new, BasicTypeInfo.STRING_TYPE_INFO);
+                        OneInputStreamTask::new,
+                        BasicTypeInfo.STRING_TYPE_INFO,
+                        tempFolder.newFolder());
         harness.setupOperatorChain(new OperatorID(), new TestOperator())
                 .chain(
                         new OperatorID(),
@@ -90,7 +100,9 @@ public class StreamTaskTestHarnessTest {
 
         harness =
                 new StreamTaskTestHarness<>(
-                        TwoInputStreamTask::new, BasicTypeInfo.STRING_TYPE_INFO);
+                        TwoInputStreamTask::new,
+                        BasicTypeInfo.STRING_TYPE_INFO,
+                        tempFolder.newFolder());
         harness.setupOperatorChain(new OperatorID(), new TwoInputTestOperator())
                 .chain(
                         new OperatorID(),

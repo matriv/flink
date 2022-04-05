@@ -25,7 +25,9 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
 import org.apache.flink.shaded.guava30.com.google.common.collect.Lists;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -33,28 +35,33 @@ import static org.junit.Assert.assertTrue;
 /** Tests for {@link EventTimeTrigger}. */
 public class EventTimeTriggerTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     /** Verify that state of separate windows does not leak into other windows. */
     @Test
     public void testWindowSeparationAndFiring() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
-                new TriggerTestHarness<>(EventTimeTrigger.create(), new TimeWindow.Serializer());
+                new TriggerTestHarness<>(
+                        EventTimeTrigger.create(),
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         // inject several elements
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 2)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 2)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 2)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 2)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 2)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 2)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(2, 4)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(2, 4)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(2, 4)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(2, 4)));
 
         assertEquals(0, testHarness.numStateEntries());
         assertEquals(0, testHarness.numProcessingTimeTimers());
@@ -83,13 +90,16 @@ public class EventTimeTriggerTest {
     @Test
     public void testLateElementTriggersImmediately() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
-                new TriggerTestHarness<>(EventTimeTrigger.create(), new TimeWindow.Serializer());
+                new TriggerTestHarness<>(
+                        EventTimeTrigger.create(),
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         testHarness.advanceWatermark(2);
 
         assertEquals(
                 TriggerResult.FIRE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 2)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 2)));
 
         assertEquals(0, testHarness.numStateEntries());
         assertEquals(0, testHarness.numProcessingTimeTimers());
@@ -100,14 +110,17 @@ public class EventTimeTriggerTest {
     @Test
     public void testClear() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
-                new TriggerTestHarness<>(EventTimeTrigger.create(), new TimeWindow.Serializer());
+                new TriggerTestHarness<>(
+                        EventTimeTrigger.create(),
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 2)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 2)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(2, 4)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(2, 4)));
 
         assertEquals(0, testHarness.numStateEntries());
         assertEquals(0, testHarness.numProcessingTimeTimers());
@@ -133,16 +146,19 @@ public class EventTimeTriggerTest {
     @Test
     public void testMergingWindows() throws Exception {
         TriggerTestHarness<Object, TimeWindow> testHarness =
-                new TriggerTestHarness<>(EventTimeTrigger.create(), new TimeWindow.Serializer());
+                new TriggerTestHarness<>(
+                        EventTimeTrigger.create(),
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         assertTrue(EventTimeTrigger.create().canMerge());
 
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 2)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 2)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(2, 4)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(2, 4)));
 
         assertEquals(0, testHarness.numStateEntries());
         assertEquals(0, testHarness.numProcessingTimeTimers());
@@ -176,16 +192,19 @@ public class EventTimeTriggerTest {
     public void testMergingLateWindows() throws Exception {
 
         TriggerTestHarness<Object, TimeWindow> testHarness =
-                new TriggerTestHarness<>(EventTimeTrigger.create(), new TimeWindow.Serializer());
+                new TriggerTestHarness<>(
+                        EventTimeTrigger.create(),
+                        new TimeWindow.Serializer(),
+                        tempFolder.newFolder());
 
         assertTrue(EventTimeTrigger.create().canMerge());
 
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(0, 2)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(0, 2)));
         assertEquals(
                 TriggerResult.CONTINUE,
-                testHarness.processElement(new StreamRecord<Object>(1), new TimeWindow(2, 4)));
+                testHarness.processElement(new StreamRecord<>(1), new TimeWindow(2, 4)));
 
         assertEquals(0, testHarness.numStateEntries());
         assertEquals(0, testHarness.numProcessingTimeTimers());

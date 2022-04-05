@@ -45,7 +45,9 @@ import org.apache.flink.util.clock.ManualClock;
 import org.apache.flink.util.clock.SystemClock;
 
 import org.junit.After;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nullable;
 
@@ -71,7 +73,7 @@ import static org.junit.Assert.assertTrue;
 /** Tests for the behavior of the barrier tracker. */
 public class CheckpointBarrierTrackerTest {
 
-    private static final int PAGE_SIZE = 512;
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private CheckpointedInputGate inputGate;
 
@@ -131,7 +133,8 @@ public class CheckpointBarrierTrackerTest {
             createBarrier(6, 0),
             createBuffer(0)
         };
-        CheckpointSequenceValidator validator = new CheckpointSequenceValidator(1, 2, 3, 4, 5, 6);
+        CheckpointSequenceValidator validator =
+                new CheckpointSequenceValidator(tempFolder.newFolder(), 1, 2, 3, 4, 5, 6);
         inputGate = createCheckpointedInputGate(1, sequence, validator);
 
         for (BufferOrEvent boe : sequence) {
@@ -156,7 +159,8 @@ public class CheckpointBarrierTrackerTest {
             createBarrier(10, 0),
             createBuffer(0)
         };
-        CheckpointSequenceValidator validator = new CheckpointSequenceValidator(1, 3, 4, 6, 7, 10);
+        CheckpointSequenceValidator validator =
+                new CheckpointSequenceValidator(tempFolder.newFolder(), 1, 3, 4, 6, 7, 10);
         inputGate = createCheckpointedInputGate(1, sequence, validator);
 
         for (BufferOrEvent boe : sequence) {
@@ -195,7 +199,8 @@ public class CheckpointBarrierTrackerTest {
             createBarrier(4, 0),
             createBuffer(0)
         };
-        CheckpointSequenceValidator validator = new CheckpointSequenceValidator(1, 2, 3, 4);
+        CheckpointSequenceValidator validator =
+                new CheckpointSequenceValidator(tempFolder.newFolder(), 1, 2, 3, 4);
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         for (BufferOrEvent boe : sequence) {
@@ -238,7 +243,8 @@ public class CheckpointBarrierTrackerTest {
             createBarrier(4, 2),
             createBuffer(0)
         };
-        CheckpointSequenceValidator validator = new CheckpointSequenceValidator(1, 2, 4);
+        CheckpointSequenceValidator validator =
+                new CheckpointSequenceValidator(tempFolder.newFolder(), 1, 2, 4);
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         for (BufferOrEvent boe : sequence) {
@@ -337,7 +343,7 @@ public class CheckpointBarrierTrackerTest {
             createBarrier(10, 1),
         };
         CheckpointSequenceValidator validator =
-                new CheckpointSequenceValidator(2, 3, 4, 5, 7, 8, 9, 10);
+                new CheckpointSequenceValidator(tempFolder.newFolder(), 2, 3, 4, 5, 7, 8, 9, 10);
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         for (BufferOrEvent boe : sequence) {
@@ -358,7 +364,8 @@ public class CheckpointBarrierTrackerTest {
             createBarrier(2, 0)
         };
 
-        ValidatingCheckpointHandler validator = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler validator =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         ManualClock manualClock = new ManualClock();
         inputGate = createCheckpointedInputGate(2, sequence, validator, manualClock);
 
@@ -385,7 +392,8 @@ public class CheckpointBarrierTrackerTest {
             createBuffer(0)
         };
         // negative values mean an expected cancellation call!
-        CheckpointSequenceValidator validator = new CheckpointSequenceValidator(1, 2, -4, 5, -6);
+        CheckpointSequenceValidator validator =
+                new CheckpointSequenceValidator(tempFolder.newFolder(), 1, 2, -4, 5, -6);
         inputGate = createCheckpointedInputGate(1, sequence, validator);
 
         for (BufferOrEvent boe : sequence) {
@@ -448,7 +456,7 @@ public class CheckpointBarrierTrackerTest {
         };
         // negative values mean an expected cancellation call!
         CheckpointSequenceValidator validator =
-                new CheckpointSequenceValidator(1, -2, 3, -4, 5, -6);
+                new CheckpointSequenceValidator(tempFolder.newFolder(), 1, -2, 3, -4, 5, -6);
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         for (BufferOrEvent boe : sequence) {
@@ -471,7 +479,8 @@ public class CheckpointBarrierTrackerTest {
             createCancellationBarrier(2L, 2),
             createBuffer(0)
         };
-        CheckpointSequenceValidator validator = new CheckpointSequenceValidator(-1, -2);
+        CheckpointSequenceValidator validator =
+                new CheckpointSequenceValidator(tempFolder.newFolder(), -1, -2);
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         for (BufferOrEvent boe : sequence) {
@@ -482,7 +491,8 @@ public class CheckpointBarrierTrackerTest {
     @Test
     public void testMetrics() throws Exception {
         List<BufferOrEvent> output = new ArrayList<>();
-        ValidatingCheckpointHandler handler = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler handler =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         int numberOfChannels = 3;
         inputGate = createCheckpointedInputGate(numberOfChannels, handler);
         int[] sequenceNumbers = new int[numberOfChannels];
@@ -544,7 +554,8 @@ public class CheckpointBarrierTrackerTest {
     @Test
     public void testSingleChannelMetrics() throws Exception {
         List<BufferOrEvent> output = new ArrayList<>();
-        ValidatingCheckpointHandler handler = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler handler =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         int numberOfChannels = 1;
         inputGate = createCheckpointedInputGate(numberOfChannels, handler);
         int[] sequenceNumbers = new int[numberOfChannels];
@@ -595,7 +606,8 @@ public class CheckpointBarrierTrackerTest {
             createEndOfPartition(2)
         };
 
-        ValidatingCheckpointHandler validator = new ValidatingCheckpointHandler(4);
+        ValidatingCheckpointHandler validator =
+                new ValidatingCheckpointHandler(4, tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         CheckpointBarrierTracker checkpointBarrierTracker =
@@ -621,7 +633,8 @@ public class CheckpointBarrierTrackerTest {
             /* 3 */ createBarrier(2, 2)
         };
 
-        ValidatingCheckpointHandler validator = new ValidatingCheckpointHandler(-1);
+        ValidatingCheckpointHandler validator =
+                new ValidatingCheckpointHandler(-1, tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         for (int i = 0; i <= 2; ++i) {
@@ -648,7 +661,8 @@ public class CheckpointBarrierTrackerTest {
             /* 5 */ createBarrier(7, 0)
         };
 
-        ValidatingCheckpointHandler validator = new ValidatingCheckpointHandler(-1);
+        ValidatingCheckpointHandler validator =
+                new ValidatingCheckpointHandler(-1, tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         for (BufferOrEvent boe : sequence) {
@@ -665,7 +679,8 @@ public class CheckpointBarrierTrackerTest {
             createBarrier(1, 0), createEndOfPartition(0), createBarrier(1, 1)
         };
 
-        ValidatingCheckpointHandler validator = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler validator =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(2, sequence, validator);
 
         for (BufferOrEvent boe : sequence) {
@@ -686,7 +701,8 @@ public class CheckpointBarrierTrackerTest {
             createEndOfPartition(2)
         };
 
-        ValidatingCheckpointHandler validator = new ValidatingCheckpointHandler(-1);
+        ValidatingCheckpointHandler validator =
+                new ValidatingCheckpointHandler(-1, tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         CheckpointBarrierTracker checkpointBarrierTracker =
@@ -714,7 +730,8 @@ public class CheckpointBarrierTrackerTest {
             /* 5 */ createCancellationBarrier(7, 0)
         };
 
-        ValidatingCheckpointHandler validator = new ValidatingCheckpointHandler(-1);
+        ValidatingCheckpointHandler validator =
+                new ValidatingCheckpointHandler(-1, tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(3, sequence, validator);
 
         for (BufferOrEvent boe : sequence) {
@@ -731,7 +748,8 @@ public class CheckpointBarrierTrackerTest {
             createBarrier(1, 0, 0), createEndOfPartition(0), createCancellationBarrier(1, 1)
         };
 
-        ValidatingCheckpointHandler checkpointHandler = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler checkpointHandler =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         inputGate = createCheckpointedInputGate(2, sequence, checkpointHandler);
 
         for (BufferOrEvent boe : sequence) {
@@ -756,7 +774,8 @@ public class CheckpointBarrierTrackerTest {
             createBarrier(2, 0)
         };
 
-        ValidatingCheckpointHandler validator = new ValidatingCheckpointHandler();
+        ValidatingCheckpointHandler validator =
+                new ValidatingCheckpointHandler(tempFolder.newFolder());
         ManualClock manualClock = new ManualClock();
         inputGate = createCheckpointedInputGate(2, sequence, validator, manualClock);
 
@@ -800,9 +819,9 @@ public class CheckpointBarrierTrackerTest {
     }
 
     private static CheckpointedInputGate createCheckpointedInputGate(
-            int numberOfChannels, BufferOrEvent[] sequence) {
+            int numberOfChannels, BufferOrEvent[] sequence) throws IOException {
         return createCheckpointedInputGate(
-                numberOfChannels, sequence, new DummyCheckpointInvokable());
+                numberOfChannels, sequence, new DummyCheckpointInvokable(tempFolder.newFolder()));
     }
 
     private static CheckpointedInputGate createCheckpointedInputGate(

@@ -63,7 +63,9 @@ import org.apache.flink.util.ExceptionUtils;
 import org.apache.flink.shaded.guava30.com.google.common.collect.Lists;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nullable;
 
@@ -122,6 +124,8 @@ public class RemoteInputChannelTest {
             CheckpointOptions.unaligned(CheckpointType.CHECKPOINT, getDefault());
     private static final CheckpointOptions ALIGNED_WITH_TIMEOUT =
             alignedWithTimeout(CheckpointType.CHECKPOINT, getDefault(), 10);
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testGateNotifiedOnBarrierConversion() throws IOException, InterruptedException {
@@ -1795,7 +1799,7 @@ public class RemoteInputChannelTest {
         final NettyShuffleEnvironment shuffleEnvironment =
                 new NettyShuffleEnvironmentBuilder().build();
         final Task task =
-                new TestTaskBuilder(shuffleEnvironment)
+                new TestTaskBuilder(shuffleEnvironment, tempFolder.newFolder())
                         .setPartitionProducerStateChecker(partitionProducerStateChecker)
                         .build();
         final SingleInputGate inputGate =

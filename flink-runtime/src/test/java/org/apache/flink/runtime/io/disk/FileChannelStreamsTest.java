@@ -29,23 +29,29 @@ import org.apache.flink.runtime.memory.MemoryManagerBuilder;
 import org.apache.flink.runtime.operators.testutils.DummyInvokable;
 import org.apache.flink.types.StringValue;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FileChannelStreamsTest {
+
+    @Rule TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void testCloseAndDeleteOutputView() {
         try (IOManager ioManager = new IOManagerAsync()) {
             MemoryManager memMan = MemoryManagerBuilder.newBuilder().build();
-            List<MemorySegment> memory = new ArrayList<MemorySegment>();
-            memMan.allocatePages(new DummyInvokable(), memory, 4);
+            List<MemorySegment> memory = new ArrayList<>();
+            memMan.allocatePages(new DummyInvokable(tempFolder.newFolder()), memory, 4);
 
             FileIOChannel.ID channel = ioManager.createChannel();
             BlockChannelWriter<MemorySegment> writer = ioManager.createBlockChannelWriter(channel);
@@ -74,8 +80,8 @@ public class FileChannelStreamsTest {
     public void testCloseAndDeleteInputView() {
         try (IOManager ioManager = new IOManagerAsync()) {
             MemoryManager memMan = MemoryManagerBuilder.newBuilder().build();
-            List<MemorySegment> memory = new ArrayList<MemorySegment>();
-            memMan.allocatePages(new DummyInvokable(), memory, 4);
+            List<MemorySegment> memory = new ArrayList<>();
+            memMan.allocatePages(new DummyInvokable(tempFolder.newFolder()), memory, 4);
 
             FileIOChannel.ID channel = ioManager.createChannel();
 

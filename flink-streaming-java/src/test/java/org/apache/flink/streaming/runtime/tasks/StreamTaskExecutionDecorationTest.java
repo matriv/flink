@@ -35,8 +35,11 @@ import org.apache.flink.util.function.ThrowingRunnable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,6 +48,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * that potentially needs to be synchronized.
  */
 public class StreamTaskExecutionDecorationTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     private CountingStreamTaskActionExecutor decorator;
     private StreamTask<Object, StreamOperator<Object>> task;
     private TaskMailboxImpl mailbox;
@@ -162,8 +168,8 @@ public class StreamTaskExecutionDecorationTest {
 
     private static final class DeclineDummyEnvironment extends DummyEnvironment {
 
-        DeclineDummyEnvironment() {
-            super("test", 1, 0);
+        DeclineDummyEnvironment() throws IOException {
+            super("test", 1, 0, tempFolder.newFolder());
         }
 
         @Override

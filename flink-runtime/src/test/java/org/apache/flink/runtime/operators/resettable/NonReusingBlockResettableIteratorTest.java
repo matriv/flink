@@ -30,7 +30,9 @@ import org.apache.flink.types.Record;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,6 +43,8 @@ public class NonReusingBlockResettableIteratorTest {
     private static final int MEMORY_CAPACITY = 3 * 128 * 1024;
 
     private static final int NUM_VALUES = 20000;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private MemoryManager memman;
 
@@ -81,7 +85,7 @@ public class NonReusingBlockResettableIteratorTest {
 
     @Test
     public void testSerialBlockResettableIterator() throws Exception {
-        final AbstractInvokable memOwner = new DummyInvokable();
+        final AbstractInvokable memOwner = new DummyInvokable(tempFolder.newFolder());
         // create the resettable Iterator
         final NonReusingBlockResettableIterator<Record> iterator =
                 new NonReusingBlockResettableIterator<Record>(
@@ -120,7 +124,7 @@ public class NonReusingBlockResettableIteratorTest {
 
     @Test
     public void testDoubleBufferedBlockResettableIterator() throws Exception {
-        final AbstractInvokable memOwner = new DummyInvokable();
+        final AbstractInvokable memOwner = new DummyInvokable(tempFolder.newFolder());
         // create the resettable Iterator
         final NonReusingBlockResettableIterator<Record> iterator =
                 new NonReusingBlockResettableIterator<Record>(
@@ -160,7 +164,7 @@ public class NonReusingBlockResettableIteratorTest {
 
     @Test
     public void testTwelveFoldBufferedBlockResettableIterator() throws Exception {
-        final AbstractInvokable memOwner = new DummyInvokable();
+        final AbstractInvokable memOwner = new DummyInvokable(tempFolder.newFolder());
         // create the resettable Iterator
         final NonReusingBlockResettableIterator<Record> iterator =
                 new NonReusingBlockResettableIterator<Record>(

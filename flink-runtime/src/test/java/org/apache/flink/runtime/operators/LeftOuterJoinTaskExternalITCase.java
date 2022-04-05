@@ -26,11 +26,13 @@ import org.apache.flink.runtime.operators.testutils.UniformIntTupleGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public class LeftOuterJoinTaskExternalITCase extends AbstractOuterJoinTaskExternalITCase {
 
     private final double hash_frac;
 
-    public LeftOuterJoinTaskExternalITCase(ExecutionConfig config) {
+    public LeftOuterJoinTaskExternalITCase(ExecutionConfig config) throws IOException {
         super(config);
         hash_frac = (double) HASH_MEM / this.getMemoryManager().getMemorySize();
     }

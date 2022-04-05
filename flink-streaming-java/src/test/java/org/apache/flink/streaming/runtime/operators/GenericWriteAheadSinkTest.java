@@ -135,7 +135,7 @@ public class GenericWriteAheadSinkTest
         ListSink2 sink = new ListSink2();
 
         OneInputStreamOperatorTestHarness<Tuple1<Integer>, Tuple1<Integer>> testHarness =
-                new OneInputStreamOperatorTestHarness<>(sink);
+                new OneInputStreamOperatorTestHarness<>(sink, TEMPORARY_FOLDER.newFolder());
 
         testHarness.open();
 

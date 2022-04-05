@@ -26,9 +26,11 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.KeyedOneInputStreamOperatorTestHarness;
 import org.apache.flink.util.TestLogger;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayDeque;
 
@@ -38,6 +40,8 @@ import static org.junit.Assert.assertThat;
 
 /** Tests {@link BatchGroupedReduceOperator}. */
 public class BatchGroupedReduceOperatorTest extends TestLogger {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Rule public ExpectedException expectedException = ExpectedException.none();
 
@@ -100,7 +104,7 @@ public class BatchGroupedReduceOperatorTest extends TestLogger {
 
         KeyedOneInputStreamOperatorTestHarness<String, String, String> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, in -> in, BasicTypeInfo.STRING_TYPE_INFO);
+                        operator, in -> in, BasicTypeInfo.STRING_TYPE_INFO, tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();

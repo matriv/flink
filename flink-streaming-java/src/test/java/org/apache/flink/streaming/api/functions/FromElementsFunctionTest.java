@@ -37,9 +37,11 @@ import org.apache.flink.types.Value;
 import org.apache.flink.util.ExceptionUtils;
 import org.apache.flink.util.InstantiationUtil;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,6 +63,8 @@ public class FromElementsFunctionTest {
 
     private static final String[] STRING_ARRAY_DATA = {"Oh", "boy", "what", "a", "show", "!"};
     private static final List<String> STRING_LIST_DATA = Arrays.asList(STRING_ARRAY_DATA);
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Rule public final ExpectedException thrown = ExpectedException.none();
 
@@ -288,7 +292,7 @@ public class FromElementsFunctionTest {
                     new FromElementsFunction<>(IntSerializer.INSTANCE, data);
             StreamSource<Integer, FromElementsFunction<Integer>> src = new StreamSource<>(source);
             AbstractStreamOperatorTestHarness<Integer> testHarness =
-                    new AbstractStreamOperatorTestHarness<>(src, 1, 1, 0);
+                    new AbstractStreamOperatorTestHarness<>(src, 1, 1, 0, tempFolder.newFolder());
             testHarness.open();
 
             final SourceFunction.SourceContext<Integer> ctx =
@@ -337,7 +341,8 @@ public class FromElementsFunctionTest {
             StreamSource<Integer, FromElementsFunction<Integer>> srcCopy =
                     new StreamSource<>(sourceCopy);
             AbstractStreamOperatorTestHarness<Integer> testHarnessCopy =
-                    new AbstractStreamOperatorTestHarness<>(srcCopy, 1, 1, 0);
+                    new AbstractStreamOperatorTestHarness<>(
+                            srcCopy, 1, 1, 0, tempFolder.newFolder());
             testHarnessCopy.setup();
             testHarnessCopy.initializeState(handles);
             testHarnessCopy.open();

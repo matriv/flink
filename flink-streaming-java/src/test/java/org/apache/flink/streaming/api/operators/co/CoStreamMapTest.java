@@ -26,7 +26,9 @@ import org.apache.flink.streaming.util.TestHarnessUtil;
 import org.apache.flink.streaming.util.TwoInputStreamOperatorTestHarness;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -41,7 +43,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * </ul>
  */
 public class CoStreamMapTest implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final class MyCoMap implements CoMapFunction<Double, Integer, String> {
         private static final long serialVersionUID = 1L;
@@ -59,43 +64,42 @@ public class CoStreamMapTest implements Serializable {
 
     @Test
     public void testCoMap() throws Exception {
-        CoStreamMap<Double, Integer, String> operator =
-                new CoStreamMap<Double, Integer, String>(new MyCoMap());
+        CoStreamMap<Double, Integer, String> operator = new CoStreamMap<>(new MyCoMap());
 
         TwoInputStreamOperatorTestHarness<Double, Integer, String> testHarness =
-                new TwoInputStreamOperatorTestHarness<Double, Integer, String>(operator);
+                new TwoInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         long initialTime = 0L;
-        ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<Object>();
+        ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<>();
 
         testHarness.open();
 
-        testHarness.processElement1(new StreamRecord<Double>(1.1d, initialTime + 1));
-        testHarness.processElement1(new StreamRecord<Double>(1.2d, initialTime + 2));
-        testHarness.processElement1(new StreamRecord<Double>(1.3d, initialTime + 3));
+        testHarness.processElement1(new StreamRecord<>(1.1d, initialTime + 1));
+        testHarness.processElement1(new StreamRecord<>(1.2d, initialTime + 2));
+        testHarness.processElement1(new StreamRecord<>(1.3d, initialTime + 3));
         testHarness.processWatermark1(new Watermark(initialTime + 3));
-        testHarness.processElement1(new StreamRecord<Double>(1.4d, initialTime + 4));
-        testHarness.processElement1(new StreamRecord<Double>(1.5d, initialTime + 5));
+        testHarness.processElement1(new StreamRecord<>(1.4d, initialTime + 4));
+        testHarness.processElement1(new StreamRecord<>(1.5d, initialTime + 5));
 
-        testHarness.processElement2(new StreamRecord<Integer>(1, initialTime + 1));
-        testHarness.processElement2(new StreamRecord<Integer>(2, initialTime + 2));
+        testHarness.processElement2(new StreamRecord<>(1, initialTime + 1));
+        testHarness.processElement2(new StreamRecord<>(2, initialTime + 2));
         testHarness.processWatermark2(new Watermark(initialTime + 2));
-        testHarness.processElement2(new StreamRecord<Integer>(3, initialTime + 3));
-        testHarness.processElement2(new StreamRecord<Integer>(4, initialTime + 4));
-        testHarness.processElement2(new StreamRecord<Integer>(5, initialTime + 5));
+        testHarness.processElement2(new StreamRecord<>(3, initialTime + 3));
+        testHarness.processElement2(new StreamRecord<>(4, initialTime + 4));
+        testHarness.processElement2(new StreamRecord<>(5, initialTime + 5));
 
-        expectedOutput.add(new StreamRecord<String>("1.1", initialTime + 1));
-        expectedOutput.add(new StreamRecord<String>("1.2", initialTime + 2));
-        expectedOutput.add(new StreamRecord<String>("1.3", initialTime + 3));
-        expectedOutput.add(new StreamRecord<String>("1.4", initialTime + 4));
-        expectedOutput.add(new StreamRecord<String>("1.5", initialTime + 5));
+        expectedOutput.add(new StreamRecord<>("1.1", initialTime + 1));
+        expectedOutput.add(new StreamRecord<>("1.2", initialTime + 2));
+        expectedOutput.add(new StreamRecord<>("1.3", initialTime + 3));
+        expectedOutput.add(new StreamRecord<>("1.4", initialTime + 4));
+        expectedOutput.add(new StreamRecord<>("1.5", initialTime + 5));
 
-        expectedOutput.add(new StreamRecord<String>("1", initialTime + 1));
-        expectedOutput.add(new StreamRecord<String>("2", initialTime + 2));
+        expectedOutput.add(new StreamRecord<>("1", initialTime + 1));
+        expectedOutput.add(new StreamRecord<>("2", initialTime + 2));
         expectedOutput.add(new Watermark(initialTime + 2));
-        expectedOutput.add(new StreamRecord<String>("3", initialTime + 3));
-        expectedOutput.add(new StreamRecord<String>("4", initialTime + 4));
-        expectedOutput.add(new StreamRecord<String>("5", initialTime + 5));
+        expectedOutput.add(new StreamRecord<>("3", initialTime + 3));
+        expectedOutput.add(new StreamRecord<>("4", initialTime + 4));
+        expectedOutput.add(new StreamRecord<>("5", initialTime + 5));
 
         TestHarnessUtil.assertOutputEquals(
                 "Output was not correct.", expectedOutput, testHarness.getOutput());
@@ -104,17 +108,17 @@ public class CoStreamMapTest implements Serializable {
     @Test
     public void testOpenClose() throws Exception {
         CoStreamMap<Double, Integer, String> operator =
-                new CoStreamMap<Double, Integer, String>(new TestOpenCloseCoMapFunction());
+                new CoStreamMap<>(new TestOpenCloseCoMapFunction());
 
         TwoInputStreamOperatorTestHarness<Double, Integer, String> testHarness =
-                new TwoInputStreamOperatorTestHarness<Double, Integer, String>(operator);
+                new TwoInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         long initialTime = 0L;
 
         testHarness.open();
 
-        testHarness.processElement1(new StreamRecord<Double>(74d, initialTime));
-        testHarness.processElement2(new StreamRecord<Integer>(42, initialTime));
+        testHarness.processElement1(new StreamRecord<>(74d, initialTime));
+        testHarness.processElement2(new StreamRecord<>(42, initialTime));
 
         testHarness.close();
 

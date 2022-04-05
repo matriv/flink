@@ -53,7 +53,7 @@ public class ReduceTaskExternalITCase
 
     private final List<Record> outList = new ArrayList<>();
 
-    public ReduceTaskExternalITCase(ExecutionConfig config) {
+    public ReduceTaskExternalITCase(ExecutionConfig config) throws IOException {
         super(config, 0, 1, 3 * 1024 * 1024);
     }
 

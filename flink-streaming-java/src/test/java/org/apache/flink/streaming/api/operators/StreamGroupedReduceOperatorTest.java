@@ -20,7 +20,6 @@ package org.apache.flink.streaming.api.operators;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.functions.RichReduceFunction;
 import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.base.IntSerializer;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.configuration.Configuration;
@@ -31,7 +30,9 @@ import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 import org.apache.flink.streaming.util.TestHarnessUtil;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -46,6 +47,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class StreamGroupedReduceOperatorTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testGroupedReduce() throws Exception {
 
@@ -56,7 +59,7 @@ public class StreamGroupedReduceOperatorTest {
 
         OneInputStreamOperatorTestHarness<Integer, Integer> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, keySelector, BasicTypeInfo.INT_TYPE_INFO);
+                        operator, keySelector, BasicTypeInfo.INT_TYPE_INFO, tempFolder.newFolder());
 
         long initialTime = 0L;
         ConcurrentLinkedQueue<Object> expectedOutput = new ConcurrentLinkedQueue<>();
@@ -91,7 +94,7 @@ public class StreamGroupedReduceOperatorTest {
                         new TestOpenCloseReduceFunction(), IntSerializer.INSTANCE);
         OneInputStreamOperatorTestHarness<Integer, Integer> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, keySelector, BasicTypeInfo.INT_TYPE_INFO);
+                        operator, keySelector, BasicTypeInfo.INT_TYPE_INFO, tempFolder.newFolder());
 
         long initialTime = 0L;
 
@@ -162,6 +165,4 @@ public class StreamGroupedReduceOperatorTest {
             return value;
         }
     }
-
-    private static TypeInformation<Integer> typeInfo = BasicTypeInfo.INT_TYPE_INFO;
 }

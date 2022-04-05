@@ -29,7 +29,9 @@ import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.runtime.io.DataInputStatus;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Arrays;
 
@@ -43,6 +45,9 @@ import static org.junit.Assert.assertThat;
  * thorough tests.
  */
 public class SortingDataInputTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void simpleFixedLengthKeySorting() throws Exception {
         CollectingDataOutput<Integer> collectingDataOutput = new CollectingDataOutput<>();
@@ -55,7 +60,7 @@ public class SortingDataInputTest {
                                 new StreamRecord<>(2, 3),
                                 new StreamRecord<>(1, 2),
                                 new StreamRecord<>(2, 2)));
-        MockEnvironment environment = MockEnvironment.builder().build();
+        MockEnvironment environment = MockEnvironment.builder(tempFolder.newFolder()).build();
         SortingDataInput<Integer, Integer> sortingDataInput =
                 new SortingDataInput<>(
                         input,
@@ -67,7 +72,7 @@ public class SortingDataInputTest {
                         true,
                         1.0,
                         new Configuration(),
-                        new DummyInvokable(),
+                        new DummyInvokable(tempFolder.newFolder()),
                         new ExecutionConfig());
 
         DataInputStatus inputStatus;
@@ -105,7 +110,7 @@ public class SortingDataInputTest {
                                 new Watermark(5),
                                 new StreamRecord<>(2, 2),
                                 new Watermark(6)));
-        MockEnvironment environment = MockEnvironment.builder().build();
+        MockEnvironment environment = MockEnvironment.builder(tempFolder.newFolder()).build();
         SortingDataInput<Integer, Integer> sortingDataInput =
                 new SortingDataInput<>(
                         input,
@@ -117,7 +122,7 @@ public class SortingDataInputTest {
                         true,
                         1.0,
                         new Configuration(),
-                        new DummyInvokable(),
+                        new DummyInvokable(tempFolder.newFolder()),
                         new ExecutionConfig());
 
         DataInputStatus inputStatus;
@@ -150,7 +155,7 @@ public class SortingDataInputTest {
                                 new StreamRecord<>(2, 3),
                                 new StreamRecord<>(1, 2),
                                 new StreamRecord<>(2, 2)));
-        MockEnvironment environment = MockEnvironment.builder().build();
+        MockEnvironment environment = MockEnvironment.builder(tempFolder.newFolder()).build();
         SortingDataInput<Integer, String> sortingDataInput =
                 new SortingDataInput<>(
                         input,
@@ -162,7 +167,7 @@ public class SortingDataInputTest {
                         true,
                         1.0,
                         new Configuration(),
-                        new DummyInvokable(),
+                        new DummyInvokable(tempFolder.newFolder()),
                         new ExecutionConfig());
 
         DataInputStatus inputStatus;

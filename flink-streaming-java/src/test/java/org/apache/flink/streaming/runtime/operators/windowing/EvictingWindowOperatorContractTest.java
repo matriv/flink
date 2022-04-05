@@ -34,6 +34,9 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.KeyedOneInputStreamOperatorTestHarness;
 import org.apache.flink.util.OutputTag;
 
+import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
+
 /**
  * These tests verify that {@link EvictingWindowOperator} correctly interacts with the other
  * windowing components: {@link WindowAssigner}, {@link Trigger}. {@link
@@ -42,6 +45,8 @@ import org.apache.flink.util.OutputTag;
  * <p>These tests document the implicit contract that exists between the windowing components.
  */
 public class EvictingWindowOperatorContractTest extends WindowOperatorContractTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     protected <W extends Window, OUT>
             KeyedOneInputStreamOperatorTestHarness<Integer, Integer, OUT> createWindowOperator(
@@ -62,13 +67,13 @@ public class EvictingWindowOperatorContractTest extends WindowOperatorContractTe
                     }
                 };
 
+        @SuppressWarnings({"unchecked", "rawtypes"})
         ListStateDescriptor<StreamRecord<Integer>> intListDescriptor =
                 new ListStateDescriptor<>(
                         "int-list",
                         (TypeSerializer<StreamRecord<Integer>>)
                                 new StreamElementSerializer(IntSerializer.INSTANCE));
 
-        @SuppressWarnings("unchecked")
         EvictingWindowOperator<Integer, Integer, OUT, W> operator =
                 new EvictingWindowOperator<>(
                         assigner,
@@ -78,12 +83,12 @@ public class EvictingWindowOperatorContractTest extends WindowOperatorContractTe
                         intListDescriptor,
                         windowFunction,
                         trigger,
-                        CountEvictor.<W>of(100),
+                        CountEvictor.of(100),
                         allowedLatenss,
                         lateOutputTag);
 
         return new KeyedOneInputStreamOperatorTestHarness<>(
-                operator, keySelector, BasicTypeInfo.INT_TYPE_INFO);
+                operator, keySelector, BasicTypeInfo.INT_TYPE_INFO, tempFolder.newFolder());
     }
 
     protected <W extends Window, OUT>

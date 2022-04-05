@@ -26,8 +26,11 @@ import org.apache.flink.util.TestLogger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,6 +51,8 @@ public class MemoryManagerTest extends TestLogger {
     private static final int PAGE_SIZE = 1024 * 32; // 32 KiBytes
 
     private static final int NUM_PAGES = MEMORY_SIZE / PAGE_SIZE;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private MemoryManager memoryManager;
 
@@ -75,8 +80,8 @@ public class MemoryManagerTest extends TestLogger {
     @Test
     public void allocateAllSingle() {
         try {
-            final AbstractInvokable mockInvoke = new DummyInvokable();
-            List<MemorySegment> segments = new ArrayList<MemorySegment>();
+            final AbstractInvokable mockInvoke = new DummyInvokable(tempFolder.newFolder());
+            List<MemorySegment> segments = new ArrayList<>();
 
             try {
                 for (int i = 0; i < NUM_PAGES; i++) {
@@ -96,8 +101,8 @@ public class MemoryManagerTest extends TestLogger {
     @Test
     public void allocateAllMulti() {
         try {
-            final AbstractInvokable mockInvoke = new DummyInvokable();
-            final List<MemorySegment> segments = new ArrayList<MemorySegment>();
+            final AbstractInvokable mockInvoke = new DummyInvokable(tempFolder.newFolder());
+            final List<MemorySegment> segments = new ArrayList<>();
 
             try {
                 for (int i = 0; i < NUM_PAGES / 2; i++) {
@@ -125,8 +130,8 @@ public class MemoryManagerTest extends TestLogger {
             List<MemorySegment>[] mems = (List<MemorySegment>[]) new List<?>[numOwners];
 
             for (int i = 0; i < numOwners; i++) {
-                owners[i] = new DummyInvokable();
-                mems[i] = new ArrayList<MemorySegment>(64);
+                owners[i] = new DummyInvokable(tempFolder.newFolder());
+                mems[i] = new ArrayList<>(64);
             }
 
             // allocate all memory to the different owners
@@ -160,7 +165,7 @@ public class MemoryManagerTest extends TestLogger {
     @Test
     public void allocateTooMuch() {
         try {
-            final AbstractInvokable mockInvoke = new DummyInvokable();
+            final AbstractInvokable mockInvoke = new DummyInvokable(tempFolder.newFolder());
 
             List<MemorySegment> segs = this.memoryManager.allocatePages(mockInvoke, NUM_PAGES);
 
@@ -178,8 +183,8 @@ public class MemoryManagerTest extends TestLogger {
     }
 
     @Test
-    public void doubleReleaseReturnsMemoryOnlyOnce() throws MemoryAllocationException {
-        final AbstractInvokable mockInvoke = new DummyInvokable();
+    public void doubleReleaseReturnsMemoryOnlyOnce() throws MemoryAllocationException, IOException {
+        final AbstractInvokable mockInvoke = new DummyInvokable(tempFolder.newFolder());
 
         Collection<MemorySegment> segs = this.memoryManager.allocatePages(mockInvoke, NUM_PAGES);
         MemorySegment segment = segs.iterator().next();
@@ -193,8 +198,8 @@ public class MemoryManagerTest extends TestLogger {
     }
 
     @Test
-    public void releaseCollectionAfterReleaseAll() throws MemoryAllocationException {
-        final AbstractInvokable mockInvoke = new DummyInvokable();
+    public void releaseCollectionAfterReleaseAll() throws MemoryAllocationException, IOException {
+        final AbstractInvokable mockInvoke = new DummyInvokable(tempFolder.newFolder());
 
         Collection<MemorySegment> segs = this.memoryManager.allocatePages(mockInvoke, 1);
         MemorySegment segment = segs.iterator().next();
@@ -206,8 +211,8 @@ public class MemoryManagerTest extends TestLogger {
     }
 
     @Test
-    public void releaseAfterReleaseAll() throws MemoryAllocationException {
-        final AbstractInvokable mockInvoke = new DummyInvokable();
+    public void releaseAfterReleaseAll() throws MemoryAllocationException, IOException {
+        final AbstractInvokable mockInvoke = new DummyInvokable(tempFolder.newFolder());
 
         Collection<MemorySegment> segs = this.memoryManager.allocatePages(mockInvoke, 1);
         MemorySegment segment = segs.iterator().next();
@@ -218,8 +223,9 @@ public class MemoryManagerTest extends TestLogger {
     }
 
     @Test
-    public void releaseSameSegmentFromTwoCollections() throws MemoryAllocationException {
-        final AbstractInvokable mockInvoke = new DummyInvokable();
+    public void releaseSameSegmentFromTwoCollections()
+            throws MemoryAllocationException, IOException {
+        final AbstractInvokable mockInvoke = new DummyInvokable(tempFolder.newFolder());
 
         MemorySegment seg1 = this.memoryManager.allocatePages(mockInvoke, 1).get(0);
         MemorySegment seg2 = this.memoryManager.allocatePages(mockInvoke, 1).get(0);

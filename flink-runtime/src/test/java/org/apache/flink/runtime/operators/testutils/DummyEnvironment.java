@@ -53,6 +53,7 @@ import org.apache.flink.runtime.util.TestingTaskManagerRuntimeInfo;
 import org.apache.flink.runtime.util.TestingUserCodeClassLoader;
 import org.apache.flink.util.UserCodeClassLoader;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -71,26 +72,33 @@ public class DummyEnvironment implements Environment {
             new AccumulatorRegistry(jobId, executionId);
     private UserCodeClassLoader userClassLoader;
     private final Configuration taskConfiguration = new Configuration();
+    private final File tmpWorkingDir;
 
-    public DummyEnvironment() {
-        this("Test Job", 1, 0, 1);
+    public DummyEnvironment(File tmpWorkingDir) {
+        this("Test Job", 1, 0, 1, tmpWorkingDir);
     }
 
-    public DummyEnvironment(ClassLoader userClassLoader) {
-        this("Test Job", 1, 0, 1);
+    public DummyEnvironment(ClassLoader userClassLoader, File tmpWorkingDir) {
+        this("Test Job", 1, 0, 1, tmpWorkingDir);
         this.userClassLoader =
                 TestingUserCodeClassLoader.newBuilder().setClassLoader(userClassLoader).build();
     }
 
-    public DummyEnvironment(String taskName, int numSubTasks, int subTaskIndex) {
-        this(taskName, numSubTasks, subTaskIndex, numSubTasks);
+    public DummyEnvironment(
+            String taskName, int numSubTasks, int subTaskIndex, File tmpWorkingDir) {
+        this(taskName, numSubTasks, subTaskIndex, numSubTasks, tmpWorkingDir);
     }
 
     public DummyEnvironment(
-            String taskName, int numSubTasks, int subTaskIndex, int maxParallelism) {
+            String taskName,
+            int numSubTasks,
+            int subTaskIndex,
+            int maxParallelism,
+            File tmpWorkingDir) {
         this.taskInfo = new TaskInfo(taskName, maxParallelism, subTaskIndex, numSubTasks, 0);
         this.taskStateManager = new TestTaskStateManager();
         this.aggregateManager = new TestGlobalAggregateManager();
+        this.tmpWorkingDir = tmpWorkingDir;
     }
 
     public void setKvStateRegistry(KvStateRegistry kvStateRegistry) {
@@ -128,7 +136,7 @@ public class DummyEnvironment implements Environment {
 
     @Override
     public TaskManagerRuntimeInfo getTaskManagerInfo() {
-        return new TestingTaskManagerRuntimeInfo();
+        return new TestingTaskManagerRuntimeInfo(tmpWorkingDir);
     }
 
     @Override

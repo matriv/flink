@@ -29,7 +29,9 @@ import org.apache.flink.util.function.RunnableWithException;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,6 +57,8 @@ public class CollectSinkFunctionRandomITCase extends TestLogger {
 
     private static final TypeSerializer<Integer> serializer = IntSerializer.INSTANCE;
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     private CollectSinkFunctionTestWrapper<Integer> functionWrapper;
     private boolean jobFinished;
 
@@ -63,7 +67,8 @@ public class CollectSinkFunctionRandomITCase extends TestLogger {
         // run multiple times for this random test
         for (int testCount = 30; testCount > 0; testCount--) {
             functionWrapper =
-                    new CollectSinkFunctionTestWrapper<>(serializer, MAX_RESULTS_PER_BATCH * 4);
+                    new CollectSinkFunctionTestWrapper<>(
+                            serializer, MAX_RESULTS_PER_BATCH * 4, tempFolder.newFolder());
             jobFinished = false;
 
             List<Integer> expected = new ArrayList<>();
@@ -84,7 +89,8 @@ public class CollectSinkFunctionRandomITCase extends TestLogger {
         // run multiple times for this random test
         for (int testCount = 30; testCount > 0; testCount--) {
             functionWrapper =
-                    new CollectSinkFunctionTestWrapper<>(serializer, MAX_RESULTS_PER_BATCH * 4);
+                    new CollectSinkFunctionTestWrapper<>(
+                            serializer, MAX_RESULTS_PER_BATCH * 4, tempFolder.newFolder());
             jobFinished = false;
 
             List<Integer> expected = new ArrayList<>();

@@ -31,7 +31,9 @@ import org.apache.flink.runtime.mailbox.SyncMailboxExecutor;
 import org.apache.flink.runtime.operators.testutils.DummyCheckpointInvokable;
 import org.apache.flink.util.clock.SystemClock;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -48,6 +50,8 @@ import java.util.stream.IntStream;
  * checkpoint barriers. The two streams are very unaligned, putting heavy work on the BarrierBuffer.
  */
 public class AlignedCheckpointsMassiveRandomTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final int PAGE_SIZE = 1024;
 
@@ -73,7 +77,7 @@ public class AlignedCheckpointsMassiveRandomTest {
                             myIG,
                             SingleCheckpointBarrierHandler.aligned(
                                     "Testing: No task associated",
-                                    new DummyCheckpointInvokable(),
+                                    new DummyCheckpointInvokable(tempFolder.newFolder()),
                                     SystemClock.getInstance(),
                                     myIG.getNumberOfInputChannels(),
                                     (callable, duration) -> () -> {},

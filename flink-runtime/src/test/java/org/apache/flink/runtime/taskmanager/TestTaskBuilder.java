@@ -57,6 +57,7 @@ import org.apache.flink.testutils.TestingUtils;
 import org.apache.flink.util.Preconditions;
 import org.apache.flink.util.SerializedValue;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
@@ -77,6 +78,7 @@ public final class TestTaskBuilder {
     private PartitionProducerStateChecker partitionProducerStateChecker =
             new NoOpPartitionProducerStateChecker();
     private final ShuffleEnvironment<?, ?> shuffleEnvironment;
+    private final File tmpWorkingDir;
     private KvStateService kvStateService = new KvStateService(new KvStateRegistry(), null, null);
     private Executor executor = TestingUtils.defaultExecutor();
     private Configuration taskManagerConfig = new Configuration();
@@ -92,8 +94,9 @@ public final class TestTaskBuilder {
             ExternalResourceInfoProvider.NO_EXTERNAL_RESOURCES;
     private TestCheckpointResponder testCheckpointResponder = new TestCheckpointResponder();
 
-    public TestTaskBuilder(ShuffleEnvironment<?, ?> shuffleEnvironment) {
+    public TestTaskBuilder(ShuffleEnvironment<?, ?> shuffleEnvironment, File tmpWorkingDir) {
         this.shuffleEnvironment = Preconditions.checkNotNull(shuffleEnvironment);
+        this.tmpWorkingDir = tmpWorkingDir;
     }
 
     public TestTaskBuilder setInvokable(Class<? extends TaskInvokable> invokable) {
@@ -238,7 +241,7 @@ public final class TestTaskBuilder {
                 new TestGlobalAggregateManager(),
                 classLoaderHandle,
                 mock(FileCache.class),
-                new TestingTaskManagerRuntimeInfo(taskManagerConfig),
+                new TestingTaskManagerRuntimeInfo(taskManagerConfig, tmpWorkingDir),
                 taskMetricGroup,
                 consumableNotifier,
                 partitionProducerStateChecker,

@@ -49,8 +49,11 @@ import org.apache.flink.util.TestLogger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -75,8 +78,10 @@ public class ReusingSortMergeInnerJoinIteratorITCase extends TestLogger {
 
     private static final long SEED2 = 231434613412342L;
 
+    @ClassRule private static TemporaryFolder tempFolder = new TemporaryFolder();
+
     // dummy abstract task
-    private final AbstractInvokable parentTask = new DummyInvokable();
+    private AbstractInvokable parentTask;
 
     private IOManager ioManager;
     private MemoryManager memoryManager;
@@ -89,32 +94,31 @@ public class ReusingSortMergeInnerJoinIteratorITCase extends TestLogger {
 
     @SuppressWarnings("unchecked")
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws IOException {
+        parentTask = new DummyInvokable(tempFolder.newFolder());
         serializer1 =
-                new TupleSerializer<Tuple2<Integer, String>>(
+                new TupleSerializer<>(
                         (Class<Tuple2<Integer, String>>) (Class<?>) Tuple2.class,
                         new TypeSerializer<?>[] {
                             IntSerializer.INSTANCE, StringSerializer.INSTANCE
                         });
         serializer2 =
-                new TupleSerializer<Tuple2<Integer, String>>(
+                new TupleSerializer<>(
                         (Class<Tuple2<Integer, String>>) (Class<?>) Tuple2.class,
                         new TypeSerializer<?>[] {
                             IntSerializer.INSTANCE, StringSerializer.INSTANCE
                         });
         comparator1 =
-                new TupleComparator<Tuple2<Integer, String>>(
+                new TupleComparator<>(
                         new int[] {0},
                         new TypeComparator<?>[] {new IntComparator(true)},
                         new TypeSerializer<?>[] {IntSerializer.INSTANCE});
         comparator2 =
-                new TupleComparator<Tuple2<Integer, String>>(
+                new TupleComparator<>(
                         new int[] {0},
                         new TypeComparator<?>[] {new IntComparator(true)},
                         new TypeSerializer<?>[] {IntSerializer.INSTANCE});
-        pairComparator =
-                new GenericPairComparator<Tuple2<Integer, String>, Tuple2<Integer, String>>(
-                        comparator1, comparator2);
+        pairComparator = new GenericPairComparator<>(comparator1, comparator2);
 
         this.memoryManager = MemoryManagerBuilder.newBuilder().setMemorySize(MEMORY_SIZE).build();
         this.ioManager = new IOManagerAsync();
@@ -160,8 +164,7 @@ public class ReusingSortMergeInnerJoinIteratorITCase extends TestLogger {
                             Tuple2<Integer, String>>
                     joinFunction = new MatchRemovingJoiner(expectedMatchesMap);
 
-            final Collector<Tuple2<Integer, String>> collector =
-                    new DiscardingOutputCollector<Tuple2<Integer, String>>();
+            final Collector<Tuple2<Integer, String>> collector = new DiscardingOutputCollector<>();
 
             // reset the generators
             generator1.reset();
@@ -175,10 +178,7 @@ public class ReusingSortMergeInnerJoinIteratorITCase extends TestLogger {
                             Tuple2<Integer, String>,
                             Tuple2<Integer, String>>
                     iterator =
-                            new ReusingMergeInnerJoinIterator<
-                                    Tuple2<Integer, String>,
-                                    Tuple2<Integer, String>,
-                                    Tuple2<Integer, String>>(
+                            new ReusingMergeInnerJoinIterator<>(
                                     input1,
                                     input2,
                                     this.serializer1,
@@ -237,20 +237,18 @@ public class ReusingSortMergeInnerJoinIteratorITCase extends TestLogger {
                     new TestData.TupleConstantValueIterator(
                             DUPLICATE_KEY, "RIGHT String for Duplicate Keys", INPUT_2_DUPLICATES);
 
-            final List<MutableObjectIterator<Tuple2<Integer, String>>> inList1 =
-                    new ArrayList<MutableObjectIterator<Tuple2<Integer, String>>>();
+            final List<MutableObjectIterator<Tuple2<Integer, String>>> inList1 = new ArrayList<>();
             inList1.add(gen1Iter);
             inList1.add(const1Iter);
 
-            final List<MutableObjectIterator<Tuple2<Integer, String>>> inList2 =
-                    new ArrayList<MutableObjectIterator<Tuple2<Integer, String>>>();
+            final List<MutableObjectIterator<Tuple2<Integer, String>>> inList2 = new ArrayList<>();
             inList2.add(gen2Iter);
             inList2.add(const2Iter);
 
             MutableObjectIterator<Tuple2<Integer, String>> input1 =
-                    new MergeIterator<Tuple2<Integer, String>>(inList1, comparator1.duplicate());
+                    new MergeIterator<>(inList1, comparator1.duplicate());
             MutableObjectIterator<Tuple2<Integer, String>> input2 =
-                    new MergeIterator<Tuple2<Integer, String>>(inList2, comparator2.duplicate());
+                    new MergeIterator<>(inList2, comparator2.duplicate());
 
             // collect expected data
             final Map<Integer, Collection<Match>> expectedMatchesMap =
@@ -274,8 +272,8 @@ public class ReusingSortMergeInnerJoinIteratorITCase extends TestLogger {
             inList2.add(gen2Iter);
             inList2.add(const2Iter);
 
-            input1 = new MergeIterator<Tuple2<Integer, String>>(inList1, comparator1.duplicate());
-            input2 = new MergeIterator<Tuple2<Integer, String>>(inList2, comparator2.duplicate());
+            input1 = new MergeIterator<>(inList1, comparator1.duplicate());
+            input2 = new MergeIterator<>(inList2, comparator2.duplicate());
 
             final FlatJoinFunction<
                             Tuple2<Integer, String>,
@@ -283,8 +281,7 @@ public class ReusingSortMergeInnerJoinIteratorITCase extends TestLogger {
                             Tuple2<Integer, String>>
                     matcher = new MatchRemovingJoiner(expectedMatchesMap);
 
-            final Collector<Tuple2<Integer, String>> collector =
-                    new DiscardingOutputCollector<Tuple2<Integer, String>>();
+            final Collector<Tuple2<Integer, String>> collector = new DiscardingOutputCollector<>();
 
             // we create this sort-merge iterator with little memory for the block-nested-loops
             // fall-back to make sure it
@@ -294,10 +291,7 @@ public class ReusingSortMergeInnerJoinIteratorITCase extends TestLogger {
                             Tuple2<Integer, String>,
                             Tuple2<Integer, String>>
                     iterator =
-                            new ReusingMergeInnerJoinIterator<
-                                    Tuple2<Integer, String>,
-                                    Tuple2<Integer, String>,
-                                    Tuple2<Integer, String>>(
+                            new ReusingMergeInnerJoinIterator<>(
                                     input1,
                                     input2,
                                     this.serializer1,
@@ -334,7 +328,7 @@ public class ReusingSortMergeInnerJoinIteratorITCase extends TestLogger {
 
     private Map<Integer, Collection<Match>> matchValues(
             Map<Integer, Collection<String>> leftMap, Map<Integer, Collection<String>> rightMap) {
-        Map<Integer, Collection<Match>> map = new HashMap<Integer, Collection<Match>>();
+        Map<Integer, Collection<Match>> map = new HashMap<>();
 
         for (Integer key : leftMap.keySet()) {
             Collection<String> leftValues = leftMap.get(key);
@@ -345,7 +339,7 @@ public class ReusingSortMergeInnerJoinIteratorITCase extends TestLogger {
             }
 
             if (!map.containsKey(key)) {
-                map.put(key, new ArrayList<Match>());
+                map.put(key, new ArrayList<>());
             }
 
             Collection<Match> matchedValues = map.get(key);
@@ -362,14 +356,14 @@ public class ReusingSortMergeInnerJoinIteratorITCase extends TestLogger {
 
     private Map<Integer, Collection<String>> collectData(
             MutableObjectIterator<Tuple2<Integer, String>> iter) throws Exception {
-        Map<Integer, Collection<String>> map = new HashMap<Integer, Collection<String>>();
-        Tuple2<Integer, String> pair = new Tuple2<Integer, String>();
+        Map<Integer, Collection<String>> map = new HashMap<>();
+        Tuple2<Integer, String> pair = new Tuple2<>();
 
         while ((pair = iter.next(pair)) != null) {
             final Integer key = pair.getField(0);
 
             if (!map.containsKey(key)) {
-                map.put(key, new ArrayList<String>());
+                map.put(key, new ArrayList<>());
             }
 
             Collection<String> values = map.get(key);

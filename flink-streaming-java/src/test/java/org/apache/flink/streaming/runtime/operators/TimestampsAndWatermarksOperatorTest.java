@@ -28,7 +28,9 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.runtime.watermarkstatus.WatermarkStatus;
 import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.Serializable;
 
@@ -41,6 +43,8 @@ import static org.junit.Assert.assertThat;
 
 /** Tests for {@link TimestampsAndWatermarksOperator}. */
 public class TimestampsAndWatermarksOperatorTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final long AUTO_WATERMARK_INTERVAL = 50L;
 
@@ -242,7 +246,7 @@ public class TimestampsAndWatermarksOperatorTest {
                 new TimestampsAndWatermarksOperator<>(watermarkStrategy, true);
 
         OneInputStreamOperatorTestHarness<T, T> testHarness =
-                new OneInputStreamOperatorTestHarness<>(operator);
+                new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.getExecutionConfig().setAutoWatermarkInterval(AUTO_WATERMARK_INTERVAL);
 
@@ -258,7 +262,7 @@ public class TimestampsAndWatermarksOperatorTest {
                 new TimestampsAndWatermarksOperator<>(watermarkStrategy, false);
 
         OneInputStreamOperatorTestHarness<T, T> testHarness =
-                new OneInputStreamOperatorTestHarness<>(operator);
+                new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.open();
 

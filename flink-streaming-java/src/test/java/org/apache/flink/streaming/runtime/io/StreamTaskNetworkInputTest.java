@@ -58,7 +58,9 @@ import org.apache.flink.streaming.runtime.watermarkstatus.WatermarkStatus;
 import org.apache.flink.util.clock.SystemClock;
 
 import org.junit.After;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -84,6 +86,8 @@ import static org.junit.Assert.assertTrue;
 public class StreamTaskNetworkInputTest {
 
     private static final int PAGE_SIZE = 1000;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private final IOManager ioManager = new IOManagerAsync();
 
@@ -154,7 +158,8 @@ public class StreamTaskNetworkInputTest {
                                         .createUnalignedCheckpointBarrierHandler(
                                                 TestSubtaskCheckpointCoordinator.INSTANCE,
                                                 "test",
-                                                new DummyCheckpointInvokable(),
+                                                new DummyCheckpointInvokable(
+                                                        tempFolder.newFolder()),
                                                 SystemClock.getInstance(),
                                                 false,
                                                 inputGate.getInputGate()),
@@ -246,7 +251,8 @@ public class StreamTaskNetworkInputTest {
         }
     }
 
-    private StreamTaskNetworkInput<Long> createStreamTaskNetworkInput(List<BufferOrEvent> buffers) {
+    private StreamTaskNetworkInput<Long> createStreamTaskNetworkInput(List<BufferOrEvent> buffers)
+            throws IOException {
         return new StreamTaskNetworkInput<>(
                 createCheckpointedInputGate(new MockInputGate(1, buffers, false)),
                 LongSerializer.INSTANCE,
@@ -255,11 +261,15 @@ public class StreamTaskNetworkInputTest {
                 0);
     }
 
-    private static CheckpointedInputGate createCheckpointedInputGate(InputGate inputGate) {
+    private static CheckpointedInputGate createCheckpointedInputGate(InputGate inputGate)
+            throws IOException {
         return new CheckpointedInputGate(
                 inputGate,
                 new CheckpointBarrierTracker(
-                        1, new DummyCheckpointInvokable(), SystemClock.getInstance(), false),
+                        1,
+                        new DummyCheckpointInvokable(tempFolder.newFolder()),
+                        SystemClock.getInstance(),
+                        false),
                 new SyncMailboxExecutor(),
                 UpstreamRecoveryTracker.forInputGate(inputGate));
     }
@@ -338,7 +348,8 @@ public class StreamTaskNetworkInputTest {
                 StreamTestSingleInputGate<Long> inputGate,
                 LongSerializer inSerializer,
                 int numInputChannels,
-                Map<InputChannelInfo, TestRecordDeserializer> deserializers) {
+                Map<InputChannelInfo, TestRecordDeserializer> deserializers)
+                throws IOException {
             super(
                     createCheckpointedInputGate(inputGate.getInputGate()),
                     inSerializer,

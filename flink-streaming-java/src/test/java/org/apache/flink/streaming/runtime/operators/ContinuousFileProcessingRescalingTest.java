@@ -37,7 +37,9 @@ import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 import org.apache.flink.util.Preconditions;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nullable;
 
@@ -56,6 +58,8 @@ public class ContinuousFileProcessingRescalingTest {
 
     private final int maxParallelism = 10;
     private final int sizeOfSplit = 20;
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     /** Simulates the scenario of scaling down from 2 to 1 instances. */
     @Test
@@ -179,7 +183,8 @@ public class ContinuousFileProcessingRescalingTest {
                                 new ExecutionConfig()),
                         maxParallelism,
                         noOfTasks,
-                        taskIdx);
+                        taskIdx,
+                        tempFolder.newFolder());
         testHarness.setTimeCharacteristic(TimeCharacteristic.EventTime);
         return testHarness;
     }

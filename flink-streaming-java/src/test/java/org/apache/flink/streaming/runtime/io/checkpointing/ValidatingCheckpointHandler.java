@@ -27,6 +27,7 @@ import org.apache.flink.runtime.jobgraph.tasks.AbstractInvokable;
 import org.apache.flink.runtime.operators.testutils.DummyEnvironment;
 import org.apache.flink.util.Preconditions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -50,12 +51,12 @@ public class ValidatingCheckpointHandler extends AbstractInvokable {
     final List<Long> triggeredCheckpoints = new ArrayList<>();
     private final List<CheckpointOptions> triggeredCheckpointOptions = new ArrayList<>();
 
-    ValidatingCheckpointHandler() {
-        this(-1);
+    ValidatingCheckpointHandler(File tmpWorkingDir) {
+        this(-1, tmpWorkingDir);
     }
 
-    ValidatingCheckpointHandler(long nextExpectedCheckpointId) {
-        super(new DummyEnvironment("test", 1, 0));
+    ValidatingCheckpointHandler(long nextExpectedCheckpointId, File tmpWorkingDir) {
+        super(new DummyEnvironment("test", 1, 0, tmpWorkingDir));
         this.nextExpectedCheckpointId = nextExpectedCheckpointId;
     }
 

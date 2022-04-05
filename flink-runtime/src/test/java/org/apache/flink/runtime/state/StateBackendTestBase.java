@@ -94,6 +94,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -155,6 +156,8 @@ import static org.mockito.Mockito.verify;
 public abstract class StateBackendTestBase<B extends AbstractStateBackend> extends TestLogger {
 
     @Rule public final ExpectedException expectedException = ExpectedException.none();
+
+    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Before
     public void before() throws Exception {
@@ -4363,7 +4366,7 @@ public abstract class StateBackendTestBase<B extends AbstractStateBackend> exten
                         IntSerializer.INSTANCE,
                         numberOfKeyGroups,
                         new KeyGroupRange(0, 0),
-                        new DummyEnvironment());
+                        new DummyEnvironment(tempFolder.newFolder()));
 
         try {
             {
@@ -5601,7 +5604,9 @@ public abstract class StateBackendTestBase<B extends AbstractStateBackend> exten
 
     private MockEnvironment buildMockEnv() throws Exception {
         MockEnvironment mockEnvironment =
-                MockEnvironment.builder().setTaskStateManager(getTestTaskStateManager()).build();
+                MockEnvironment.builder(tempFolder.newFolder())
+                        .setTaskStateManager(getTestTaskStateManager())
+                        .build();
         mockEnvironment.setCheckpointStorageAccess(getCheckpointStorageAccess());
         return mockEnvironment;
     }

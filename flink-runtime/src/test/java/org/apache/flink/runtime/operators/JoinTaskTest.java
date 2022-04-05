@@ -36,12 +36,14 @@ import org.apache.flink.util.Collector;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 public class JoinTaskTest extends DriverTestBase<FlatJoinFunction<Record, Record, Record>> {
 
@@ -69,7 +71,7 @@ public class JoinTaskTest extends DriverTestBase<FlatJoinFunction<Record, Record
 
     private final List<Record> outList = new ArrayList<>();
 
-    public JoinTaskTest(ExecutionConfig config) {
+    public JoinTaskTest(ExecutionConfig config) throws IOException {
         super(config, HASH_MEM, NUM_SORTER, SORT_MEM);
         bnljn_frac = (double) BNLJN_MEM / this.getMemoryManager().getMemorySize();
         hash_frac = (double) HASH_MEM / this.getMemoryManager().getMemorySize();

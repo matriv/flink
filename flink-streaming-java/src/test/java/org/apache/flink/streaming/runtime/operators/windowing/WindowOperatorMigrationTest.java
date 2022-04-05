@@ -56,8 +56,10 @@ import org.apache.flink.streaming.util.OperatorSnapshotUtil;
 import org.apache.flink.streaming.util.TestHarnessUtil;
 import org.apache.flink.util.Collector;
 
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -82,6 +84,8 @@ import static org.junit.Assert.fail;
  */
 @RunWith(Parameterized.class)
 public class WindowOperatorMigrationTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Parameterized.Parameters(name = "Migration Savepoint: {0}")
     public static Collection<FlinkVersion> parameters() {
@@ -138,7 +142,7 @@ public class WindowOperatorMigrationTest {
                         new WindowOperator<>(
                                 EventTimeSessionWindows.withGap(Time.seconds(sessionSize)),
                                 new TimeWindow.Serializer(),
-                                new TupleKeySelector<String>(),
+                                new TupleKeySelector<>(),
                                 BasicTypeInfo.STRING_TYPE_INFO.createSerializer(
                                         new ExecutionConfig()),
                                 stateDesc,
@@ -150,7 +154,10 @@ public class WindowOperatorMigrationTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple3<String, Long, Long>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector<>(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector<>(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -196,7 +203,7 @@ public class WindowOperatorMigrationTest {
                         new WindowOperator<>(
                                 EventTimeSessionWindows.withGap(Time.seconds(sessionSize)),
                                 new TimeWindow.Serializer(),
-                                new TupleKeySelector<String>(),
+                                new TupleKeySelector<>(),
                                 BasicTypeInfo.STRING_TYPE_INFO.createSerializer(
                                         new ExecutionConfig()),
                                 stateDesc,
@@ -210,7 +217,10 @@ public class WindowOperatorMigrationTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple3<String, Long, Long>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector<>(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector<>(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         testHarness.setup();
 
@@ -271,7 +281,7 @@ public class WindowOperatorMigrationTest {
                         new WindowOperator<>(
                                 EventTimeSessionWindows.withGap(Time.seconds(sessionSize)),
                                 new TimeWindow.Serializer(),
-                                new TupleKeySelector<String>(),
+                                new TupleKeySelector<>(),
                                 BasicTypeInfo.STRING_TYPE_INFO.createSerializer(
                                         new ExecutionConfig()),
                                 stateDesc,
@@ -283,7 +293,10 @@ public class WindowOperatorMigrationTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple3<String, Long, Long>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector<>(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector<>(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -323,7 +336,7 @@ public class WindowOperatorMigrationTest {
                         new WindowOperator<>(
                                 EventTimeSessionWindows.withGap(Time.seconds(sessionSize)),
                                 new TimeWindow.Serializer(),
-                                new TupleKeySelector<String>(),
+                                new TupleKeySelector<>(),
                                 BasicTypeInfo.STRING_TYPE_INFO.createSerializer(
                                         new ExecutionConfig()),
                                 stateDesc,
@@ -337,7 +350,10 @@ public class WindowOperatorMigrationTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple3<String, Long, Long>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector<>(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector<>(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         testHarness.setup();
 
@@ -414,8 +430,7 @@ public class WindowOperatorMigrationTest {
                                         new ExecutionConfig()),
                                 stateDesc,
                                 new InternalSingleValueWindowFunction<>(
-                                        new PassThroughWindowFunction<
-                                                String, TimeWindow, Tuple2<String, Integer>>()),
+                                        new PassThroughWindowFunction<>()),
                                 EventTimeTrigger.create(),
                                 0,
                                 null /* late data output tag */);
@@ -425,7 +440,10 @@ public class WindowOperatorMigrationTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector<>(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector<>(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -494,8 +512,7 @@ public class WindowOperatorMigrationTest {
                                         new ExecutionConfig()),
                                 stateDesc,
                                 new InternalSingleValueWindowFunction<>(
-                                        new PassThroughWindowFunction<
-                                                String, TimeWindow, Tuple2<String, Integer>>()),
+                                        new PassThroughWindowFunction<>()),
                                 EventTimeTrigger.create(),
                                 0,
                                 null /* late data output tag */);
@@ -505,7 +522,10 @@ public class WindowOperatorMigrationTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector<>(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector<>(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         testHarness.setup();
 
@@ -565,8 +585,7 @@ public class WindowOperatorMigrationTest {
                                 BasicTypeInfo.STRING_TYPE_INFO.createSerializer(
                                         new ExecutionConfig()),
                                 stateDesc,
-                                new InternalIterableWindowFunction<>(
-                                        new RichSumReducer<TimeWindow>()),
+                                new InternalIterableWindowFunction<>(new RichSumReducer<>()),
                                 EventTimeTrigger.create(),
                                 0,
                                 null /* late data output tag */);
@@ -576,7 +595,10 @@ public class WindowOperatorMigrationTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector<>(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector<>(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -643,8 +665,7 @@ public class WindowOperatorMigrationTest {
                                 BasicTypeInfo.STRING_TYPE_INFO.createSerializer(
                                         new ExecutionConfig()),
                                 stateDesc,
-                                new InternalIterableWindowFunction<>(
-                                        new RichSumReducer<TimeWindow>()),
+                                new InternalIterableWindowFunction<>(new RichSumReducer<>()),
                                 EventTimeTrigger.create(),
                                 0,
                                 null /* late data output tag */);
@@ -654,7 +675,10 @@ public class WindowOperatorMigrationTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector<>(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector<>(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         testHarness.setup();
 
@@ -717,8 +741,7 @@ public class WindowOperatorMigrationTest {
                                         new ExecutionConfig()),
                                 stateDesc,
                                 new InternalSingleValueWindowFunction<>(
-                                        new PassThroughWindowFunction<
-                                                String, TimeWindow, Tuple2<String, Integer>>()),
+                                        new PassThroughWindowFunction<>()),
                                 ProcessingTimeTrigger.create(),
                                 0,
                                 null /* late data output tag */);
@@ -728,7 +751,10 @@ public class WindowOperatorMigrationTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector<>(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector<>(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -787,8 +813,7 @@ public class WindowOperatorMigrationTest {
                                         new ExecutionConfig()),
                                 stateDesc,
                                 new InternalSingleValueWindowFunction<>(
-                                        new PassThroughWindowFunction<
-                                                String, TimeWindow, Tuple2<String, Integer>>()),
+                                        new PassThroughWindowFunction<>()),
                                 ProcessingTimeTrigger.create(),
                                 0,
                                 null /* late data output tag */);
@@ -798,7 +823,10 @@ public class WindowOperatorMigrationTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector<>(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector<>(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         testHarness.setup();
 
@@ -854,8 +882,7 @@ public class WindowOperatorMigrationTest {
                                 BasicTypeInfo.STRING_TYPE_INFO.createSerializer(
                                         new ExecutionConfig()),
                                 stateDesc,
-                                new InternalIterableWindowFunction<>(
-                                        new RichSumReducer<TimeWindow>()),
+                                new InternalIterableWindowFunction<>(new RichSumReducer<>()),
                                 ProcessingTimeTrigger.create(),
                                 0,
                                 null /* late data output tag */);
@@ -865,7 +892,10 @@ public class WindowOperatorMigrationTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector<>(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector<>(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -922,8 +952,7 @@ public class WindowOperatorMigrationTest {
                                 BasicTypeInfo.STRING_TYPE_INFO.createSerializer(
                                         new ExecutionConfig()),
                                 stateDesc,
-                                new InternalIterableWindowFunction<>(
-                                        new RichSumReducer<TimeWindow>()),
+                                new InternalIterableWindowFunction<>(new RichSumReducer<>()),
                                 ProcessingTimeTrigger.create(),
                                 0,
                                 null /* late data output tag */);
@@ -933,7 +962,10 @@ public class WindowOperatorMigrationTest {
         OneInputStreamOperatorTestHarness<Tuple2<String, Integer>, Tuple2<String, Integer>>
                 testHarness =
                         new KeyedOneInputStreamOperatorTestHarness<>(
-                                operator, new TupleKeySelector<>(), BasicTypeInfo.STRING_TYPE_INFO);
+                                operator,
+                                new TupleKeySelector<>(),
+                                BasicTypeInfo.STRING_TYPE_INFO,
+                                tempFolder.newFolder());
 
         testHarness.setup();
 
@@ -1009,7 +1041,8 @@ public class WindowOperatorMigrationTest {
                         new KeyedOneInputStreamOperatorTestHarness<>(
                                 operator,
                                 new TupleKeySelector<>(),
-                                TypeInformation.of(NonPojoType.class));
+                                TypeInformation.of(NonPojoType.class),
+                                tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -1104,7 +1137,8 @@ public class WindowOperatorMigrationTest {
                         new KeyedOneInputStreamOperatorTestHarness<>(
                                 operator,
                                 new TupleKeySelector<>(),
-                                TypeInformation.of(NonPojoType.class));
+                                TypeInformation.of(NonPojoType.class),
+                                tempFolder.newFolder());
 
         testHarness.setup();
 

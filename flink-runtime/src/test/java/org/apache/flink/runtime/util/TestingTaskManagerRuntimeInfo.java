@@ -35,15 +35,23 @@ public class TestingTaskManagerRuntimeInfo implements TaskManagerRuntimeInfo {
     private final String taskManagerExternalAddress;
     private final File tmpWorkingDirectory;
 
-    public TestingTaskManagerRuntimeInfo() {
-        this(
-                new Configuration(),
-                EnvironmentInformation.getTemporaryFileDirectory()
-                        .split(",|" + File.pathSeparator));
+    //    public TestingTaskManagerRuntimeInfo() {
+    //        this(
+    //                new Configuration(),
+    //                EnvironmentInformation.getTemporaryFileDirectory()
+    //                        .split(",|" + File.pathSeparator));
+    //    }
+    //
+    //    public TestingTaskManagerRuntimeInfo(Configuration configuration) {
+    //        this(configuration, EnvironmentInformation.getTemporaryFileDirectory());
+    //    }
+
+    public TestingTaskManagerRuntimeInfo(File tmpWorkingDirectory) {
+        this(new Configuration(), tmpWorkingDirectory);
     }
 
-    public TestingTaskManagerRuntimeInfo(Configuration configuration) {
-        this(configuration, EnvironmentInformation.getTemporaryFileDirectory());
+    public TestingTaskManagerRuntimeInfo(String tmpWorkingDirectory) {
+        this(new Configuration(), tmpWorkingDirectory);
     }
 
     public TestingTaskManagerRuntimeInfo(Configuration configuration, File tmpWorkingDirectory) {
@@ -54,11 +62,11 @@ public class TestingTaskManagerRuntimeInfo implements TaskManagerRuntimeInfo {
                 tmpWorkingDirectory);
     }
 
-    public TestingTaskManagerRuntimeInfo(Configuration configuration, String tmpDirectory) {
-        this(configuration, new String[] {checkNotNull(tmpDirectory)});
+    public TestingTaskManagerRuntimeInfo(Configuration configuration, String tmpWorkingDirectory) {
+        this(configuration, new String[] {checkNotNull(tmpWorkingDirectory)});
     }
 
-    public TestingTaskManagerRuntimeInfo(Configuration configuration, String[] tmpDirectories) {
+    private TestingTaskManagerRuntimeInfo(Configuration configuration, String[] tmpDirectories) {
         this(
                 configuration,
                 tmpDirectories,

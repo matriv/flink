@@ -35,6 +35,8 @@ import org.apache.flink.util.Collector;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public abstract class AbstractOuterJoinTaskExternalITCase
         extends BinaryOperatorTestBase<
                 FlatJoinFunction<
@@ -52,14 +54,12 @@ public abstract class AbstractOuterJoinTaskExternalITCase
 
     private final double bnljn_frac;
 
-    @SuppressWarnings("unchecked")
     protected final TypeComparator<Tuple2<Integer, Integer>> comparator1 =
             new TupleComparator<>(
                     new int[] {0},
                     new TypeComparator<?>[] {new IntComparator(true)},
                     new TypeSerializer<?>[] {IntSerializer.INSTANCE});
 
-    @SuppressWarnings("unchecked")
     protected final TypeComparator<Tuple2<Integer, Integer>> comparator2 =
             new TupleComparator<>(
                     new int[] {0},
@@ -75,11 +75,12 @@ public abstract class AbstractOuterJoinTaskExternalITCase
     protected final CountingOutputCollector<Tuple2<Integer, Integer>> output =
             new CountingOutputCollector<>();
 
-    public AbstractOuterJoinTaskExternalITCase(ExecutionConfig config) {
+    public AbstractOuterJoinTaskExternalITCase(ExecutionConfig config) throws IOException {
         super(config, HASH_MEM, 2, SORT_MEM);
         bnljn_frac = (double) BNLJN_MEM / this.getMemoryManager().getMemorySize();
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void testExternalSortOuterJoinTask() throws Exception {
         final int keyCnt1 = 16384 * 4;
@@ -128,7 +129,6 @@ public abstract class AbstractOuterJoinTaskExternalITCase
 
     // =================================================================================================
 
-    @SuppressWarnings("serial")
     public static final class MockJoinStub
             implements FlatJoinFunction<
                     Tuple2<Integer, Integer>, Tuple2<Integer, Integer>, Tuple2<Integer, Integer>> {

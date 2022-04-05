@@ -34,7 +34,9 @@ import org.apache.flink.types.StringValue;
 import org.apache.flink.util.MutableObjectIterator;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,14 +44,13 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class ReduceCombineDriverTest {
 
+    @ClassRule public static TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testImmutableEmpty() {
         try {
             TestTaskContext<ReduceFunction<Tuple2<String, Integer>>, Tuple2<String, Integer>>
-                    context =
-                            new TestTaskContext<
-                                    ReduceFunction<Tuple2<String, Integer>>,
-                                    Tuple2<String, Integer>>(1024 * 1024);
+                    context = new TestTaskContext<>(1024 * 1024, tempFolder.newFolder());
             context.getTaskConfig().setRelativeMemoryDriver(0.5);
 
             List<Tuple2<String, Integer>> data = DriverTestData.createReduceImmutableData();
@@ -66,15 +67,13 @@ public class ReduceCombineDriverTest {
                             new int[] {0}, new boolean[] {true}, 0, new ExecutionConfig());
 
             GatheringCollector<Tuple2<String, Integer>> result =
-                    new GatheringCollector<Tuple2<String, Integer>>(
-                            typeInfo.createSerializer(new ExecutionConfig()));
+                    new GatheringCollector<>(typeInfo.createSerializer(new ExecutionConfig()));
 
             context.setInput1(input, typeInfo.createSerializer(new ExecutionConfig()));
             context.setComparator1(comparator);
             context.setCollector(result);
 
-            ReduceCombineDriver<Tuple2<String, Integer>> driver =
-                    new ReduceCombineDriver<Tuple2<String, Integer>>();
+            ReduceCombineDriver<Tuple2<String, Integer>> driver = new ReduceCombineDriver<>();
             driver.setup(context);
             driver.prepare();
             driver.run();
@@ -92,10 +91,7 @@ public class ReduceCombineDriverTest {
         try {
             {
                 TestTaskContext<ReduceFunction<Tuple2<String, Integer>>, Tuple2<String, Integer>>
-                        context =
-                                new TestTaskContext<
-                                        ReduceFunction<Tuple2<String, Integer>>,
-                                        Tuple2<String, Integer>>(1024 * 1024);
+                        context = new TestTaskContext<>(1024 * 1024, tempFolder.newFolder());
                 context.getTaskConfig().setRelativeMemoryDriver(0.5);
 
                 List<Tuple2<String, Integer>> data = DriverTestData.createReduceImmutableData();
@@ -105,15 +101,14 @@ public class ReduceCombineDriverTest {
                         (TupleTypeInfo<Tuple2<String, Integer>>)
                                 TypeExtractor.getForObject(data.get(0));
                 MutableObjectIterator<Tuple2<String, Integer>> input =
-                        new RegularToMutableObjectIterator<Tuple2<String, Integer>>(
+                        new RegularToMutableObjectIterator<>(
                                 data.iterator(), typeInfo.createSerializer(new ExecutionConfig()));
                 TypeComparator<Tuple2<String, Integer>> comparator =
                         typeInfo.createComparator(
                                 new int[] {0}, new boolean[] {true}, 0, new ExecutionConfig());
 
                 GatheringCollector<Tuple2<String, Integer>> result =
-                        new GatheringCollector<Tuple2<String, Integer>>(
-                                typeInfo.createSerializer(new ExecutionConfig()));
+                        new GatheringCollector<>(typeInfo.createSerializer(new ExecutionConfig()));
 
                 context.setDriverStrategy(DriverStrategy.SORTED_PARTIAL_REDUCE);
                 context.setInput1(input, typeInfo.createSerializer(new ExecutionConfig()));
@@ -121,8 +116,7 @@ public class ReduceCombineDriverTest {
                 context.setCollector(result);
                 context.setUdf(new ConcatSumFirstReducer());
 
-                ReduceCombineDriver<Tuple2<String, Integer>> driver =
-                        new ReduceCombineDriver<Tuple2<String, Integer>>();
+                ReduceCombineDriver<Tuple2<String, Integer>> driver = new ReduceCombineDriver<>();
                 driver.setup(context);
                 driver.prepare();
                 driver.run();
@@ -136,10 +130,7 @@ public class ReduceCombineDriverTest {
 
             {
                 TestTaskContext<ReduceFunction<Tuple2<String, Integer>>, Tuple2<String, Integer>>
-                        context =
-                                new TestTaskContext<
-                                        ReduceFunction<Tuple2<String, Integer>>,
-                                        Tuple2<String, Integer>>(1024 * 1024);
+                        context = new TestTaskContext<>(1024 * 1024, tempFolder.newFolder());
                 context.getTaskConfig().setRelativeMemoryDriver(0.5);
 
                 List<Tuple2<String, Integer>> data = DriverTestData.createReduceImmutableData();
@@ -149,15 +140,14 @@ public class ReduceCombineDriverTest {
                         (TupleTypeInfo<Tuple2<String, Integer>>)
                                 TypeExtractor.getForObject(data.get(0));
                 MutableObjectIterator<Tuple2<String, Integer>> input =
-                        new RegularToMutableObjectIterator<Tuple2<String, Integer>>(
+                        new RegularToMutableObjectIterator<>(
                                 data.iterator(), typeInfo.createSerializer(new ExecutionConfig()));
                 TypeComparator<Tuple2<String, Integer>> comparator =
                         typeInfo.createComparator(
                                 new int[] {0}, new boolean[] {true}, 0, new ExecutionConfig());
 
                 GatheringCollector<Tuple2<String, Integer>> result =
-                        new GatheringCollector<Tuple2<String, Integer>>(
-                                typeInfo.createSerializer(new ExecutionConfig()));
+                        new GatheringCollector<>(typeInfo.createSerializer(new ExecutionConfig()));
 
                 context.setDriverStrategy(DriverStrategy.SORTED_PARTIAL_REDUCE);
                 context.setInput1(input, typeInfo.createSerializer(new ExecutionConfig()));
@@ -165,8 +155,7 @@ public class ReduceCombineDriverTest {
                 context.setCollector(result);
                 context.setUdf(new ConcatSumSecondReducer());
 
-                ReduceCombineDriver<Tuple2<String, Integer>> driver =
-                        new ReduceCombineDriver<Tuple2<String, Integer>>();
+                ReduceCombineDriver<Tuple2<String, Integer>> driver = new ReduceCombineDriver<>();
                 driver.setup(context);
                 driver.prepare();
                 driver.run();
@@ -191,10 +180,7 @@ public class ReduceCombineDriverTest {
                 TestTaskContext<
                                 ReduceFunction<Tuple2<StringValue, IntValue>>,
                                 Tuple2<StringValue, IntValue>>
-                        context =
-                                new TestTaskContext<
-                                        ReduceFunction<Tuple2<StringValue, IntValue>>,
-                                        Tuple2<StringValue, IntValue>>(1024 * 1024);
+                        context = new TestTaskContext<>(1024 * 1024, tempFolder.newFolder());
                 context.getTaskConfig().setRelativeMemoryDriver(0.5);
 
                 List<Tuple2<StringValue, IntValue>> data = DriverTestData.createReduceMutableData();
@@ -202,15 +188,14 @@ public class ReduceCombineDriverTest {
                         (TupleTypeInfo<Tuple2<StringValue, IntValue>>)
                                 TypeExtractor.getForObject(data.get(0));
                 MutableObjectIterator<Tuple2<StringValue, IntValue>> input =
-                        new RegularToMutableObjectIterator<Tuple2<StringValue, IntValue>>(
+                        new RegularToMutableObjectIterator<>(
                                 data.iterator(), typeInfo.createSerializer(new ExecutionConfig()));
                 TypeComparator<Tuple2<StringValue, IntValue>> comparator =
                         typeInfo.createComparator(
                                 new int[] {0}, new boolean[] {true}, 0, new ExecutionConfig());
 
                 GatheringCollector<Tuple2<StringValue, IntValue>> result =
-                        new GatheringCollector<Tuple2<StringValue, IntValue>>(
-                                typeInfo.createSerializer(new ExecutionConfig()));
+                        new GatheringCollector<>(typeInfo.createSerializer(new ExecutionConfig()));
 
                 context.setDriverStrategy(DriverStrategy.SORTED_PARTIAL_REDUCE);
                 context.setInput1(input, typeInfo.createSerializer(new ExecutionConfig()));
@@ -219,7 +204,7 @@ public class ReduceCombineDriverTest {
                 context.setUdf(new ConcatSumFirstMutableReducer());
 
                 ReduceCombineDriver<Tuple2<StringValue, IntValue>> driver =
-                        new ReduceCombineDriver<Tuple2<StringValue, IntValue>>();
+                        new ReduceCombineDriver<>();
                 driver.setup(context);
                 driver.prepare();
                 driver.run();
@@ -233,10 +218,7 @@ public class ReduceCombineDriverTest {
                 TestTaskContext<
                                 ReduceFunction<Tuple2<StringValue, IntValue>>,
                                 Tuple2<StringValue, IntValue>>
-                        context =
-                                new TestTaskContext<
-                                        ReduceFunction<Tuple2<StringValue, IntValue>>,
-                                        Tuple2<StringValue, IntValue>>(1024 * 1024);
+                        context = new TestTaskContext<>(1024 * 1024, tempFolder.newFolder());
                 context.getTaskConfig().setRelativeMemoryDriver(0.5);
 
                 List<Tuple2<StringValue, IntValue>> data = DriverTestData.createReduceMutableData();
@@ -244,15 +226,14 @@ public class ReduceCombineDriverTest {
                         (TupleTypeInfo<Tuple2<StringValue, IntValue>>)
                                 TypeExtractor.getForObject(data.get(0));
                 MutableObjectIterator<Tuple2<StringValue, IntValue>> input =
-                        new RegularToMutableObjectIterator<Tuple2<StringValue, IntValue>>(
+                        new RegularToMutableObjectIterator<>(
                                 data.iterator(), typeInfo.createSerializer(new ExecutionConfig()));
                 TypeComparator<Tuple2<StringValue, IntValue>> comparator =
                         typeInfo.createComparator(
                                 new int[] {0}, new boolean[] {true}, 0, new ExecutionConfig());
 
                 GatheringCollector<Tuple2<StringValue, IntValue>> result =
-                        new GatheringCollector<Tuple2<StringValue, IntValue>>(
-                                typeInfo.createSerializer(new ExecutionConfig()));
+                        new GatheringCollector<>(typeInfo.createSerializer(new ExecutionConfig()));
 
                 context.setDriverStrategy(DriverStrategy.SORTED_PARTIAL_REDUCE);
                 context.setInput1(input, typeInfo.createSerializer(new ExecutionConfig()));
@@ -261,7 +242,7 @@ public class ReduceCombineDriverTest {
                 context.setUdf(new ConcatSumSecondMutableReducer());
 
                 ReduceCombineDriver<Tuple2<StringValue, IntValue>> driver =
-                        new ReduceCombineDriver<Tuple2<StringValue, IntValue>>();
+                        new ReduceCombineDriver<>();
                 driver.setup(context);
                 driver.prepare();
                 driver.run();

@@ -25,7 +25,9 @@ import org.apache.flink.runtime.operators.testutils.DummyInvokable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.nio.ByteBuffer;
 import java.util.Random;
@@ -44,6 +46,8 @@ public class MemorySegmentSimpleTest {
 
     public static final int PAGE_SIZE = 1024 * 512;
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     private MemoryManager manager;
 
     private MemorySegment segment;
@@ -58,7 +62,8 @@ public class MemorySegmentSimpleTest {
                             .setMemorySize(MANAGED_MEMORY_SIZE)
                             .setPageSize(PAGE_SIZE)
                             .build();
-            this.segment = manager.allocatePages(new DummyInvokable(), 1).get(0);
+            this.segment =
+                    manager.allocatePages(new DummyInvokable(tempFolder.newFolder()), 1).get(0);
             this.random = new Random(RANDOM_SEED);
         } catch (Exception e) {
             e.printStackTrace();

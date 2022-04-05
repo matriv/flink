@@ -44,9 +44,11 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 import org.apache.flink.streaming.util.TestHarnessUtil;
 
+import org.junit.ClassRule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nullable;
 
@@ -63,13 +65,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SinkWriterOperatorTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     void testNotEmitCommittablesWithoutCommitter() throws Exception {
         final TestSink.DefaultSinkWriter<Integer> sinkWriter = new TestSink.DefaultSinkWriter<>();
         final OneInputStreamOperatorTestHarness<Integer, CommittableMessage<Integer>> testHarness =
                 new OneInputStreamOperatorTestHarness<>(
                         new SinkWriterOperatorFactory<>(
-                                TestSink.newBuilder().setWriter(sinkWriter).build().asV2()));
+                                TestSink.newBuilder().setWriter(sinkWriter).build().asV2()),
+                        tempFolder.newFolder());
         testHarness.open();
         testHarness.processElement(1, 1);
 
@@ -91,7 +96,8 @@ class SinkWriterOperatorTest {
         final OneInputStreamOperatorTestHarness<Integer, CommittableMessage<Integer>> testHarness =
                 new OneInputStreamOperatorTestHarness<>(
                         new SinkWriterOperatorFactory<>(
-                                TestSink.newBuilder().setWriter(writer).build().asV2()));
+                                TestSink.newBuilder().setWriter(writer).build().asV2()),
+                        tempFolder.newFolder());
         testHarness.open();
 
         testHarness.processWatermark(initialTime);
@@ -117,7 +123,8 @@ class SinkWriterOperatorTest {
                                         .setDefaultCommitter()
                                         .setWriter(new TimeBasedBufferingSinkWriter())
                                         .build()
-                                        .asV2()));
+                                        .asV2()),
+                        tempFolder.newFolder());
 
         testHarness.open();
 
@@ -145,7 +152,8 @@ class SinkWriterOperatorTest {
         final OneInputStreamOperatorTestHarness<Integer, CommittableMessage<Integer>> testHarness =
                 new OneInputStreamOperatorTestHarness<>(
                         new SinkWriterOperatorFactory<>(
-                                TestSink.newBuilder().setDefaultCommitter().build().asV2()));
+                                TestSink.newBuilder().setDefaultCommitter().build().asV2()),
+                        tempFolder.newFolder());
 
         testHarness.open();
         assertThat(testHarness.getOutput()).isEmpty();
@@ -166,7 +174,8 @@ class SinkWriterOperatorTest {
                 new SinkWriterOperatorFactory<>(
                         TestSink.newBuilder().setDefaultCommitter().build().asV2());
         final OneInputStreamOperatorTestHarness<Integer, CommittableMessage<Integer>> testHarness =
-                new OneInputStreamOperatorTestHarness<>(writerOperatorFactory);
+                new OneInputStreamOperatorTestHarness<>(
+                        writerOperatorFactory, tempFolder.newFolder());
 
         testHarness.open();
         assertThat(testHarness.getOutput()).isEmpty();
@@ -243,7 +252,7 @@ class SinkWriterOperatorTest {
 
         final OneInputStreamOperatorTestHarness<String, String> previousSink =
                 new OneInputStreamOperatorTestHarness<>(
-                        new DummySinkOperator(), StringSerializer.INSTANCE);
+                        new DummySinkOperator(), StringSerializer.INSTANCE, tempFolder.newFolder());
 
         OperatorSubtaskState previousSinkState =
                 TestHarnessUtil.buildSubtaskState(previousSink, previousSinkInputs);
@@ -303,7 +312,9 @@ class SinkWriterOperatorTest {
 
         final OneInputStreamOperatorTestHarness<String, String> committer =
                 new OneInputStreamOperatorTestHarness<>(
-                        new TestCommitterOperator(), StringSerializer.INSTANCE);
+                        new TestCommitterOperator(),
+                        StringSerializer.INSTANCE,
+                        tempFolder.newFolder());
 
         final OperatorSubtaskState committerState =
                 TestHarnessUtil.buildSubtaskState(committer, committables);
@@ -316,7 +327,8 @@ class SinkWriterOperatorTest {
                                         .setDefaultCommitter()
                                         .setWriter(sinkWriter)
                                         .build()
-                                        .asV2()));
+                                        .asV2()),
+                        tempFolder.newFolder());
 
         testHarness.initializeState(committerState);
 
@@ -364,7 +376,8 @@ class SinkWriterOperatorTest {
                                         .setWriter(sinkWriter)
                                         .setDefaultCommitter()
                                         .build()
-                                        .asV2()));
+                                        .asV2()),
+                        tempFolder.newFolder());
         testHarness.open();
         testHarness.processElement(1, 1);
 
@@ -433,7 +446,8 @@ class SinkWriterOperatorTest {
         }
         final SinkWriterOperatorFactory<Integer, Integer> writerOperatorFactory =
                 new SinkWriterOperatorFactory<>(builder.build().asV2());
-        return new OneInputStreamOperatorTestHarness<>(writerOperatorFactory);
+        return new OneInputStreamOperatorTestHarness<>(
+                writerOperatorFactory, tempFolder.newFolder());
     }
 
     private static OneInputStreamOperatorTestHarness<Integer, CommittableMessage<Integer>>
@@ -450,7 +464,8 @@ class SinkWriterOperatorTest {
         }
         final SinkWriterOperatorFactory<Integer, Integer> writerOperatorFactory =
                 new SinkWriterOperatorFactory<>(builder.build().asV2());
-        return new OneInputStreamOperatorTestHarness<>(writerOperatorFactory);
+        return new OneInputStreamOperatorTestHarness<>(
+                writerOperatorFactory, tempFolder.newFolder());
     }
 
     private static void assertBasicOutput(

@@ -31,12 +31,12 @@ import org.apache.flink.runtime.testutils.recordutils.RecordComparator;
 import org.apache.flink.runtime.testutils.recordutils.RecordPairComparatorFactory;
 import org.apache.flink.types.IntValue;
 import org.apache.flink.types.Record;
-import org.apache.flink.types.Value;
 import org.apache.flink.util.Collector;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CoGroupTaskTest extends DriverTestBase<CoGroupFunction<Record, Record, Record>> {
@@ -44,17 +44,15 @@ public class CoGroupTaskTest extends DriverTestBase<CoGroupFunction<Record, Reco
 
     @SuppressWarnings("unchecked")
     private final RecordComparator comparator1 =
-            new RecordComparator(
-                    new int[] {0}, (Class<? extends Value>[]) new Class[] {IntValue.class});
+            new RecordComparator(new int[] {0}, new Class[] {IntValue.class});
 
     @SuppressWarnings("unchecked")
     private final RecordComparator comparator2 =
-            new RecordComparator(
-                    new int[] {0}, (Class<? extends Value>[]) new Class[] {IntValue.class});
+            new RecordComparator(new int[] {0}, new Class[] {IntValue.class});
 
     private final CountingOutputCollector output = new CountingOutputCollector();
 
-    public CoGroupTaskTest(ExecutionConfig config) {
+    public CoGroupTaskTest(ExecutionConfig config) throws IOException {
         super(config, 0, 2, SORT_MEM);
     }
 

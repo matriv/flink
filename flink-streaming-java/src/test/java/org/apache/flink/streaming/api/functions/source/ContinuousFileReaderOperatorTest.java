@@ -29,12 +29,16 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.runtime.tasks.mailbox.Mail;
 import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import static org.junit.Assert.fail;
 
 /** {@link ContinuousFileReaderOperator} test. */
 public class ContinuousFileReaderOperatorTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test(expected = ExpectedTestException.class)
     public void testExceptionRethrownFromClose() throws Exception {
@@ -101,7 +105,7 @@ public class ContinuousFileReaderOperatorTest {
         return new OneInputStreamOperatorTestHarness<>(
                 new ContinuousFileReaderOperatorFactory<>(
                         format, TypeExtractor.getInputFormatTypes(format), config),
-                TypeExtractor.getForClass(TimestampedFileInputSplit.class)
-                        .createSerializer(config));
+                TypeExtractor.getForClass(TimestampedFileInputSplit.class).createSerializer(config),
+                tempFolder.newFolder());
     }
 }

@@ -47,6 +47,8 @@ import org.apache.flink.util.TestLogger;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -59,6 +61,8 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public abstract class UnaryOperatorTestBase<S extends Function, IN, OUT> extends TestLogger
         implements TaskContext<S, OUT> {
+
+    @ClassRule public static TemporaryFolder tempFolder = new TemporaryFolder();
 
     protected static final long DEFAULT_PER_SORT_MEM = 16 * 1024 * 1024;
 
@@ -98,13 +102,14 @@ public abstract class UnaryOperatorTestBase<S extends Function, IN, OUT> extends
 
     private ExecutionConfig executionConfig;
 
-    protected UnaryOperatorTestBase(
-            ExecutionConfig executionConfig, long memory, int maxNumSorters) {
+    protected UnaryOperatorTestBase(ExecutionConfig executionConfig, long memory, int maxNumSorters)
+            throws IOException {
         this(executionConfig, memory, maxNumSorters, DEFAULT_PER_SORT_MEM);
     }
 
     protected UnaryOperatorTestBase(
-            ExecutionConfig executionConfig, long memory, int maxNumSorters, long perSortMemory) {
+            ExecutionConfig executionConfig, long memory, int maxNumSorters, long perSortMemory)
+            throws IOException {
         if (memory < 0 || maxNumSorters < 0 || perSortMemory < 0) {
             throw new IllegalArgumentException();
         }
@@ -118,15 +123,15 @@ public abstract class UnaryOperatorTestBase<S extends Function, IN, OUT> extends
                 totalMem > 0
                         ? MemoryManagerBuilder.newBuilder().setMemorySize(totalMem).build()
                         : null;
-        this.owner = new DummyInvokable();
+        this.owner = new DummyInvokable(tempFolder.newFolder());
 
         Configuration config = new Configuration();
         this.taskConfig = new TaskConfig(config);
 
         this.executionConfig = executionConfig;
-        this.comparators = new ArrayList<TypeComparator<IN>>(2);
+        this.comparators = new ArrayList<>(2);
 
-        this.taskManageInfo = new TestingTaskManagerRuntimeInfo();
+        this.taskManageInfo = new TestingTaskManagerRuntimeInfo(tempFolder.newFolder());
     }
 
     @Parameterized.Parameters

@@ -30,6 +30,7 @@ import org.apache.flink.types.Record;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CrossTaskTest extends DriverTestBase<CrossFunction<Record, Record, Record>> {
@@ -40,7 +41,7 @@ public class CrossTaskTest extends DriverTestBase<CrossFunction<Record, Record, 
 
     private final CountingOutputCollector output = new CountingOutputCollector();
 
-    public CrossTaskTest(ExecutionConfig config) {
+    public CrossTaskTest(ExecutionConfig config) throws IOException {
         super(config, CROSS_MEM, 0);
 
         cross_frac = (double) CROSS_MEM / this.getMemoryManager().getMemorySize();

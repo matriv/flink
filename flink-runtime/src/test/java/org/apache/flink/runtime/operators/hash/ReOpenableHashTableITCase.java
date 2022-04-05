@@ -40,7 +40,9 @@ import org.apache.flink.util.TestLogger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,10 +59,12 @@ public class ReOpenableHashTableITCase extends TestLogger {
 
     private static final int NUM_PROBES = 3; // number of reopenings of hash join
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     private IOManager ioManager;
     private MemoryManager memoryManager;
 
-    private static final AbstractInvokable MEM_OWNER = new DummyInvokable();
+    private AbstractInvokable memOwner;
     private TypeSerializer<Tuple2<Integer, Integer>> recordBuildSideAccesssor;
     private TypeSerializer<Tuple2<Integer, Integer>> recordProbeSideAccesssor;
     private TypeComparator<Tuple2<Integer, Integer>> recordBuildSideComparator;
@@ -70,7 +74,8 @@ public class ReOpenableHashTableITCase extends TestLogger {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws IOException {
+        this.memOwner = new DummyInvokable(tempFolder.newFolder());
         this.recordBuildSideAccesssor = TestData.getIntIntTupleSerializer();
         this.recordProbeSideAccesssor = TestData.getIntIntTupleSerializer();
         this.recordBuildSideComparator = TestData.getIntIntTupleComparator();
@@ -153,7 +158,7 @@ public class ReOpenableHashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memoryManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memoryManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;

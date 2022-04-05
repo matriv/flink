@@ -25,11 +25,15 @@ import org.apache.flink.streaming.util.AbstractStreamOperatorTestHarness;
 import org.apache.flink.streaming.util.OneInputStreamOperatorTestHarness;
 import org.apache.flink.util.TestLogger;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 /** Test base for {@link GenericWriteAheadSink}. */
 public abstract class WriteAheadSinkTestBase<IN, S extends GenericWriteAheadSink<IN>>
         extends TestLogger {
+
+    @ClassRule protected static final TemporaryFolder TEMPORARY_FOLDER = new TemporaryFolder();
 
     protected abstract S createSink() throws Exception;
 
@@ -53,7 +57,7 @@ public abstract class WriteAheadSinkTestBase<IN, S extends GenericWriteAheadSink
         S sink = createSink();
 
         OneInputStreamOperatorTestHarness<IN, IN> testHarness =
-                new OneInputStreamOperatorTestHarness<>(sink);
+                new OneInputStreamOperatorTestHarness<>(sink, TEMPORARY_FOLDER.newFolder());
 
         testHarness.open();
 
@@ -92,7 +96,7 @@ public abstract class WriteAheadSinkTestBase<IN, S extends GenericWriteAheadSink
         S sink = createSink();
 
         OneInputStreamOperatorTestHarness<IN, IN> testHarness =
-                new OneInputStreamOperatorTestHarness<>(sink);
+                new OneInputStreamOperatorTestHarness<>(sink, TEMPORARY_FOLDER.newFolder());
 
         testHarness.open();
 
@@ -130,7 +134,7 @@ public abstract class WriteAheadSinkTestBase<IN, S extends GenericWriteAheadSink
         S sink = createSink();
 
         OneInputStreamOperatorTestHarness<IN, IN> testHarness =
-                new OneInputStreamOperatorTestHarness<>(sink);
+                new OneInputStreamOperatorTestHarness<>(sink, TEMPORARY_FOLDER.newFolder());
 
         testHarness.open();
 
@@ -154,7 +158,7 @@ public abstract class WriteAheadSinkTestBase<IN, S extends GenericWriteAheadSink
 
         sink = createSink();
 
-        testHarness = new OneInputStreamOperatorTestHarness<>(sink);
+        testHarness = new OneInputStreamOperatorTestHarness<>(sink, TEMPORARY_FOLDER.newFolder());
 
         testHarness.setup();
         testHarness.initializeState(latestSnapshot);
@@ -175,12 +179,14 @@ public abstract class WriteAheadSinkTestBase<IN, S extends GenericWriteAheadSink
     public void testScalingDown() throws Exception {
         S sink1 = createSink();
         OneInputStreamOperatorTestHarness<IN, IN> testHarness1 =
-                new OneInputStreamOperatorTestHarness<>(sink1, maxParallelism, 2, 0);
+                new OneInputStreamOperatorTestHarness<>(
+                        sink1, maxParallelism, 2, 0, TEMPORARY_FOLDER.newFolder());
         testHarness1.open();
 
         S sink2 = createSink();
         OneInputStreamOperatorTestHarness<IN, IN> testHarness2 =
-                new OneInputStreamOperatorTestHarness<>(sink2, maxParallelism, 2, 1);
+                new OneInputStreamOperatorTestHarness<>(
+                        sink2, maxParallelism, 2, 1, TEMPORARY_FOLDER.newFolder());
         testHarness2.open();
 
         int elementCounter = 1;
@@ -216,7 +222,8 @@ public abstract class WriteAheadSinkTestBase<IN, S extends GenericWriteAheadSink
 
         S sink3 = createSink();
         OneInputStreamOperatorTestHarness<IN, IN> mergedTestHarness =
-                new OneInputStreamOperatorTestHarness<>(sink3, maxParallelism, 1, 0);
+                new OneInputStreamOperatorTestHarness<>(
+                        sink3, maxParallelism, 1, 0, TEMPORARY_FOLDER.newFolder());
 
         mergedTestHarness.setup();
         mergedTestHarness.initializeState(initState);
@@ -240,7 +247,8 @@ public abstract class WriteAheadSinkTestBase<IN, S extends GenericWriteAheadSink
 
         S sink1 = createSink();
         OneInputStreamOperatorTestHarness<IN, IN> testHarness1 =
-                new OneInputStreamOperatorTestHarness<>(sink1, maxParallelism, 1, 0);
+                new OneInputStreamOperatorTestHarness<>(
+                        sink1, maxParallelism, 1, 0, TEMPORARY_FOLDER.newFolder());
 
         int elementCounter = 1;
         int snapshotCount = 0;
@@ -283,7 +291,8 @@ public abstract class WriteAheadSinkTestBase<IN, S extends GenericWriteAheadSink
 
         S sink2 = createSink();
         OneInputStreamOperatorTestHarness<IN, IN> testHarness2 =
-                new OneInputStreamOperatorTestHarness<>(sink2, maxParallelism, 2, 0);
+                new OneInputStreamOperatorTestHarness<>(
+                        sink2, maxParallelism, 2, 0, TEMPORARY_FOLDER.newFolder());
 
         testHarness2.setup();
         testHarness2.initializeState(initState1);
@@ -295,7 +304,8 @@ public abstract class WriteAheadSinkTestBase<IN, S extends GenericWriteAheadSink
 
         S sink3 = createSink();
         OneInputStreamOperatorTestHarness<IN, IN> testHarness3 =
-                new OneInputStreamOperatorTestHarness<>(sink3, maxParallelism, 2, 1);
+                new OneInputStreamOperatorTestHarness<>(
+                        sink3, maxParallelism, 2, 1, TEMPORARY_FOLDER.newFolder());
 
         testHarness3.setup();
         testHarness3.initializeState(initState2);

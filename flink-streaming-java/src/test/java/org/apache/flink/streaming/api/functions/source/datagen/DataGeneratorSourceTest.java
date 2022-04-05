@@ -27,7 +27,9 @@ import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.util.AbstractStreamOperatorTestHarness;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,6 +42,8 @@ import java.util.function.Supplier;
 /** Tests for {@link DataGeneratorSource}. */
 public class DataGeneratorSourceTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void testRandomGenerator() throws Exception {
         long min = 10;
@@ -48,7 +52,7 @@ public class DataGeneratorSourceTest {
                 new DataGeneratorSource<>(RandomGenerator.longGenerator(min, max));
         StreamSource<Long, DataGeneratorSource<Long>> src = new StreamSource<>(source);
         AbstractStreamOperatorTestHarness<Long> testHarness =
-                new AbstractStreamOperatorTestHarness<>(src, 1, 1, 0);
+                new AbstractStreamOperatorTestHarness<>(src, 1, 1, 0, tempFolder.newFolder());
         testHarness.open();
 
         int totalNumber = 1000;
@@ -57,7 +61,7 @@ public class DataGeneratorSourceTest {
         source.run(
                 new SourceFunction.SourceContext<Long>() {
 
-                    private Object lock = new Object();
+                    private final Object lock = new Object();
                     private int emitNumber = 0;
 
                     @Override
@@ -119,14 +123,16 @@ public class DataGeneratorSourceTest {
         StreamSource<T, DataGeneratorSource<T>> src1 = new StreamSource<>(source1);
 
         final AbstractStreamOperatorTestHarness<T> testHarness1 =
-                new AbstractStreamOperatorTestHarness<>(src1, maxParallelsim, 2, 0);
+                new AbstractStreamOperatorTestHarness<>(
+                        src1, maxParallelsim, 2, 0, tempFolder.newFolder());
         testHarness1.open();
 
         final DataGeneratorSource<T> source2 = supplier.get();
         StreamSource<T, DataGeneratorSource<T>> src2 = new StreamSource<>(source2);
 
         final AbstractStreamOperatorTestHarness<T> testHarness2 =
-                new AbstractStreamOperatorTestHarness<>(src2, maxParallelsim, 2, 1);
+                new AbstractStreamOperatorTestHarness<>(
+                        src2, maxParallelsim, 2, 1, tempFolder.newFolder());
         testHarness2.open();
 
         // run the source asynchronously
@@ -186,7 +192,8 @@ public class DataGeneratorSourceTest {
                         snapshot, maxParallelsim, 2, 1, 0);
 
         final AbstractStreamOperatorTestHarness<T> testHarness3 =
-                new AbstractStreamOperatorTestHarness<>(src3, maxParallelsim, 1, 0);
+                new AbstractStreamOperatorTestHarness<>(
+                        src3, maxParallelsim, 1, 0, tempFolder.newFolder());
         testHarness3.setup();
         testHarness3.initializeState(initState);
         testHarness3.open();

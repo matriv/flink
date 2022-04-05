@@ -28,14 +28,18 @@ import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 import org.apache.flink.util.TestLogger;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /** Tests {@link ProcessOperator}. */
 public class ProcessOperatorTest extends TestLogger {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Rule public ExpectedException expectedException = ExpectedException.none();
 
@@ -46,7 +50,7 @@ public class ProcessOperatorTest extends TestLogger {
                 new ProcessOperator<>(new QueryingProcessFunction(TimeDomain.EVENT_TIME));
 
         OneInputStreamOperatorTestHarness<Integer, String> testHarness =
-                new OneInputStreamOperatorTestHarness<>(operator);
+                new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -77,7 +81,7 @@ public class ProcessOperatorTest extends TestLogger {
                 new ProcessOperator<>(new QueryingProcessFunction(TimeDomain.PROCESSING_TIME));
 
         OneInputStreamOperatorTestHarness<Integer, String> testHarness =
-                new OneInputStreamOperatorTestHarness<>(operator);
+                new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -105,7 +109,7 @@ public class ProcessOperatorTest extends TestLogger {
                 new ProcessOperator<>(new NullOutputTagEmittingProcessFunction());
 
         OneInputStreamOperatorTestHarness<Integer, String> testHarness =
-                new OneInputStreamOperatorTestHarness<>(operator);
+                new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -126,7 +130,7 @@ public class ProcessOperatorTest extends TestLogger {
                 new ProcessOperator<>(new SideOutputProcessFunction());
 
         OneInputStreamOperatorTestHarness<Integer, String> testHarness =
-                new OneInputStreamOperatorTestHarness<>(operator);
+                new OneInputStreamOperatorTestHarness<>(operator, tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();

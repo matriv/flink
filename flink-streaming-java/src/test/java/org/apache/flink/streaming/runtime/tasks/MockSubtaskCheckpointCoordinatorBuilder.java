@@ -30,6 +30,7 @@ import org.apache.flink.util.concurrent.Executors;
 import org.apache.flink.util.concurrent.FutureUtils;
 import org.apache.flink.util.function.BiFunctionWithException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -51,6 +52,11 @@ public class MockSubtaskCheckpointCoordinatorBuilder {
     private boolean unalignedCheckpointEnabled;
     private int maxRecordAbortedCheckpoints = 10;
     private boolean enableCheckpointAfterTasksFinished = true;
+    private final File tmpWorkingDir;
+
+    public MockSubtaskCheckpointCoordinatorBuilder(File tmpWorkingDir) {
+        this.tmpWorkingDir = tmpWorkingDir;
+    }
 
     public MockSubtaskCheckpointCoordinatorBuilder setEnvironment(Environment environment) {
         this.environment = environment;
@@ -90,7 +96,7 @@ public class MockSubtaskCheckpointCoordinatorBuilder {
 
     SubtaskCheckpointCoordinator build() throws IOException {
         if (environment == null) {
-            this.environment = MockEnvironment.builder().build();
+            this.environment = MockEnvironment.builder(tmpWorkingDir).build();
         }
         if (checkpointStorage == null) {
             this.checkpointStorage =

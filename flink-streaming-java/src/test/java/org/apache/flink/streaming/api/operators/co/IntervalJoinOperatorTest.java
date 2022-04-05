@@ -39,7 +39,9 @@ import org.apache.flink.shaded.guava30.com.google.common.collect.Iterables;
 import org.apache.flink.shaded.guava30.com.google.common.collect.Lists;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -53,6 +55,8 @@ import java.util.stream.Collectors;
 /** Tests for {@link IntervalJoinOperator}. Those tests cover correctness and cleaning of state */
 @RunWith(Parameterized.class)
 public class IntervalJoinOperatorTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private final boolean lhsFasterThanRhs;
 
@@ -891,7 +895,7 @@ public class IntervalJoinOperatorTest {
                 KeySelector<TestElem, String> keySelector2,
                 TypeInformation<String> keyType)
                 throws Exception {
-            super(operator, keySelector1, keySelector2, keyType);
+            super(operator, keySelector1, keySelector2, keyType, tempFolder.newFolder());
         }
     }
 }

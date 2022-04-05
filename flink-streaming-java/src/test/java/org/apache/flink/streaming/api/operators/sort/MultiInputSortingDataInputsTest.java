@@ -36,7 +36,9 @@ import org.apache.flink.streaming.runtime.io.StreamTaskInput;
 import org.apache.flink.streaming.runtime.streamrecord.StreamElement;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +48,8 @@ import static org.junit.Assert.assertThat;
 
 /** Tests for {@link MultiInputSortingDataInput}. */
 public class MultiInputSortingDataInputsTest {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Test
     public void passThroughThenSortedInput() throws Exception {
@@ -81,10 +85,11 @@ public class MultiInputSortingDataInputsTest {
 
         KeySelector<Integer, Integer> keySelector = value -> value;
 
-        try (MockEnvironment environment = MockEnvironment.builder().build()) {
+        try (MockEnvironment environment =
+                MockEnvironment.builder(tempFolder.newFolder()).build()) {
             SelectableSortingInputs selectableSortingInputs =
                     MultiInputSortingDataInput.wrapInputs(
-                            new DummyInvokable(),
+                            new DummyInvokable(tempFolder.newFolder()),
                             new StreamTaskInput[] {sortedInput},
                             new KeySelector[] {keySelector},
                             new TypeSerializer[] {new IntSerializer()},
@@ -163,10 +168,11 @@ public class MultiInputSortingDataInputsTest {
         CollectionDataInput<Integer> dataInput1 = new CollectionDataInput<>(elements, 0);
         CollectionDataInput<Integer> dataInput2 = new CollectionDataInput<>(elements, 1);
         KeySelector<Integer, Integer> keySelector = value -> value;
-        try (MockEnvironment environment = MockEnvironment.builder().build()) {
+        try (MockEnvironment environment =
+                MockEnvironment.builder(tempFolder.newFolder()).build()) {
             SelectableSortingInputs selectableSortingInputs =
                     MultiInputSortingDataInput.wrapInputs(
-                            new DummyInvokable(),
+                            new DummyInvokable(tempFolder.newFolder()),
                             new StreamTaskInput[] {dataInput1, dataInput2},
                             new KeySelector[] {keySelector, keySelector},
                             new TypeSerializer[] {new IntSerializer(), new IntSerializer()},
@@ -244,10 +250,11 @@ public class MultiInputSortingDataInputsTest {
         CollectionDataInput<Integer> dataInput1 = new CollectionDataInput<>(elements1, 0);
         CollectionDataInput<Integer> dataInput2 = new CollectionDataInput<>(elements2, 1);
         KeySelector<Integer, Integer> keySelector = value -> value;
-        try (MockEnvironment environment = MockEnvironment.builder().build()) {
+        try (MockEnvironment environment =
+                MockEnvironment.builder(tempFolder.newFolder()).build()) {
             SelectableSortingInputs selectableSortingInputs =
                     MultiInputSortingDataInput.wrapInputs(
-                            new DummyInvokable(),
+                            new DummyInvokable(tempFolder.newFolder()),
                             new StreamTaskInput[] {dataInput1, dataInput2},
                             new KeySelector[] {keySelector, keySelector},
                             new TypeSerializer[] {new IntSerializer(), new IntSerializer()},

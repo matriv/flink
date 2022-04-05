@@ -42,7 +42,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Test that checks how the combiner handles very large records that are too large to be written
@@ -84,7 +86,7 @@ public class CombinerOversizedRecordsTest
 
     // ------------------------------------------------------------------------
 
-    public CombinerOversizedRecordsTest(ExecutionConfig config) {
+    public CombinerOversizedRecordsTest(ExecutionConfig config) throws IOException {
         super(config, COMBINE_MEM, 0);
         combine_frac = (double) COMBINE_MEM / getMemoryManager().getMemorySize();
     }

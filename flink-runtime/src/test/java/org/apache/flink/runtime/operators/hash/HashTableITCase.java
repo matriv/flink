@@ -48,7 +48,9 @@ import org.apache.flink.util.TestLogger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,7 +63,9 @@ import static org.junit.Assert.fail;
 
 public class HashTableITCase extends TestLogger {
 
-    private static final AbstractInvokable MEM_OWNER = new DummyInvokable();
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
+    private AbstractInvokable memOwner;
 
     private MemoryManager memManager;
     private IOManager ioManager;
@@ -79,7 +83,8 @@ public class HashTableITCase extends TestLogger {
     private TypePairComparator<IntPair, IntPair> pairComparator;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        memOwner = new DummyInvokable(tempFolder.newFolder());
         final int[] keyPos = new int[] {0};
         @SuppressWarnings("unchecked")
         final Class<? extends Value>[] keyType =
@@ -150,7 +155,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -207,7 +212,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -264,7 +269,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -388,7 +393,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -519,7 +524,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -647,7 +652,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -706,7 +711,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 128);
+            memSegments = this.memManager.allocatePages(memOwner, 128);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -763,7 +768,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 96);
+            memSegments = this.memManager.allocatePages(memOwner, 96);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -820,7 +825,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 85);
+            memSegments = this.memManager.allocatePages(memOwner, 85);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -880,7 +885,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -937,7 +942,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -994,7 +999,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -1116,7 +1121,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -1243,7 +1248,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -1369,7 +1374,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -1428,7 +1433,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 128);
+            memSegments = this.memManager.allocatePages(memOwner, 128);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -1485,7 +1490,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 85);
+            memSegments = this.memManager.allocatePages(memOwner, 85);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -1541,7 +1546,7 @@ public class HashTableITCase extends TestLogger {
         // allocate the memory for the HashTable
         List<MemorySegment> memSegments;
         try {
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 896);
+            memSegments = this.memManager.allocatePages(memOwner, 896);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -1629,7 +1634,7 @@ public class HashTableITCase extends TestLogger {
         List<MemorySegment> memSegments;
         try {
             // 33 is minimum number of pages required to perform hash join this inputs
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 33);
+            memSegments = this.memManager.allocatePages(memOwner, 33);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -1713,7 +1718,7 @@ public class HashTableITCase extends TestLogger {
         List<MemorySegment> memSegments;
         try {
             // 33 is minimum number of pages required to perform hash join this inputs
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 33);
+            memSegments = this.memManager.allocatePages(memOwner, 33);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -1784,7 +1789,7 @@ public class HashTableITCase extends TestLogger {
         List<MemorySegment> memSegments;
         try {
             // 33 is minimum number of pages required to perform hash join this inputs
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 33);
+            memSegments = this.memManager.allocatePages(memOwner, 33);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;
@@ -1843,7 +1848,7 @@ public class HashTableITCase extends TestLogger {
         List<MemorySegment> memSegments;
         try {
             // 33 is minimum number of pages required to perform hash join this inputs
-            memSegments = this.memManager.allocatePages(MEM_OWNER, 33);
+            memSegments = this.memManager.allocatePages(memOwner, 33);
         } catch (MemoryAllocationException maex) {
             fail("Memory for the Join could not be provided.");
             return;

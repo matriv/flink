@@ -32,6 +32,7 @@ import org.apache.flink.shaded.guava30.com.google.common.base.Throwables;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertFalse;
@@ -43,7 +44,7 @@ public class RightOuterJoinTaskTest extends AbstractOuterJoinTaskTest {
 
     private final double hash_frac;
 
-    public RightOuterJoinTaskTest(ExecutionConfig config) {
+    public RightOuterJoinTaskTest(ExecutionConfig config) throws IOException {
         super(config);
         hash_frac = (double) HASH_MEM / this.getMemoryManager().getMemorySize();
     }

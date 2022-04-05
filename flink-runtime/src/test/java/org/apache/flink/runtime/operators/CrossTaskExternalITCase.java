@@ -28,6 +28,8 @@ import org.apache.flink.types.Record;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public class CrossTaskExternalITCase extends DriverTestBase<CrossFunction<Record, Record, Record>> {
     private static final long CROSS_MEM = 1024 * 1024;
 
@@ -35,7 +37,7 @@ public class CrossTaskExternalITCase extends DriverTestBase<CrossFunction<Record
 
     private final CountingOutputCollector output = new CountingOutputCollector();
 
-    public CrossTaskExternalITCase(ExecutionConfig config) {
+    public CrossTaskExternalITCase(ExecutionConfig config) throws IOException {
         super(config, CROSS_MEM, 0);
         cross_frac = (double) CROSS_MEM / this.getMemoryManager().getMemorySize();
     }

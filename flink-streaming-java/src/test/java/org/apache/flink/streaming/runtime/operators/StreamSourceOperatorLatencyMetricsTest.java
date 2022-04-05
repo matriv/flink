@@ -45,8 +45,11 @@ import org.apache.flink.streaming.util.MockStreamTaskBuilder;
 import org.apache.flink.util.TestLogger;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,6 +64,8 @@ public class StreamSourceOperatorLatencyMetricsTest extends TestLogger {
     private static final long maxProcessingTime = 100L;
     private static final long latencyMarkInterval = 10L;
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     /** Verifies that by default no latency metrics are emitted. */
     @Test
     public void testLatencyMarkEmissionDisabled() throws Exception {
@@ -70,7 +75,7 @@ public class StreamSourceOperatorLatencyMetricsTest extends TestLogger {
                         setupSourceOperator(
                                 operator,
                                 new ExecutionConfig(),
-                                MockEnvironment.builder().build(),
+                                MockEnvironment.builder(tempFolder.newFolder()).build(),
                                 timeProvider));
     }
 
@@ -86,7 +91,7 @@ public class StreamSourceOperatorLatencyMetricsTest extends TestLogger {
                     setupSourceOperator(
                             operator,
                             executionConfig,
-                            MockEnvironment.builder().build(),
+                            MockEnvironment.builder(tempFolder.newFolder()).build(),
                             timeProvider);
                 });
     }
@@ -101,9 +106,10 @@ public class StreamSourceOperatorLatencyMetricsTest extends TestLogger {
                     tmConfig.setLong(MetricOptions.LATENCY_INTERVAL, latencyMarkInterval);
 
                     Environment env =
-                            MockEnvironment.builder()
+                            MockEnvironment.builder(tempFolder.newFolder())
                                     .setTaskManagerRuntimeInfo(
-                                            new TestingTaskManagerRuntimeInfo(tmConfig))
+                                            new TestingTaskManagerRuntimeInfo(
+                                                    tmConfig, tempFolder.newFolder()))
                                     .build();
 
                     setupSourceOperator(operator, new ExecutionConfig(), env, timeProvider);
@@ -126,9 +132,10 @@ public class StreamSourceOperatorLatencyMetricsTest extends TestLogger {
                     tmConfig.setLong(MetricOptions.LATENCY_INTERVAL, 0L);
 
                     Environment env =
-                            MockEnvironment.builder()
+                            MockEnvironment.builder(tempFolder.newFolder())
                                     .setTaskManagerRuntimeInfo(
-                                            new TestingTaskManagerRuntimeInfo(tmConfig))
+                                            new TestingTaskManagerRuntimeInfo(
+                                                    tmConfig, tempFolder.newFolder()))
                                     .build();
 
                     setupSourceOperator(operator, executionConfig, env, timeProvider);
@@ -148,9 +155,10 @@ public class StreamSourceOperatorLatencyMetricsTest extends TestLogger {
                     tmConfig.setLong(MetricOptions.LATENCY_INTERVAL, latencyMarkInterval);
 
                     Environment env =
-                            MockEnvironment.builder()
+                            MockEnvironment.builder(tempFolder.newFolder())
                                     .setTaskManagerRuntimeInfo(
-                                            new TestingTaskManagerRuntimeInfo(tmConfig))
+                                            new TestingTaskManagerRuntimeInfo(
+                                                    tmConfig, tempFolder.newFolder()))
                                     .build();
 
                     ExecutionConfig executionConfig = new ExecutionConfig();
@@ -162,8 +170,8 @@ public class StreamSourceOperatorLatencyMetricsTest extends TestLogger {
 
     private interface OperatorSetupOperation {
         void setupSourceOperator(
-                StreamSource<Long, ?> operator,
-                TestProcessingTimeService testProcessingTimeService);
+                StreamSource<Long, ?> operator, TestProcessingTimeService testProcessingTimeService)
+                throws IOException;
     }
 
     private void testLatencyMarkEmission(
@@ -183,17 +191,14 @@ public class StreamSourceOperatorLatencyMetricsTest extends TestLogger {
         operatorSetup.setupSourceOperator(operator, testProcessingTimeService);
 
         // run and wait to be stopped
-        OperatorChain<?, ?> operatorChain =
+        try (OperatorChain<?, ?> operatorChain =
                 new RegularOperatorChain<>(
                         operator.getContainingTask(),
                         StreamTask.createRecordWriterDelegate(
                                 operator.getOperatorConfig(),
-                                new MockEnvironmentBuilder().build()));
-        try {
+                                new MockEnvironmentBuilder(tempFolder.newFolder()).build()))) {
             operator.run(new Object(), new CollectorOutput<>(output), operatorChain);
             operator.finish();
-        } finally {
-            operatorChain.close();
         }
 
         assertEquals(numberLatencyMarkers, output.size());

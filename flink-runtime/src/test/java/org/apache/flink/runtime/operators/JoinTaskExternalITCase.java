@@ -32,6 +32,8 @@ import org.apache.flink.util.Collector;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public class JoinTaskExternalITCase
         extends DriverTestBase<FlatJoinFunction<Record, Record, Record>> {
 
@@ -57,7 +59,7 @@ public class JoinTaskExternalITCase
 
     private final CountingOutputCollector output = new CountingOutputCollector();
 
-    public JoinTaskExternalITCase(ExecutionConfig config) {
+    public JoinTaskExternalITCase(ExecutionConfig config) throws IOException {
         super(config, HASH_MEM, 2, SORT_MEM);
         bnljn_frac = (double) BNLJN_MEM / this.getMemoryManager().getMemorySize();
         hash_frac = (double) HASH_MEM / this.getMemoryManager().getMemorySize();

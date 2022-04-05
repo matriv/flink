@@ -74,7 +74,9 @@ import org.apache.flink.shaded.guava30.com.google.common.base.Joiner;
 import org.apache.flink.shaded.guava30.com.google.common.collect.Iterables;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -94,6 +96,8 @@ import static org.mockito.Mockito.when;
 /** Tests for {@link WindowOperator}. */
 @SuppressWarnings("serial")
 public class WindowOperatorTest extends TestLogger {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     private static final TypeInformation<Tuple2<String, Integer>> STRING_INT_TUPLE =
             TypeInformation.of(new TypeHint<Tuple2<String, Integer>>() {});
@@ -1091,11 +1095,13 @@ public class WindowOperatorTest extends TestLogger {
                     OneInputStreamOperator<Tuple2<String, Integer>, OUT> operator)
                     throws Exception {
         return new KeyedOneInputStreamOperatorTestHarness<>(
-                operator, new TupleKeySelector(), BasicTypeInfo.STRING_TYPE_INFO);
+                operator,
+                new TupleKeySelector(),
+                BasicTypeInfo.STRING_TYPE_INFO,
+                tempFolder.newFolder());
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testContinuousWatermarkTrigger() throws Exception {
         closeCalled.set(0);
 

@@ -37,9 +37,11 @@ import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 import org.apache.flink.util.TestLogger;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -48,6 +50,8 @@ import static org.junit.Assert.assertTrue;
 
 /** Tests {@link KeyedProcessOperator}. */
 public class KeyedProcessOperatorTest extends TestLogger {
+
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Rule public ExpectedException expectedException = ExpectedException.none();
 
@@ -75,7 +79,10 @@ public class KeyedProcessOperatorTest extends TestLogger {
 
         try (OneInputStreamOperatorTestHarness<Tuple2<Integer, String>, String> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, (in) -> in.f0, BasicTypeInfo.INT_TYPE_INFO)) {
+                        operator,
+                        (in) -> in.f0,
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder())) {
 
             testHarness.setup();
             testHarness.open();
@@ -100,7 +107,10 @@ public class KeyedProcessOperatorTest extends TestLogger {
 
         OneInputStreamOperatorTestHarness<Integer, String> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, new IdentityKeySelector<Integer>(), BasicTypeInfo.INT_TYPE_INFO);
+                        operator,
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -132,7 +142,10 @@ public class KeyedProcessOperatorTest extends TestLogger {
 
         OneInputStreamOperatorTestHarness<Integer, String> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, new IdentityKeySelector<Integer>(), BasicTypeInfo.INT_TYPE_INFO);
+                        operator,
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -165,7 +178,10 @@ public class KeyedProcessOperatorTest extends TestLogger {
 
         OneInputStreamOperatorTestHarness<Integer, Integer> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, new IdentityKeySelector<Integer>(), BasicTypeInfo.INT_TYPE_INFO);
+                        operator,
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -200,7 +216,10 @@ public class KeyedProcessOperatorTest extends TestLogger {
 
         OneInputStreamOperatorTestHarness<Integer, Integer> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, new IdentityKeySelector<Integer>(), BasicTypeInfo.INT_TYPE_INFO);
+                        operator,
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -230,7 +249,10 @@ public class KeyedProcessOperatorTest extends TestLogger {
 
         OneInputStreamOperatorTestHarness<Integer, String> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, new IdentityKeySelector<Integer>(), BasicTypeInfo.INT_TYPE_INFO);
+                        operator,
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -274,7 +296,10 @@ public class KeyedProcessOperatorTest extends TestLogger {
 
         OneInputStreamOperatorTestHarness<Integer, String> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, new IdentityKeySelector<Integer>(), BasicTypeInfo.INT_TYPE_INFO);
+                        operator,
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -314,7 +339,10 @@ public class KeyedProcessOperatorTest extends TestLogger {
 
         OneInputStreamOperatorTestHarness<Integer, String> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, new IdentityKeySelector<Integer>(), BasicTypeInfo.INT_TYPE_INFO);
+                        operator,
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -330,7 +358,10 @@ public class KeyedProcessOperatorTest extends TestLogger {
 
         testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, new IdentityKeySelector<Integer>(), BasicTypeInfo.INT_TYPE_INFO);
+                        operator,
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.initializeState(snapshot);
@@ -358,7 +389,10 @@ public class KeyedProcessOperatorTest extends TestLogger {
 
         OneInputStreamOperatorTestHarness<Integer, String> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, new IdentityKeySelector<>(), BasicTypeInfo.INT_TYPE_INFO);
+                        operator,
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();
@@ -380,7 +414,10 @@ public class KeyedProcessOperatorTest extends TestLogger {
 
         OneInputStreamOperatorTestHarness<Integer, String> testHarness =
                 new KeyedOneInputStreamOperatorTestHarness<>(
-                        operator, new IdentityKeySelector<>(), BasicTypeInfo.INT_TYPE_INFO);
+                        operator,
+                        new IdentityKeySelector<>(),
+                        BasicTypeInfo.INT_TYPE_INFO,
+                        tempFolder.newFolder());
 
         testHarness.setup();
         testHarness.open();

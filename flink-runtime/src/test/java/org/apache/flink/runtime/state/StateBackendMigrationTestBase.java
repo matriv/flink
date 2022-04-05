@@ -90,8 +90,8 @@ public abstract class StateBackendMigrationTestBase<B extends AbstractStateBacke
     @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Before
-    public void before() {
-        env = MockEnvironment.builder().build();
+    public void before() throws IOException {
+        env = MockEnvironment.builder(tempFolder.newFolder()).build();
     }
 
     @After

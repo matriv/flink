@@ -36,7 +36,9 @@ import org.apache.flink.util.CollectionUtil;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nullable;
 
@@ -54,6 +56,8 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings("serial")
 public class SourceOperatorTest {
 
+    @ClassRule private static final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Nullable private SourceOperatorTestContext context;
     @Nullable private SourceOperator<Integer, MockSourceSplit> operator;
     @Nullable private MockSourceReader mockSourceReader;
@@ -61,7 +65,7 @@ public class SourceOperatorTest {
 
     @Before
     public void setup() throws Exception {
-        context = new SourceOperatorTestContext();
+        context = new SourceOperatorTestContext(tempFolder.newFolder());
         operator = context.getOperator();
         mockSourceReader = context.getSourceReader();
         mockGateway = context.getGateway();
