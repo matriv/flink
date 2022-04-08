@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.table.planner.codegen
 
-import org.apache.flink.api.common.functions.{Function, RuntimeContext}
+import org.apache.flink.api.common.functions.Function
 import org.apache.flink.api.common.typeutils.TypeSerializer
 import org.apache.flink.configuration.ReadableConfig
 import org.apache.flink.table.data.GenericRowData
@@ -33,7 +34,6 @@ import org.apache.flink.table.types.DataType
 import org.apache.flink.table.types.logical._
 import org.apache.flink.table.types.logical.LogicalTypeRoot._
 import org.apache.flink.table.utils.DateTimeUtils
-import org.apache.flink.util.InstantiationUtil
 
 import java.time.ZoneId
 import java.util.TimeZone
@@ -564,7 +564,9 @@ class CodeGeneratorContext(val tableConfig: ReadableConfig) {
     fieldTerm
   }
 
-  /** Adds a reusable query-level local time to the beginning of the SAM of the generated class. */
+  /**
+   * Adds a reusable query-level local time to the beginning of the SAM of the generated class.
+   */
   def addReusableQueryLevelLocalTime(): String = {
     val fieldTerm = s"queryStartLocaltime"
 
@@ -701,11 +703,7 @@ class CodeGeneratorContext(val tableConfig: ReadableConfig) {
       fieldTerm: String,
       fieldTypeTerm: String): Unit = {
     val idx = references.length
-    // make a deep copy of the object
-    val byteArray = InstantiationUtil.serializeObject(obj)
-    val objCopy: AnyRef =
-      InstantiationUtil.deserializeObject(byteArray, Thread.currentThread().getContextClassLoader)
-    references += objCopy
+    references += obj
 
     reusableMemberStatements.add(s"private transient $fieldTypeTerm $fieldTerm;")
     reusableInitStatements.add(s"$fieldTerm = ((($fieldTypeTerm) references[$idx]));")
