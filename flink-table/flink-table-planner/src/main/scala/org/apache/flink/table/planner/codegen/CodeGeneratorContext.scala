@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.flink.table.planner.codegen
 
 import org.apache.flink.api.common.functions.Function
@@ -564,9 +563,7 @@ class CodeGeneratorContext(val tableConfig: ReadableConfig) {
     fieldTerm
   }
 
-  /**
-   * Adds a reusable query-level local time to the beginning of the SAM of the generated class.
-   */
+  /** Adds a reusable query-level local time to the beginning of the SAM of the generated class. */
   def addReusableQueryLevelLocalTime(): String = {
     val fieldTerm = s"queryStartLocaltime"
 
