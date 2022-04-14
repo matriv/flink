@@ -129,7 +129,7 @@ class AvroSchemaConverterTest {
                 (RowType)
                         TableSchema.builder()
                                 .field("a", DataTypes.STRING())
-                                .field("b", DataTypes.TIMESTAMP(9))
+                                .field("b", DataTypes.TIMESTAMP(8))
                                 .build()
                                 .toRowDataType()
                                 .getLogicalType();
@@ -137,8 +137,8 @@ class AvroSchemaConverterTest {
         assertThatThrownBy(() -> AvroSchemaConverter.convertToSchema(rowType))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(
-                        "Avro does not support TIMESTAMP type with precision: 9, "
-                                + "it only supports precision less than 3.");
+                        "Avro does not support TIMESTAMP type with precision: 8, "
+                                + "it only supports precision less than or equal to 6.");
     }
 
     @Test

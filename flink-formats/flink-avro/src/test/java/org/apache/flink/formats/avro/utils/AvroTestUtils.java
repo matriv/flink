@@ -213,8 +213,7 @@ public final class AvroTestUtils {
         user.put("type_time_millis", LocalTime.parse("12:12:12"));
         user.put("type_time_micros", LocalTime.ofSecondOfDay(0).plus(123456L, ChronoUnit.MICROS));
         user.put("type_timestamp_millis", Instant.parse("2014-03-01T12:12:12.321Z"));
-        user.put(
-                "type_timestamp_micros", Instant.ofEpochSecond(0).plus(123456L, ChronoUnit.MICROS));
+        user.put("type_timestamp_micros", Instant.parse("2014-03-01T12:12:12.123456Z"));
         user.put(
                 "type_decimal_bytes",
                 ByteBuffer.wrap(BigDecimal.valueOf(2000, 2).unscaledValue().toByteArray()));
