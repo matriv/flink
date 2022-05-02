@@ -135,7 +135,7 @@ object JoinUtil {
       nonEquiCondition: RexNode,
       leftType: LogicalType,
       rightType: LogicalType): GeneratedJoinCondition = {
-    val ctx = CodeGeneratorContext(tableConfig)
+    val ctx = new CodeGeneratorContext(tableConfig)
     // should consider null fields
     val exprGenerator = new ExprCodeGenerator(ctx, false)
       .bindInput(leftType)

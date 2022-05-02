@@ -36,7 +36,7 @@ object ValuesCodeGenerator {
       outputType: RowType,
       tuples: util.List[util.List[RexLiteral]],
       description: String): ValuesInputFormat = {
-    val ctx = CodeGeneratorContext(tableConfig)
+    val ctx = new CodeGeneratorContext(tableConfig)
     val exprGenerator = new ExprCodeGenerator(ctx, false)
     // generate code for every record
     val generatedRecords = tuples.map {

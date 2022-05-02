@@ -17,7 +17,7 @@
  */
 package org.apache.flink.table.planner.codegen
 
-import org.apache.flink.api.common.functions.{Function, RuntimeContext}
+import org.apache.flink.api.common.functions.Function
 import org.apache.flink.api.common.typeutils.TypeSerializer
 import org.apache.flink.configuration.ReadableConfig
 import org.apache.flink.table.data.GenericRowData
@@ -958,11 +958,5 @@ class CodeGeneratorContext(val tableConfig: ReadableConfig) {
     reusableInitStatements.add(nullableInit)
 
     fieldTerm
-  }
-}
-
-object CodeGeneratorContext {
-  def apply(tableConfig: ReadableConfig): CodeGeneratorContext = {
-    new CodeGeneratorContext(tableConfig)
   }
 }
