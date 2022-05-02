@@ -102,7 +102,7 @@ public class PlannerContext {
             List<RelTraitDef> traitDefs,
             ClassLoader classLoader) {
         this.typeSystem = FlinkTypeSystem.INSTANCE;
-        this.typeFactory = new FlinkTypeFactory(typeSystem);
+        this.typeFactory = new FlinkTypeFactory(classLoader, typeSystem);
         this.context =
                 new FlinkContextImpl(
                         isBatchMode,
