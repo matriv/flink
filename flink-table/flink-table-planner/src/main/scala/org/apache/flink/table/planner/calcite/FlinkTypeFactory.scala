@@ -21,7 +21,7 @@ import org.apache.flink.api.common.typeinfo.{BasicTypeInfo, NothingTypeInfo, Typ
 import org.apache.flink.table.api.{DataTypes, TableException, TableSchema, ValidationException}
 import org.apache.flink.table.calcite.ExtendedRelTypeFactory
 import org.apache.flink.table.planner.calcite.FlinkTypeFactory.toLogicalType
-import org.apache.flink.table.planner.plan.schema.{GenericRelDataType, _}
+import org.apache.flink.table.planner.plan.schema._
 import org.apache.flink.table.runtime.types.{LogicalTypeDataTypeConverter, PlannerTypeUtils}
 import org.apache.flink.table.types.logical._
 import org.apache.flink.table.typeutils.TimeIndicatorTypeInfo
@@ -50,7 +50,9 @@ import scala.collection.mutable
  * Flink specific type factory that represents the interface between Flink's [[LogicalType]] and
  * Calcite's [[RelDataType]].
  */
-class FlinkTypeFactory(typeSystem: RelDataTypeSystem = FlinkTypeSystem.INSTANCE)
+class FlinkTypeFactory(
+    classLoader: ClassLoader,
+    typeSystem: RelDataTypeSystem = FlinkTypeSystem.INSTANCE)
   extends JavaTypeFactoryImpl(typeSystem)
   with ExtendedRelTypeFactory {
 
@@ -366,10 +368,7 @@ class FlinkTypeFactory(typeSystem: RelDataTypeSystem = FlinkTypeSystem.INSTANCE)
   }
 
   override def createRawType(className: String, serializerString: String): RelDataType = {
-    val rawType = RawType.restore(
-      FlinkTypeFactory.getClass.getClassLoader, // temporary solution until FLINK-15635 is fixed
-      className,
-      serializerString)
+    val rawType = RawType.restore(classLoader, className, serializerString)
     val rawRelDataType = createFieldTypeFromLogicalType(rawType)
     canonize(rawRelDataType)
   }

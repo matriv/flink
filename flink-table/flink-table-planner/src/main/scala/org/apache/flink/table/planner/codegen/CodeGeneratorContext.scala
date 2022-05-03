@@ -33,7 +33,6 @@ import org.apache.flink.table.types.DataType
 import org.apache.flink.table.types.logical._
 import org.apache.flink.table.types.logical.LogicalTypeRoot._
 import org.apache.flink.table.utils.DateTimeUtils
-import org.apache.flink.util.InstantiationUtil
 
 import java.time.ZoneId
 import java.util.TimeZone
@@ -701,11 +700,7 @@ class CodeGeneratorContext(val tableConfig: ReadableConfig) {
       fieldTerm: String,
       fieldTypeTerm: String): Unit = {
     val idx = references.length
-    // make a deep copy of the object
-    val byteArray = InstantiationUtil.serializeObject(obj)
-    val objCopy: AnyRef =
-      InstantiationUtil.deserializeObject(byteArray, Thread.currentThread().getContextClassLoader)
-    references += objCopy
+    references += obj
 
     reusableMemberStatements.add(s"private transient $fieldTypeTerm $fieldTerm;")
     reusableInitStatements.add(s"$fieldTerm = ((($fieldTypeTerm) references[$idx]));")

@@ -42,7 +42,7 @@ import org.apache.flink.table.expressions.Expression
 import org.apache.flink.table.factories.{FactoryUtil, PlannerFactoryUtil, StreamTableSourceFactory}
 import org.apache.flink.table.functions._
 import org.apache.flink.table.module.ModuleManager
-import org.apache.flink.table.operations.{ModifyOperation, Operation, QueryOperation, SinkModifyOperation}
+import org.apache.flink.table.operations.{ModifyOperation, QueryOperation}
 import org.apache.flink.table.planner.calcite.CalciteConfig
 import org.apache.flink.table.planner.delegation.PlannerBase
 import org.apache.flink.table.planner.functions.sql.FlinkSqlOperatorTable
@@ -1507,8 +1507,7 @@ object TestingTableEnvironment {
       catalogManager: Option[CatalogManager] = None,
       tableConfig: TableConfig): TestingTableEnvironment = {
 
-    // temporary solution until FLINK-15635 is fixed
-    val classLoader = Thread.currentThread.getContextClassLoader
+    val classLoader = settings.getUserClassLoader
 
     val executorFactory = FactoryUtil.discoverFactory(
       classLoader,
@@ -1536,10 +1535,11 @@ object TestingTableEnvironment {
           .build
     }
 
-    val functionCatalog = new FunctionCatalog(settings.getConfiguration, catalogMgr, moduleManager)
+    val functionCatalog =
+      new FunctionCatalog(settings.getConfiguration, catalogMgr, moduleManager, classLoader)
 
     val planner = PlannerFactoryUtil
-      .createPlanner(executor, tableConfig, moduleManager, catalogMgr, functionCatalog)
+      .createPlanner(executor, tableConfig, classLoader, moduleManager, catalogMgr, functionCatalog)
       .asInstanceOf[PlannerBase]
 
     new TestingTableEnvironment(
